@@ -185,9 +185,7 @@ $Pr (X=-1) = \dfrac{1}{4}$ and $Pr (Y=1) = \dfrac{1}{4}$, meaning that $Pr (X=-1
 
 Accordingly, $Pr (X=-1)*Pr(Y=1) = \dfrac{1}{16} \neq 0 = Pr (X=-1 \cap Y=1)$
 
-\subparagraph{b)} This problem is taken from Pitman (1993) Probability, Ch. 6.4, Problem 5 (p. 445). Let X have uniform distribution on {-1,0,1} and let $Y=X^2$. Are X and Y uncorrelated? Are X and Y independent? Show math
-
-$\mathbb{E}(X) = \dfrac{1}{3}*(-1) + \dfrac{1}{3}*(0) + \dfrac{1}{3}*(1) = 0$
+\subparagraph{b)} $\mathbb{E}(X) = \dfrac{1}{3}*(-1) + \dfrac{1}{3}*(0) + \dfrac{1}{3}*(1) = 0$
 
 $\mathbb{E}(Y) = \dfrac{1}{3}*(1) + \dfrac{1}{3}*(0) + \dfrac{1}{3}*(1) = \dfrac{2}{3}$
 

@@ -4,6 +4,7 @@
 \usepackage{graphicx}
 \usepackage{fullpage}
 \usepackage{setspace}
+\usepackage{hyperref}
 
 \onehalfspacing
 
@@ -11,9 +12,9 @@
 
 \title{Pol Sci 630: Problem Set 1 - Probability Theory and Distributions - Solutions}
 
-\author{Prepared by: Jan Vogler (jan.vogler@duke.edu)}
+\author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
-\date{Due Date: Tuesday, September 1st, 2015, 6 PM}
+\date{Due Date: Tuesday, September 1st, 2015, 10 AM (Beginning of Class)}
  
 \maketitle 
 
@@ -29,7 +30,7 @@ factorial(10)
 factorial(8)
 
 ### b
-factorial(15)/factorial(5)
+factorial(15)/factorial(10)
 factorial(10)/factorial(5)
 
 ### c
@@ -106,10 +107,10 @@ DiceAverage3(1.5)
 
 
 
-\subsection*{Problem 3}
+\subsection*{Problem 3 (Bonus Problem)}
 
 <<results='show',tidy=TRUE>>=
-### Let's write a function to represent the Monty Hall problem. How successful are you if you always switch to the other door when Monty reveals an empty one?
+### Let's write a function to represent the Monty Hall problem. What is the proportion of successful trials, for any number of trials n, if you always switch to the other door when Monty reveals an empty one? The theoretical expectation derived from the calculation in the lecture was 2/3. The following function returns an empirical proportion of successes for any number of trials.
 
 Switching = function(trials){
   successes=rep(0,trials)
@@ -152,8 +153,6 @@ Switching(1000)
 \section*{Probability Theory}
 
 \subsection*{Problem 4}
-
-\paragraph{I will insert the solution here later.}
 
 \subparagraph{a)} If $a$ and $b$ are independent events, are the following true or false?
 \begin{enumerate}
