@@ -15,7 +15,7 @@ output: pdf_document
 
 **Topic 1: Covariance**
 
-Let us create two variables that are clearly dependent on each other.
+Let us create two variables that are clearly linearly dependent on each other.
 
 ```{r}
 x=seq(-10,10)
@@ -23,7 +23,7 @@ y=(x+5)
 plot(x,y)
 ```
 
-The covariance of these two variables is positive - as x increases so does y
+The covariance of these two variables is positive - as x increases so does y.
 
 ```{r}
 cov(x,y)
@@ -73,7 +73,7 @@ The formula can't capture the curvilinear relationship because it looks at the v
 
 **Topic 2: Correlation**
 
-As you've learned in the lecture, the problem with covariance is that it is not to scale. It doesn't really tell us that much about how much variables vary with each other because it doesn't account for their individual variation.
+As you've learned in the lecture, the problem with covariance is that it is not to scale. It doesn't really tell us that much about how much variables vary with each other because it doesn't account for their individual variation magnitudes. However, correlation standardizes covariance by the standard deviation of the two variables. The result is that the measure of correlation is bound between -1 and 1.
 
 ```{r}
 cor(x,y) ### Why does this produce "1". What is the meaning of this value?
@@ -96,7 +96,7 @@ is.numeric(y4) # Checks whether y4 is numeric and returns the argument FALSE.
 cor(x,y4) # Gives us the error message "y must be numeric".
 ```
 
-Interestingly, R allows us to find the correlation between a numeric and a logical vector, although a logical vector is not numeric.
+Interestingly, however, R allows us to find the correlation between a numeric and a logical vector, although a logical vector is not numeric.
 
 ```{r}
 y5=rep(c(T,F,F),7)
@@ -131,7 +131,7 @@ According to the documentation this is "Cross-classification of a sample of Brit
 
 The source is a journal article from 1979: "Goodman, L. A. (1979) Simple Models for the Analysis of Association in Cross-Classifications having Ordered Categories."
 
-Let us assume that 1 is a low occupational status and 8 is a high occupational status. Is there a relationship between the status of the father and the son?
+Let us assume that 1 is a low occupational status and 8 is a high occupational status (it might be the opposite). Is there a relationship between the status of the father and the son?
 
 Before using the command below, use install.packages("gmodels").
 
@@ -188,7 +188,7 @@ plot(x4,y4, type="l") # Use type="l" for a line plot
 
 We can also use the ggplot2 package to make it look even nicer.
 
-Use install.packages("ggplot2") before you run this code.
+Use the command install.packages("ggplot2") before you run this code.
 
 ```{r}
 library(ggplot2)
@@ -212,11 +212,11 @@ hist(meanstore, breaks=20) # It is approximately normally distributed, as predic
 
 **Topic 5: t-tests and p-values**
 
-Typically, a p-value is related to a type-1 error rate (alpha) that we define in advance. Often we want alpha to be smaller than 0.05.
+Typically, a p-value is related to a type-1 error rate (alpha) that we define in advance. Type-1 erors refer to the incorrect rejection of a true null hypothesis. Often we want alpha to be smaller than 0.05.
 
 Typically, our null hypothesis (H0) is that there is no relationship between two variables.
 
-The p-value is the probability that we get data with evidence that is such strong AGAINST H0 if H0 was true. Think about what this means.
+The p-value is the probability that we get data with evidence that is such strong AGAINST H0 if H0 was true. Think about what this means. If we define a threshold of p to be p < 0.05, then we have a type-1 error rate of alpha = 0.05.
 
 Let's load another R dataset that can illustrate this. The "airquality" dataset. According to the documentation, this is "Daily air quality measurements in New York, May to September 1973."
 
@@ -236,7 +236,7 @@ Let us use linear regression to answer this question:
 lm1=lm(Ozone ~ Solar.R, data=airquality)
 ```
 
-The summary of this linear regression will return a t-value and a p-value for the inercept all coefficients.
+The summary of this linear regression will return a t-value and a p-value for the intercept and all coefficients.
 
 ```{r}
 summary(lm1)
@@ -244,21 +244,21 @@ summary(lm1)
 
 The last column Pr(>|t|) is the p-value of the t-test. How do we interpret this finding?
 
-The probability to find this data if H0 is true (i.e. there is no relationship between Ozone and Solar.R) is 0.1%. This is strong evidence against H0. Therefore we reject H0 under p < 0.001. Please pay attention to the difference between percent (0-100) and proportions (0-1).
+The probability to find this data if H0 is true (i.e. there is no relationship between Ozone and Solar.R) is 0.1%. This is strong evidence against H0. Therefore we reject H0 under p < 0.001. Please pay close attention to the difference between percent (0-100) and proportions (0-1).
 
-For a 1-point increase in Solar.R, we would expect a 0.13 increase in Ozone (in a multivariate model we would have to add: "holding all other covariates constant"). The associated t-value is 3.880, which imples a p-value of 0.0002. This p-value is p < 0.001. Therefore, the relationship is statistically significant at all common levels of statistical significance.
+How would we interpret the finding with respect to the linear relationship between the two variables? The interpreation would look like this:
 
-Note that there are four important thresholds of statistical significane:
+There is a positive linear relationship between Ozone and Solar.R. For a 1-point increase in Solar.R, we would expect a 0.13 increase in Ozone (in a multivariate model we would have to add: "holding all other variables constant"). The associated t-value is 3.880. This t-value imples a p-value of 0.0002. This p < 0.001 corresponds to a type-1 error rate of alpha < 0.001, meaning that the relationship is significant at all common levels of statistical significance.
 
-p = 0.001, equals a type-1 error rate (alpha) of 0.001
-p = 0.01, equals a tye-1 error rate (alpha) of 0.01
-p = 0.05, equals a type-1 error rate (alpha) of 0.05
-p = 0.1, equals a type-1 error rate (alpha) of 0.1
+Note that there are four important levels of statistical significane:
 
-If an indicator has a p-value of p < 0.001, it is significant at all common levels of statistical significance.
+p <= 0.001, corresponds to a type-1 error rate (alpha) of 0.001
+p <= 0.01, corresponds to a tye-1 error rate (alpha) of 0.01
+p <= 0.05, corresponds to a type-1 error rate (alpha) of 0.05
+p <= 0.1, corresponds to a type-1 error rate (alpha) of 0.1
 
-This indicates that there is a significan t linear relationship between the two variables.
+If a coefficient has a p-value of p < 0.001, the linear relationship is significant at all common levels of statistical significance.
 
-If you have a linear regression with multiple independent variables, then the code you need looks like the following:
+Note: If you have a linear regression with multiple independent variables, then the code you need to use looks like the following:
 
 lm(y ~ x1 + x2 + x3)

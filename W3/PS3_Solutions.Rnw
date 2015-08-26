@@ -4,6 +4,7 @@
 \usepackage{graphicx}
 \usepackage{fullpage}
 \usepackage{setspace}
+\usepackage{hyperref}
 \onehalfspacing
 
 
@@ -12,9 +13,9 @@
 
 \title{Pol Sci 630: Problem Set 3 - Comparisons and Inference - Solutions}
 
-\author{Prepared by: Jan Vogler (jan.vogler@duke.edu)}
+\author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
-\date{Due Date: Tuesday, September 15th, 2015, 6 PM}
+\date{Due Date: Tuesday, September 15th, 2015, 10 AM (Beginning of Class)}
  
 \maketitle
 
@@ -41,9 +42,9 @@ Note: if someone created a different kind of linear function, the result might b
 cor(x,y)
 @
 
-Interpretation: the correlation is bound between -1 and 1. The correlation value of "1" here means that x and y have a perfect positive linear relationship. As x goes above its mean, y goes above its mean. This is not surprising as we created y through a linear function of x.
+Interpretation: the correlation is bound between -1 and 1. The correlation value of 1 here means that x and y have a perfect positive linear relationship. As x goes above its mean, y goes above its mean. This is not surprising as we created y through a linear function of x.
 
-Note: if someone created a different kind of linear function, the result might be a correlation value of "-1", indicating a perfect negative linear relationship. As x goes above its mean, y goes below its mean.
+Note: if someone created a different kind of linear function, the result might be a correlation value of -1, indicating a perfect negative linear relationship. As x goes above its mean, y goes below its mean.
 
 <<results='show',tidy=TRUE>>=
 noise=rnorm(1000,mean=0,sd=10)
@@ -58,9 +59,9 @@ Interpretation: same as above - the covariance indicates that there might be a l
 cor(x,y2)
 @
 
-The correlation is bound between -1 and 1. The correlation value here should be very close to 1 or -1 but not be 1 due to the randomly distributed error. As long as some random error has been introduced to a formerly linear relationship, even if that relationship is still clearly linear, there will be a reduction in the absolute value of the correlation. The result you can expect to get here is an absolute value of approximately 0.99, but it depends on the size of the random error that you introduced. If you introduce a random error that has a greater standard deviation, then your correlation will go down even further.
+The correlation is bound between -1 and 1. The correlation value here should be very close to 1 or -1 but not be exactly that value due to the random error. As long as some random error has been introduced to a formerly perfect linear relationship, even if that relationship is still generally linear, there will be a reduction in the absolute value of the correlation. Accordingly, the result you can expect to get here is an absolute value of approximately 0.99. The exact value, however, depends on the size of the random error that you introduced. If you introduce a random error that has a greater variance, then the value of your correlation will go down further.
 
-Interpretation: a correlation close to 1 or -1 indicates a nearly perfect linear relationship of two variables. If the relationship is positive: as x goes above its mean, y goes above its mean. If the relationship is negative: as x goes above its mean, y goes below its mean. The randomly distributed error does not change the generally strongly linear relationship between the two.
+Interpretation: a correlation close to 1 or -1 indicates a nearly perfect linear relationship of two variables. If the relationship is positive, the following is true: as x goes above its mean, y goes above its mean. If the relationship is negative, the following is true: as x goes above its mean, y goes below its mean. The randomly distributed error will in most cases not change the generally strong linear relationship between the two variables.
 
 <<results='show',tidy=TRUE>>=
 ### b
@@ -131,19 +132,19 @@ lm1=lm(Education ~ Fertility + Agriculture + Examination
 summary(lm1)
 @
 
-\subparagraph{c)} In order to get full points on this problem, you need an interpretation for every of the 5 variables.
+\subparagraph{c)} In order to get full points on this problem, you need an interpretation for each of the 5 variables.
 
 The interpretation would look like this for Fertility:
 
-There is a negative linear relationship between Fertility and Education. For a 1-point increase in Fertility, we expect a 0.41-point decrease in Education, holding all other variables at the same value. The t-value is -4.758. This t-value implies a p-value of $2.43*10^{-5}$. This $p < 0.001$, meaning that the statistical relationship is significant at all common levels of statistical significance.
+There is a negative linear relationship between Fertility and Education. For a 1-point increase in Fertility, we expect a 0.41-point decrease in Education, holding all other variables constant. The t-value is -4.758. This t-value implies a p-value of $2.43*10^{-5}$. This $p < 0.001$ corresponds to a type-1 error rate of $\alpha < 0.001$, meaning that the statistical relationship is significant at all common levels of statistical significance.
 
-The other variables are interpreted accordingly. The levels of significance can be found in the tutorial notes.
+The other variables are interpreted accordingly. Agriculture and Catholic are significant at all common levels of statistical significance as well. Please note that Examination is significant at a level of $p < 0.05$, $\alpha < 0.05$, and Infant.Mortality is not significant at common levels of statistical significance. The levels of significance can be found in the tutorial notes.
 
 What can we say about causality? Nothing really. There are two primary reasons for this:
 
 First and foremost, linear regression does not per se tell us anything about causality - it primarily measures correlation between variables.
 
-Second, we do not have any theory regarding the relationship of Education on the other covariates and so we cannot make any causal claims that are grounded in theory. In particular, there might be a mutual influence between Education and the other variables that we regress it on. This phenomenon is called "endogeneity".
+Second, we do not have any theory regarding the relationship of Education on the other covariates and so we cannot make any causal claims that are grounded in theory. In particular, there might be a mutual influence between Education and the other variables that we regress it on. This phenomenon is called "endogeneity" and there are various ways to deal with it that you will learn about in the class.
 
 In short, we can't say anything about causality here.
 
