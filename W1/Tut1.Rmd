@@ -1,11 +1,11 @@
 ---
 title: "Tutorial 1: Probability Theory and Distributions"
 author: "Jan Vogler (jan.vogler@duke.edu)"
-date: "August 25, 2015"
+date: "August 28, 2015"
 output: pdf_document
 ---
 
-1. Topic 1: Useful R commands
+**Topic 1: Useful R commands**
 
 The following commands are relevant for the problem set and future tutorials.
 
@@ -40,7 +40,7 @@ which(newvector >= 3) # Tells you which entries of the vector meet the condition
 
 If you have a logical vector, it can have two types of entries, TRUE (T) and FALSE (F).
 
-TRUE and FALSE are possible values when conditions are formulated, such as "if" conditions within functions or for loops.
+TRUE and FALSE are possible values when conditions are formulated, such as "if" conditions within functions or loops.
 
 ```{r}
 logical=c(T,F,T,F,F) # TRUE=T, FALSE=F
@@ -62,7 +62,7 @@ c=a[-c(4,5)] # This command excludes the fourth and fifth element
 c # Only 1, 2, and 3 are left
 ```
 
-Important: this command does not exclude values, it excludes items by their position
+Important: this command does not exclude values, it excludes items by their position!
 
 ```{r}
 d=c(11,15,9,2,34)
@@ -86,7 +86,8 @@ matrix[2,3] # Gives you the element in the second row and third column
 ```
 
 
-2. Topic 2: For loops
+
+**Topic 2: For loops**
 
 A for loop applies a specific action to a number of elements, indexed by a letter or combination of letters. The letter "i" is most frequently used for constructing for loops.
 
@@ -115,11 +116,12 @@ number # Returns the value of number = 2550
 ```
 
 
-3. Topic 3: Basic functions
 
-Unlike a for loop where you specify the elements for which the action is executed, a function is a general formula.
+**Topic 3: Basic functions**
 
-The input of a function is not defined in advance. When you use the function later, you plug some values in.
+Unlike a for loop where you specify the elements for which the action is executed, a function is a general formula that then can be applied to different numbers.
+
+This means the input of a function is not defined in advance. When you use the function later, you plug some values in.
 
 ```{r}
 addition=function(a,b){
@@ -130,6 +132,7 @@ addition(1,3) # Returns the value 4
 ```
 
 Just like for loops, functions can also include conditions.
+
 Let's create the same function but it's limited to the numbers between 0 and 10 for "a".
 
 ```{r}
@@ -186,7 +189,8 @@ divideby3(3) # Now the function tells us that it has to be greater than 3
 ```
 
 
-4. Topic 4: Combinations and Permutations
+
+**Topic 4: Combinations and Permutations**
 
 Combinations and permutations fundamentally rest on the use of factorials.
 
@@ -199,7 +203,7 @@ factorial(5) # 5! = 5*4*3*2*1 = 120
 
 There is a second factorial function in R, called the logarithmic factorial.
 
-This function is used for high values of factorials because they become hard to store.
+This function is used for high value factorials because they become hard to store.
 
 ```{r}
 lfactorial(2) # log(2*1) = log(2) + log(1) = 0.6931472
@@ -207,7 +211,9 @@ lfactorial(2) # log(2*1) = log(2) + log(1) = 0.6931472
 
 In order to write a permutation with the factorial command, we need to know "n" and "k". Let n=10 and k=7.
 
+```{r}
 factorial(10)/factorial(3) # This is the expression for 10!/3! = 604800
+```
 
 In order to write a combination with the factorial command, we need to account for the different orders in which the elements can occur. In the case of n=10 and k=7, there are 7! different combinations in which the elements can occur.
 
@@ -223,7 +229,9 @@ R has a built-in command for combinations.
 choose(10,3) # If we did everything right, it should return the same value "120"
 ```
 
-5. Topic 5: Basic probability
+
+
+**Topic 5: Basic probability**
 
 Let us create a vector that contains all possible outcomes of a die roll.
 
@@ -333,9 +341,10 @@ probunionAB(1000) # Returns a number very close to 0.833 for large n
 ```
 
 
-5. Topic 5: Conditional Probability
 
-Next we will consider the Monty Hall problem. This will be an important part of the homework.
+**Topic 5: Conditional Probability**
+
+Next we will consider the Monty Hall problem. This will be part of the homework.
 
 There are three possible locations of the prize:
 
@@ -367,7 +376,9 @@ For your homework: Write a function in which you input the number of trials. The
 
 The function should give you the proportion of times that you were right in "n" trials. This won't be easy, you have to apply most things you have learned today.
 
-6. Topic 6: Distributions, histograms, and density plots
+
+
+**Topic 6: Distributions, histograms, and density plots**
 
 Let us look at the Binomial distribution:
 
@@ -379,7 +390,7 @@ binomdraws
 Let us plot this in a histogram, it's a discrete distribution:
 
 ```{r}
-hist(binomdraws, main="1000 Draws from a Binomial(n=100,p=0.33")
+hist(binomdraws, main="1000 Draws from a Binomial(n=100,p=0.33)")
 mean(binomdraws)
 ```
 

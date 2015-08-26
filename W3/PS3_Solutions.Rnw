@@ -33,13 +33,17 @@ y=2*x-5
 cov(x,y)
 @
 
-Interpretation: the covariance indicates that there might be a linear positive relationship of x and y. However, because the covariance is not to-scale, the number itself is not very meaningful.
+Interpretation: the covariance indicates that there might be a positive linear relationship of x and y. However, because the covariance is not to-scale, the number itself is not very meaningful.
+
+Note: if someone created a different kind of linear function, the result might be a covariance that indicates a negative linear relationship.
 
 <<results='show',tidy=TRUE>>=
 cor(x,y)
 @
 
-Interpretation: the correlation is bound between -1 and 1. The correlation value of "1" here means that x and y have a perfect positive linear relationship. This is not surprising as we created y through a linear function of x.
+Interpretation: the correlation is bound between -1 and 1. The correlation value of "1" here means that x and y have a perfect positive linear relationship. As x goes above its mean, y goes above its mean. This is not surprising as we created y through a linear function of x.
+
+Note: if someone created a different kind of linear function, the result might be a correlation value of "-1", indicating a perfect negative linear relationship. As x goes above its mean, y goes below its mean.
 
 <<results='show',tidy=TRUE>>=
 noise=rnorm(1000,mean=0,sd=10)
@@ -54,7 +58,9 @@ Interpretation: same as above - the covariance indicates that there might be a l
 cor(x,y2)
 @
 
-Interpretation: the correlation is bound between -1 and 1. The correlation value here should be very close to "1" but not be 1. As long as some random error has been introduced to a relationship, even if that relationship is still clearly linear, there will be a reduction in the size of the correlation. The result you can expect to get here is approximately 0.99, but it depends on the size of the random error that you introduced. If you introduce a random error that has a greater standard deviation, then your correlation will go down even further.
+The correlation is bound between -1 and 1. The correlation value here should be very close to 1 or -1 but not be 1 due to the randomly distributed error. As long as some random error has been introduced to a formerly linear relationship, even if that relationship is still clearly linear, there will be a reduction in the absolute value of the correlation. The result you can expect to get here is an absolute value of approximately 0.99, but it depends on the size of the random error that you introduced. If you introduce a random error that has a greater standard deviation, then your correlation will go down even further.
+
+Interpretation: a correlation close to 1 or -1 indicates a nearly perfect linear relationship of two variables. If the relationship is positive: as x goes above its mean, y goes above its mean. If the relationship is negative: as x goes above its mean, y goes below its mean. The randomly distributed error does not change the generally strongly linear relationship between the two.
 
 <<results='show',tidy=TRUE>>=
 ### b
@@ -127,11 +133,19 @@ summary(lm1)
 
 \subparagraph{c)} In order to get full points on this problem, you need an interpretation for every of the 5 variables.
 
-The interpretation would look like this for Fertility: There is a negative linear relationship between Fertility and Education. For a 1-point increase in Fertility, we expect a 0.41-point decrease in Education. The t-value is -4.758. Given the number of observations that translates into a p-value of $2.43*10^{-5}$. This $p < 0.001$, meaning that the statistical relationship is significant at all common levels of statistical significance.
+The interpretation would look like this for Fertility:
 
-The other variables are interpreted accordingly.
+There is a negative linear relationship between Fertility and Education. For a 1-point increase in Fertility, we expect a 0.41-point decrease in Education, holding all other variables at the same value. The t-value is -4.758. This t-value implies a p-value of $2.43*10^{-5}$. This $p < 0.001$, meaning that the statistical relationship is significant at all common levels of statistical significance.
 
-What can we say about causality? Nothing really. There are several reasons for this: First and foremost, linear regression does not per se tell us anything about causality - it measures correlation between variables. Second, we do not have any theory regarding the relationship of Education on the other covariates and so we cannot make any causal claims that are grounded in theory. In particular, there might be a mutual influence between Education and the other variables. This is called "endogeneity". In short, we can't say anything about causality here.
+The other variables are interpreted accordingly. The levels of significance can be found in the tutorial notes.
+
+What can we say about causality? Nothing really. There are two primary reasons for this:
+
+First and foremost, linear regression does not per se tell us anything about causality - it primarily measures correlation between variables.
+
+Second, we do not have any theory regarding the relationship of Education on the other covariates and so we cannot make any causal claims that are grounded in theory. In particular, there might be a mutual influence between Education and the other variables that we regress it on. This phenomenon is called "endogeneity".
+
+In short, we can't say anything about causality here.
 
 
 
@@ -246,6 +260,7 @@ $Pr (X=12 \cap Y=1) = 0$ because this event never occurs.
 $Pr (X=12) = \dfrac{1}{36}$ and $Pr (Y=1) = \dfrac{4}{36} = \dfrac{1}{9}$, meaning that $Pr (X=12)*Pr(Y=1) = \dfrac{1}{324}$
 
 Accordingly, $Pr (X=12)*Pr(Y=1) = \dfrac{1}{324} \neq 0 = Pr (X=12 \cap Y=1)$
+
 
 
 \end{document}
