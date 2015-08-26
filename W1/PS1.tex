@@ -23,7 +23,7 @@
 
 \paragraph{Note 1: It is absolutely essential that you show all your work, including intermediary steps, and comment on your R code to earn full credit. Showing all steps and commenting on code them will also be required in future problem sets.}
 
-\paragraph{Note 2: Please use a *single* PDF file created through knitr to submit your answers. knitr allows you to combine R code and LaTeX code in one document, meaning that you can include both the answers to the coding and the math problems.}
+\paragraph{Note 2: Please use a *single* PDF file created through knitr to submit your answers. knitr allows you to combine R code and \LaTeX \ code in one document, meaning that you can include both the answers to R programming and math problems.}
 
 \paragraph{Note 3: Make sure that the PDF files you submit do not include any references to your identity. The grading will happen anonymously. You can submit your answer at the following website: \url{http://ps630-f15.herokuapp.com/}}
 
@@ -57,21 +57,9 @@ Bonus problem (not required): Let the function return an error message if $n \no
 
 
 
-\subsection*{Problem 3 (Bonus Problem)}
-
-\paragraph{This is a bonus problem (not required): Consider the Monty Hall problem from the lecture and the R tutorial notes. If you are not familiar with the problem, please review these notes. Please write a function with the following characteristics:}
-
-\subparagraph{a)} First, as input you have the number of trials. This means you create a function of the number of trials.
-
-\subparagraph{b)} Second, inside the function, for every trial, you draw a location of the prize at random (door 1, 2, or 3). You then draw your chosen door at random and you define a mechanism by which Monty opens an empty door. This mechanism is supposed to look like this:  if you have chosen the same location as the prize, he will randomly draw from the two other doors. If the door chosen by you is different from the door with the prize, he will show you the only remaining empty door (because the one you chose is one of the two empty doors). You then always switch to the remaining door (the one that Monty has not revealed).
-
-\subparagraph{c)} Third, as output you get the proportion of trials in which you made the correct decision because you switched. This means the proportion of trials in which the door to which you switched actually was the door with the prize. Your function should return a value of  approximately $\dfrac{2}{3}$ or 0.68 for large numbers of trials. Test whether your function meets this expectation.
-
-
-
 \section*{Probability Theory}
 
-\subsection*{Problem 4}
+\subsection*{Problem 3}
 
 \paragraph{Do the following problems. Show every step.}
 
@@ -81,10 +69,28 @@ Bonus problem (not required): Let the function return an error message if $n \no
 
 \subparagraph{c)} Moore and Siegel, Ch. 9, Problem 16 (p. 196).
 
-\subparagraph{d)} Moore and Siegel, Ch. 9, Problem 20 (p. 196).
+
+
+\subsection*{Problem 4}
+
+\paragraph{Do the following problems. Show every step.}
+
+\subparagraph{a)} Moore and Siegel, Ch. 9, Problem 20 (p. 196).
 
 Clarification: The legislator begins with a prior and uses Bayes' rule to calculate a posterior belief. He updates his beliefs every month. Throughout this process, he uses the updated posterior beliefs as the prior for the following month. For example, his posterior beliefs in January will be his prior beliefs in February.
 
-\subparagraph{e)} This problem is taken from Jim Pitman (1993) \textit{Probability}: Player A and player B roll a fair six-sided die. Player A wins if he rolls a number that is strictly greater than the number rolled by player B. If player A and player B play this game five times, what is the probability that player A will win at least four times? %Ch. 2.1, Problem 7 (p. 91)%
+\subparagraph{b)} This problem is taken from Jim Pitman (1993) \textit{Probability}: Player A and player B roll a fair six-sided die. Player A wins if he rolls a number that is strictly greater than the number rolled by player B. If player A and player B play this game five times, what is the probability that player A will win at least four times? %Ch. 2.1, Problem 7 (p. 91)%
+
+
+
+\subsection*{Problem 5 (Bonus Problem)}
+
+\paragraph{This is a bonus problem (not required): Consider the Monty Hall problem from the lecture and the R tutorial notes. If you are not familiar with the problem, please review these notes. Please write a function with the following characteristics in R:}
+
+\subparagraph{a)} First, as input you have the number of trials. This means you create a function of the number of trials.
+
+\subparagraph{b)} Second, inside the function, for every trial, you draw a location of the prize at random (door 1, 2, or 3). You then draw your chosen door at random and you define a mechanism by which Monty opens an empty door. This mechanism is supposed to look like this:  if you have chosen the same location as the prize, he will randomly draw from the two other doors. If the door chosen by you is different from the door with the prize, he will show you the only remaining empty door (because the one you chose is one of the two empty doors). You then always switch to the remaining door (the one that Monty has not revealed).
+
+\subparagraph{c)} Third, as output you get the proportion of trials in which you made the correct decision because you switched. This means the proportion of trials in which the door to which you switched actually was the door with the prize. Your function should return a value of  approximately $\dfrac{2}{3}$ or 0.68 for large numbers of trials. Test whether your function meets this expectation.
 
 \end{document}

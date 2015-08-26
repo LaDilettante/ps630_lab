@@ -342,7 +342,7 @@ probunionAB(1000) # Returns a number very close to 0.833 for large n
 
 
 
-**Topic 5: Conditional Probability**
+**Topic 6: Conditional Probability**
 
 Next we will consider the Monty Hall problem. This will be part of the homework.
 
@@ -375,33 +375,3 @@ What happens if your door does not have the prize in it? That means your door is
 For your homework: Write a function in which you input the number of trials. The function should execute the above steps and always make you switch to the other door after Monty has shown you an emtpy one.
 
 The function should give you the proportion of times that you were right in "n" trials. This won't be easy, you have to apply most things you have learned today.
-
-
-
-**Topic 6: Distributions, histograms, and density plots**
-
-Let us look at the Binomial distribution:
-
-```{r}
-binomdraws=rbinom(n=1000,size=100,prob=0.33)
-binomdraws
-```
-
-Let us plot this in a histogram, it's a discrete distribution:
-
-```{r}
-hist(binomdraws, main="1000 Draws from a Binomial(n=100,p=0.33)")
-mean(binomdraws)
-```
-
-What does this distribution look like? Why does it look like that?
-
-Let us also look at draws from a normal distribution:
-
-```{r}
-normdraws=rnorm(n=1000,mean=10,sd=5)
-normdensity=density(normdraws)
-plot(normdensity, main="Density of Draws from Normal")
-```
-
-Start with your homework early. Ask others for help. Work together. But always make sure that you understand the solution fully and write it down yourself and independent from others.

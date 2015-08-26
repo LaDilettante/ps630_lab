@@ -107,11 +107,75 @@ DiceAverage3(1.5)
 
 
 
-\subsection*{Problem 3 (Bonus Problem)}
+\section*{Probability Theory}
+
+\subsection*{Problem 3}
+
+\subparagraph{a)} If $a$ and $b$ are independent events, are the following true or false?
+\begin{enumerate}
+	\item True %$Pr(a \cap b) = Pr(a)Pr(b)$
+	\item False. %$Pr(a|b) = Pr(a) + Pr(a)Pr(b)$ 
+	\item True. %$Pr(b|a) = Pr(b)$
+\end{enumerate}
+
+\subparagraph{b)} In general, $P(A \cup B)=P(A)+P(B) - P(A \cap B)$ and $P(A \cap B)=P(A|B)P(B)$ which, when combined, yield: $P(A \cup B)=P(A)+P(B) - P(A|B)P(B)$. If the two events are independent then $P(A|B)=P(A)$, giving $P(A \cup B)=P(A)+P(B) - P(A)P(B) = P(B)(1-P(A))+P(A)$.
+
+We solve for $P(B)$ to get $P(B)=\frac{P(A \cup B)-P(A)}{1-P(A)}=\frac{0.5-0.3}{1-0.3}=\frac{2}{7}$.
+
+\subparagraph{c)} A committee contains fifteen legislators with ten men and five women. Find the number of ways that a delegation of six:
+\begin{enumerate}
+	\item This is the number of ways 6 elements can be chosen from 15, or ${15}\choose{6}$. %Can be chosen.
+	\item Now we have the joint probability of two independent events: choosing 3 women from 5 and 3 men from 10. This is: ${{10}\choose{3}} {{5}\choose{3}}$. %With an equal number of men and women can be chosen.
+	\item Finally, we have the joint probability of two independent events: choosing 2 women from 5 and 4 men from 10, since there are twice as many men as women in the full group. This is: ${{10}\choose{4}} {{5}\choose{2}}$. %With a proportional number of men and women can be chosen.
+\end{enumerate}
+
+
+
+\subsection*{Problem 4}
+
+\subparagraph{a)} Each time a fundraiser is observed or not observed, the legislator should again update his beliefs, in each case using posterior beliefs at the end of the previous month as his priors in the present month. Further, as $Pr(f|I_r)$ increases, the degree to which observing a fundraiser (or not observing one) is informative increases as well. (Note that is need not be perfectly informative as $Pr(f|I_r)$ approaches 1, however, as $Pr(f|\sim I_r)$ is logically independent of $Pr(f|I_r)$ and need not change as $Pr(f|I_r)$ changes.) We assume that the legislator's posterior belief is $0.6$ at the end of December, as in the problem in Section 9.2.3.  After observing no fundraiser in January, his posterior belief is $\Pr(I_r|\sim f)=\frac{Pr(\sim f|I_r)Pr(I_r)}{Pr(\sim f|I_r)Pr(I_r)+Pr(\sim f|\sim I_r)Pr(\sim I_r)}=\frac{(0.3)(0.6)}{(0.3)(0.6)+(0.6)(0.4)}=0.43$. If he now sees one in February, this changes to $\Pr(I_r|f)=\frac{Pr(f|I_r)Pr(I_r)}{Pr(f|I_r)Pr(I_r)+Pr(f|\sim I_r)Pr(\sim I_r)}=\frac{(0.8)(0.43)}{(0.8)(0.43)+(0.4)(0.57)}=0.6$. Finally, if he does not see one in March, his posterior is $\Pr(I_r|\sim f)=\frac{Pr(\sim f|I_r)Pr(I_r)}{Pr(\sim f|I_r)Pr(I_r)+Pr(\sim f|\sim I_r)Pr(\sim I_r)}=\frac{(0.1)(0.6)}{(0.1)(0.6)+(0.6)(0.4)}=0.2$. So two positive signals and two negative ones drop the final posterior below the prior because later signals are more informative.
+
+\subparagraph{b)} There are 36 possible outcomes for the dice rolls of player A and player B. All these outcomes are equally likely. There are several ways to compute the probability of player A having a strictly greater number than player B. One possible way is the following:
+
+The probability of player B to roll any number from 1 to 6 is $\dfrac{1}{6}$, i.e. each possible number occurs with probability $\dfrac{1}{6}$.
+
+If player B rolls a 1, player A can beat him with five different outcomes, i.e. the numbers from 2 to 6. This implies that the likelihood of beating him is $\dfrac{5}{6}$.
+
+If player B rolls a 2, player A can beat him with four different outcomes, i.e. the numbers from 3 to 6. This implies that the likelihood of beating him is $\dfrac{4}{6}$.
+
+\bigskip
+
+Following this logic and applying it to all outcomes, player A will beat player B with the following probability:
+
+$\sum_{i=1}^{6} Pr(B\ rolling\ i) * Pr (A\ beating\ B | B\ rolling\ i)$
+
+\bigskip
+
+$= \dfrac{1}{6}*\dfrac{5}{6}+\dfrac{1}{6}*\dfrac{4}{6}+\dfrac{1}{6}*\dfrac{3}{6}+\dfrac{1}{6}*\dfrac{2}{6}+\dfrac{1}{6}*\dfrac{1}{6}+\dfrac{1}{6}*\dfrac{0}{6} = \dfrac{15}{36} = \dfrac{5}{12}$
+
+This is the probability for player A to win a single game against B.
+
+\bigskip
+
+We have to model the probability that player A will win four games against player B with a binomial distribution.
+
+$\binom{5}{4}(\dfrac{5}{12})^4(\dfrac{7}{12})^1 = 0.088 $
+
+Additionally, player A could also win all five games against player B, so you have to add a second probability.
+
+$\binom{5}{5}(\dfrac{5}{12})^5(\dfrac{7}{12})^0 = 0.012 $
+
+\bigskip
+
+The total probability of both outcomes is approximately 0.1 or 10 percent.
+
+
+
+\subsection*{Problem 5 (Bonus Problem)}
+
+Let's write a function to represent the Monty Hall problem. What is the proportion of successful trials, for any number of trials n, if you always switch to the other door when Monty reveals an empty one? The theoretical expectation derived from the calculation in the lecture was $2/3$. The following function returns an empirical proportion of successes for any number of trials.
 
 <<results='show',tidy=TRUE>>=
-### Let's write a function to represent the Monty Hall problem. What is the proportion of successful trials, for any number of trials n, if you always switch to the other door when Monty reveals an empty one? The theoretical expectation derived from the calculation in the lecture was 2/3. The following function returns an empirical proportion of successes for any number of trials.
-
 Switching = function(trials){
   successes=rep(0,trials)
 # Create a null vector with the length of the number of trials
@@ -147,67 +211,6 @@ Switching = function(trials){
 Switching(1000)
 # Returns approximately 0.68.
 @
-
-
-
-\section*{Probability Theory}
-
-\subsection*{Problem 4}
-
-\subparagraph{a)} If $a$ and $b$ are independent events, are the following true or false?
-\begin{enumerate}
-	\item True %$Pr(a \cap b) = Pr(a)Pr(b)$
-	\item False. %$Pr(a|b) = Pr(a) + Pr(a)Pr(b)$ 
-	\item True. %$Pr(b|a) = Pr(b)$
-\end{enumerate}
-
-\subparagraph{b)} In general, $P(A \cup B)=P(A)+P(B) - P(A \cap B)$ and $P(A \cap B)=P(A|B)P(B)$ which, when combined, yield: $P(A \cup B)=P(A)+P(B) - P(A|B)P(B)$. If the two events are independent then $P(A|B)=P(A)$, giving $P(A \cup B)=P(A)+P(B) - P(A)P(B) = P(B)(1-P(A))+P(A)$.
-
-We solve for $P(B)$ to get $P(B)=\frac{P(A \cup B)-P(A)}{1-P(A)}=\frac{0.5-0.3}{1-0.3}=\frac{2}{7}$.
-
-\subparagraph{c)} A committee contains fifteen legislators with ten men and five women. Find the number of ways that a delegation of six:
-\begin{enumerate}
-	\item This is the number of ways 6 elements can be chosen from 15, or ${15}\choose{6}$. %Can be chosen.
-	\item Now we have the joint probability of two independent events: choosing 3 women from 5 and 3 men from 10. This is: ${{10}\choose{3}} {{5}\choose{3}}$. %With an equal number of men and women can be chosen.
-	\item Finally, we have the joint probability of two independent events: choosing 2 women from 5 and 4 men from 10, since there are twice as many men as women in the full group. This is: ${{10}\choose{4}} {{5}\choose{2}}$. %With a proportional number of men and women can be chosen.
-\end{enumerate}
-
-\subparagraph{d)} Each time a fundraiser is observed or not observed, the legislator should again update his beliefs, in each case using posterior beliefs at the end of the previous month as his priors in the present month. Further, as $Pr(f|I_r)$ increases, the degree to which observing a fundraiser (or not observing one) is informative increases as well. (Note that is need not be perfectly informative as $Pr(f|I_r)$ approaches 1, however, as $Pr(f|\sim I_r)$ is logically independent of $Pr(f|I_r)$ and need not change as $Pr(f|I_r)$ changes.) We assume that the legislator's posterior belief is $0.6$ at the end of December, as in the problem in Section 9.2.3.  After observing no fundraiser in January, his posterior belief is $\Pr(I_r|\sim f)=\frac{Pr(\sim f|I_r)Pr(I_r)}{Pr(\sim f|I_r)Pr(I_r)+Pr(\sim f|\sim I_r)Pr(\sim I_r)}=\frac{(0.3)(0.6)}{(0.3)(0.6)+(0.6)(0.4)}=0.43$. If he now sees one in February, this changes to $\Pr(I_r|f)=\frac{Pr(f|I_r)Pr(I_r)}{Pr(f|I_r)Pr(I_r)+Pr(f|\sim I_r)Pr(\sim I_r)}=\frac{(0.8)(0.43)}{(0.8)(0.43)+(0.4)(0.57)}=0.6$. Finally, if he does not see one in March, his posterior is $\Pr(I_r|\sim f)=\frac{Pr(\sim f|I_r)Pr(I_r)}{Pr(\sim f|I_r)Pr(I_r)+Pr(\sim f|\sim I_r)Pr(\sim I_r)}=\frac{(0.1)(0.6)}{(0.1)(0.6)+(0.6)(0.4)}=0.2$. So two positive signals and two negative ones drop the final posterior below the prior because later signals are more informative.
-
-\subparagraph{e)} There are 36 possible outcomes for the dice rolls of player A and player B. All these outcomes are equally likely. There are several ways to compute the probability of player A having a strictly greater number than player B. One possible way is the following:
-
-The probability of player B to roll any number from 1 to 6 is $\dfrac{1}{6}$, i.e. each possible number occurs with probability $\dfrac{1}{6}$.
-
-If player B rolls a 1, player A can beat him with five different outcomes, i.e. the numbers from 2 to 6. This implies that the likelihood of beating him is $\dfrac{5}{6}$.
-
-If player B rolls a 2, player A can beat him with four different outcomes, i.e. the numbers from 3 to 6. This implies that the likelihood of beating him is $\dfrac{4}{6}$.
-
-\bigskip
-
-Following this logic and applying it to all outcomes, player A will beat player B with the following probability:
-
-$\sum_{i=1}^{6} Pr(B\ rolling\ i) * Pr (A\ beating\ B | B\ rolling\ i)$
-
-\bigskip
-
-$= \dfrac{1}{6}*\dfrac{5}{6}+\dfrac{1}{6}*\dfrac{4}{6}+\dfrac{1}{6}*\dfrac{3}{6}+\dfrac{1}{6}*\dfrac{2}{6}+\dfrac{1}{6}*\dfrac{1}{6}+\dfrac{1}{6}*\dfrac{0}{6} = \dfrac{15}{36} = \dfrac{5}{12}$
-
-This is the probability for player A to win a single game against B.
-
-\bigskip
-
-We have to model the probability that player A will win four games against player B with a binomial distribution.
-
-$\binom{5}{4}(\dfrac{5}{12})^4(\dfrac{7}{12})^1 = 0.088 $
-
-Additionally, player A could also win all five games against player B, so you have to add a second probability.
-
-$\binom{5}{5}(\dfrac{5}{12})^5(\dfrac{7}{12})^0 = 0.012 $
-
-\bigskip
-
-The total probability of both outcomes is approximately 0.1 or 10 percent.
-
 
 
 \end{document} 
