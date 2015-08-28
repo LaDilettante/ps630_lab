@@ -12,6 +12,7 @@ output: pdf_document
 2. Download data automatically from the web (no more point and click!)
 3. Draw the plots you saw from lectures in R
 
+## Jan: I added this part here because Kyle wanted it to be in the second Tutorial
 ## Distributions, histograms, and density plots**
 
 Let us look at the Binomial distribution:
