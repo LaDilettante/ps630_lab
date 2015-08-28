@@ -2,7 +2,6 @@
 .Rhistory
 .RData
 
-*.tex
 *.log
 *-concordance.tex
 *.synctex.gz

@@ -1,0 +1,80 @@
+\documentclass[12pt,letter]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{hyperref}
+\onehalfspacing
+
+
+
+\begin{document}
+
+\title{Pol Sci 630: Problem Set 3 - Comparisons and Inference}
+
+\author{Prepared by: Jan Vogler (jan.vogler@duke.edu)}
+
+\date{Due Date: Tuesday, September 15th, 2015, 10 AM (Beginning of Class)}
+ 
+\maketitle 
+
+
+
+\paragraph{Note 1: It is absolutely essential that you show all your work, including intermediary steps, and comment on your R code to earn full credit. Showing all steps and commenting on code them will also be required in future problem sets.}
+
+\paragraph{Note 2: Please use a *single* PDF file created through knitr to submit your answers. knitr allows you to combine R code and \LaTeX \ code in one document, meaning that you can include both the answers to R programming and math problems.}
+
+\paragraph{Note 3: Make sure that the PDF files you submit do not include any references to your identity. The grading will happen anonymously. You can submit your answer at the following website: \url{http://ps630-f15.herokuapp.com/}}
+
+
+
+\section*{R Programming}
+
+\subsection*{Problem 1}
+
+\paragraph{Do the following in R:}
+
+\subparagraph{a)} Create a variable $x$ that is a sequence from 1 to 1000 (intervals of 1). Then, create a variable $y$ that is linearly dependent on $x$. Now evaluate their covariance and correlation. Interpret the results. Then, create a second variable $y2$ that is linearly dependent on $x$ but additionally has some normally distributed error. Now evaluate their covariance and correlation. Interpret the results. Finally, interpret the difference between the covariances and correlations.
+
+Hint: In order to create the randomly distributed error, you have to first create a vector of length 1000 with random draws from a normal distribution, then add this vector to $y2$.
+
+\subparagraph{b)} Write a function that returns the correlation between two vectors in R. For this purpose, do not use the covariance (cov) or the correlation (cor) functions that are built into R. Instead, please refer to the lecture and text book for the mathematical definition of covariance and correlation and emulate those calculations in your function. Demonstrate that your function works by comparing it to the built-in cor function in R.
+
+\subparagraph{c)} Copy the function you created for problem B. Now integrate two error messages. Message 1 should appear if you plug in two vectors of different lengths. Message 2 should appear if you plug in a non-numeric vector. Demonstrate that your function works by, first, plugging in two vectors of different lengths and, second, plugging in a vector consisting of characters.
+
+
+
+\subsection*{Problem 2}
+
+\paragraph{Do the following in R:}
+
+\subparagraph{a)} Load the \textit{swiss} dataset in R via the command  \textit{data(swiss)}. According to the documentation this is data on "Standardized fertility measure and socio-economic indicators for each of 47 French-speaking provinces of Switzerland at about 1888".
+
+\subparagraph{b)} We are interested in how the level of "Education" is correlated with other measures. Use the lm command to run a regression of education on all other variables in the dataset. Note that R is case-sensitive, so pay attention to capital letters.
+
+\subparagraph{c)} Interpret the results. Include a brief interpretation of every variable you used in the linear model. Be specific about the magnitude of the relationship and the meaning of p-values. Furthermore, please answer the following question: What can you say about causality with respect to the statistical relationships identified? Explain your answer.
+
+
+
+\section*{Covariance and Correlation in Mathematics}
+
+\subsection*{Problem 3}
+
+\paragraph{Do the following problems. Show every step. For all of the following problems, be aware of the following mathematical definitions:
+	\bigskip
+\\1. $Cov(X, Y) = \mathbb{E}(X*Y)-\mathbb{E}(X)*\mathbb{E}(Y)$
+\\2. $\mathbb{E}(X) = \sum_{i=1}^{n} x * Pr(X=x)$
+\\3. $\mathbb{E}(X*Y) = \sum_{i=1}^{n} x *y* Pr(X=x, Y=y)$}
+
+\subparagraph{a)} This problem is taken from Pitman (1993) Probability: Let $(X,Y)$ have uniform distribution on the four points $(-1,0), (0,1), (0,-1), (1,0)$. Show that X and Y are uncorrelated. Then prove that they are not independent. %Ch. 6.4, Problem 4 (p. 445)
+
+\subparagraph{b)} This problem is taken from Pitman (1993) Probability: Let X have uniform distribution on {-1,0,1} and let $Y=X^2$. Are X and Y uncorrelated? Are X and Y independent? Explain carefully. %Ch. 6.4, Problem 5 (p. 445)
+
+\subparagraph{c)} This problem is taken from Pitman (1993) Probability: Let $X_{1}$ and $X_{2} $ be the numbers on two independent fair six-sided die rolls, $X = X_{1} - X_{2}$ and $Y= X_{1} + X_{2}$. Show that X and Y are uncorrelated, but not independent. %Ch. 6.4, Problem 6 (p. 445)
+
+\paragraph{} Hint: For this problem, it might be most convenient to use a for loop in R to calculate the covariance. The solution will be based on an R code, too. It is also possible to calculate this manually though.
+
+
+
+\end{document}

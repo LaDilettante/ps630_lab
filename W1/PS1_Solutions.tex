@@ -1,0 +1,345 @@
+\documentclass[12pt,letter]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{hyperref}
+
+\onehalfspacing
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\title{Pol Sci 630: Problem Set 1 - Probability Theory and Distributions - Solutions}
+
+\author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
+
+\date{Due Date: Tuesday, September 1st, 2015, 10 AM (Beginning of Class)}
+ 
+\maketitle 
+
+
+
+\section*{R Programming}
+
+\subsection*{Problem 1}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### a}
+\hlkwd{factorial}\hlstd{(}\hlnum{10}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 3628800
+\end{verbatim}
+\begin{alltt}
+\hlkwd{factorial}\hlstd{(}\hlnum{8}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 40320
+\end{verbatim}
+\begin{alltt}
+\hlcom{### b}
+\hlkwd{factorial}\hlstd{(}\hlnum{15}\hlstd{)}\hlopt{/}\hlkwd{factorial}\hlstd{(}\hlnum{10}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 360360
+\end{verbatim}
+\begin{alltt}
+\hlkwd{factorial}\hlstd{(}\hlnum{10}\hlstd{)}\hlopt{/}\hlkwd{factorial}\hlstd{(}\hlnum{5}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 30240
+\end{verbatim}
+\begin{alltt}
+\hlcom{### c}
+\hlkwd{choose}\hlstd{(}\hlnum{12}\hlstd{,} \hlnum{3}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 220
+\end{verbatim}
+\begin{alltt}
+\hlkwd{choose}\hlstd{(}\hlnum{9}\hlstd{,} \hlnum{3}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 84
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+
+\subsection*{Problem 2}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### a}
+\hlstd{Multi} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{a}\hlstd{,} \hlkwc{b}\hlstd{,} \hlkwc{c}\hlstd{) \{}
+    \hlkwa{if} \hlstd{(}\hlopt{-}\hlnum{5} \hlopt{<=} \hlstd{a} \hlopt{&} \hlstd{a} \hlopt{<=} \hlnum{10} \hlopt{& -}\hlnum{5} \hlopt{<=} \hlstd{b} \hlopt{&} \hlstd{b} \hlopt{<=} \hlnum{10} \hlopt{& -}\hlnum{5} \hlopt{<=} \hlstd{c} \hlopt{&} \hlstd{c} \hlopt{<=} \hlnum{10}\hlstd{) \{}
+        \hlkwd{print}\hlstd{(a} \hlopt{*} \hlstd{b} \hlopt{*} \hlstd{c)}
+    \hlstd{\}} \hlkwa{else} \hlstd{\{}
+        \hlkwd{print}\hlstd{(}\hlstr{"The values of the variables have to be between -5 and 10."}\hlstd{)}
+    \hlstd{\}}
+\hlstd{\}}
+
+\hlkwd{Multi}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{4}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 24
+\end{verbatim}
+\begin{alltt}
+\hlkwd{Multi}\hlstd{(}\hlopt{-}\hlnum{6}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{4}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] "The values of the variables have to be between -5 and 10."
+\end{verbatim}
+\begin{alltt}
+\hlcom{### b}
+\hlstd{Permutation} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{n}\hlstd{,} \hlkwc{k}\hlstd{) \{}
+    \hlkwd{print}\hlstd{(}\hlkwd{factorial}\hlstd{(n)}\hlopt{/}\hlkwd{factorial}\hlstd{(n} \hlopt{-} \hlstd{k))}
+\hlstd{\}}
+
+\hlkwd{Permutation}\hlstd{(}\hlkwc{n} \hlstd{=} \hlnum{10}\hlstd{,} \hlkwc{k} \hlstd{=} \hlnum{8}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 1814400
+\end{verbatim}
+\begin{alltt}
+\hlcom{### c}
+\hlstd{DiceAverage} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{rolls}\hlstd{) \{}
+    \hlstd{die} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{4}\hlstd{,} \hlnum{5}\hlstd{,} \hlnum{6}\hlstd{)}
+    \hlkwd{print}\hlstd{(}\hlkwd{mean}\hlstd{(}\hlkwd{sample}\hlstd{(die,} \hlkwc{size} \hlstd{= rolls,} \hlkwc{replace} \hlstd{= T)))}
+\hlstd{\}}
+
+\hlkwd{DiceAverage}\hlstd{(}\hlnum{1000}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 3.451
+\end{verbatim}
+\begin{alltt}
+\hlcom{### Bonus}
+\hlstd{DiceAverage2} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{rolls}\hlstd{) \{}
+    \hlkwa{if} \hlstd{(rolls}\hlopt{%%}\hlnum{1} \hlopt{==} \hlnum{0} \hlopt{&} \hlstd{rolls} \hlopt{>=} \hlnum{0}\hlstd{) \{}
+        \hlstd{die} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{4}\hlstd{,} \hlnum{5}\hlstd{,} \hlnum{6}\hlstd{)}
+        \hlkwd{print}\hlstd{(}\hlkwd{mean}\hlstd{(}\hlkwd{sample}\hlstd{(die,} \hlkwc{size} \hlstd{= rolls,} \hlkwc{replace} \hlstd{= T)))}
+    \hlstd{\}} \hlkwa{else} \hlstd{\{}
+        \hlkwd{print}\hlstd{(}\hlstr{"The number of rolls must be a natural number"}\hlstd{)}
+    \hlstd{\}}
+\hlstd{\}}
+
+\hlkwd{DiceAverage2}\hlstd{(}\hlopt{-}\hlnum{10}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] "The number of rolls must be a natural number"
+\end{verbatim}
+\begin{alltt}
+\hlcom{# Returns the error message written above.}
+
+\hlkwd{DiceAverage2}\hlstd{(}\hlnum{1.5}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] "The number of rolls must be a natural number"
+\end{verbatim}
+\begin{alltt}
+\hlcom{# Returns the error message written above.}
+
+\hlcom{### Alternative solution for bonus question}
+\hlstd{DiceAverage3} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{rolls}\hlstd{) \{}
+    \hlkwa{if} \hlstd{(rolls} \hlopt{==} \hlkwd{round}\hlstd{(rolls)} \hlopt{&} \hlstd{rolls} \hlopt{>=} \hlnum{0}\hlstd{) \{}
+        \hlstd{die} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{4}\hlstd{,} \hlnum{5}\hlstd{,} \hlnum{6}\hlstd{)}
+        \hlkwd{print}\hlstd{(}\hlkwd{mean}\hlstd{(}\hlkwd{sample}\hlstd{(die,} \hlkwc{size} \hlstd{= rolls,} \hlkwc{replace} \hlstd{= T)))}
+    \hlstd{\}} \hlkwa{else} \hlstd{\{}
+        \hlkwd{print}\hlstd{(}\hlstr{"The number of rolls must be a natural number."}\hlstd{)}
+    \hlstd{\}}
+\hlstd{\}}
+
+\hlkwd{DiceAverage3}\hlstd{(}\hlopt{-}\hlnum{10}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] "The number of rolls must be a natural number."
+\end{verbatim}
+\begin{alltt}
+\hlcom{# Returns the error message written above.}
+
+\hlkwd{DiceAverage3}\hlstd{(}\hlnum{1.5}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] "The number of rolls must be a natural number."
+\end{verbatim}
+\begin{alltt}
+\hlcom{# Returns the error message written above.}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+
+\section*{Probability Theory}
+
+\subsection*{Problem 3}
+
+\subparagraph{a)} If $a$ and $b$ are independent events, are the following true or false?
+\begin{enumerate}
+	\item True %$Pr(a \cap b) = Pr(a)Pr(b)$
+	\item False. %$Pr(a|b) = Pr(a) + Pr(a)Pr(b)$ 
+	\item True. %$Pr(b|a) = Pr(b)$
+\end{enumerate}
+
+\subparagraph{b)} In general, $P(A \cup B)=P(A)+P(B) - P(A \cap B)$ and $P(A \cap B)=P(A|B)P(B)$ which, when combined, yield: $P(A \cup B)=P(A)+P(B) - P(A|B)P(B)$. If the two events are independent then $P(A|B)=P(A)$, giving $P(A \cup B)=P(A)+P(B) - P(A)P(B) = P(B)(1-P(A))+P(A)$.
+
+We solve for $P(B)$ to get $P(B)=\frac{P(A \cup B)-P(A)}{1-P(A)}=\frac{0.5-0.3}{1-0.3}=\frac{2}{7}$.
+
+\subparagraph{c)} A committee contains fifteen legislators with ten men and five women. Find the number of ways that a delegation of six:
+\begin{enumerate}
+	\item This is the number of ways 6 elements can be chosen from 15, or ${15}\choose{6}$. %Can be chosen.
+	\item Now we have the joint probability of two independent events: choosing 3 women from 5 and 3 men from 10. This is: ${{10}\choose{3}} {{5}\choose{3}}$. %With an equal number of men and women can be chosen.
+	\item Finally, we have the joint probability of two independent events: choosing 2 women from 5 and 4 men from 10, since there are twice as many men as women in the full group. This is: ${{10}\choose{4}} {{5}\choose{2}}$. %With a proportional number of men and women can be chosen.
+\end{enumerate}
+
+
+
+\subsection*{Problem 4}
+
+\subparagraph{a)} Each time a fundraiser is observed or not observed, the legislator should again update his beliefs, in each case using posterior beliefs at the end of the previous month as his priors in the present month. Further, as $Pr(f|I_r)$ increases, the degree to which observing a fundraiser (or not observing one) is informative increases as well. (Note that is need not be perfectly informative as $Pr(f|I_r)$ approaches 1, however, as $Pr(f|\sim I_r)$ is logically independent of $Pr(f|I_r)$ and need not change as $Pr(f|I_r)$ changes.) We assume that the legislator's posterior belief is $0.6$ at the end of December, as in the problem in Section 9.2.3.  After observing no fundraiser in January, his posterior belief is $\Pr(I_r|\sim f)=\frac{Pr(\sim f|I_r)Pr(I_r)}{Pr(\sim f|I_r)Pr(I_r)+Pr(\sim f|\sim I_r)Pr(\sim I_r)}=\frac{(0.3)(0.6)}{(0.3)(0.6)+(0.6)(0.4)}=0.43$. If he now sees one in February, this changes to $\Pr(I_r|f)=\frac{Pr(f|I_r)Pr(I_r)}{Pr(f|I_r)Pr(I_r)+Pr(f|\sim I_r)Pr(\sim I_r)}=\frac{(0.8)(0.43)}{(0.8)(0.43)+(0.4)(0.57)}=0.6$. Finally, if he does not see one in March, his posterior is $\Pr(I_r|\sim f)=\frac{Pr(\sim f|I_r)Pr(I_r)}{Pr(\sim f|I_r)Pr(I_r)+Pr(\sim f|\sim I_r)Pr(\sim I_r)}=\frac{(0.1)(0.6)}{(0.1)(0.6)+(0.6)(0.4)}=0.2$. So two positive signals and two negative ones drop the final posterior below the prior because later signals are more informative.
+
+\subparagraph{b)} There are 36 possible outcomes for the dice rolls of player A and player B. All these outcomes are equally likely. There are several ways to compute the probability of player A having a strictly greater number than player B. One possible way is the following:
+
+The probability of player B to roll any number from 1 to 6 is $\dfrac{1}{6}$, i.e. each possible number occurs with probability $\dfrac{1}{6}$.
+
+If player B rolls a 1, player A can beat him with five different outcomes, i.e. the numbers from 2 to 6. This implies that the likelihood of beating him is $\dfrac{5}{6}$.
+
+If player B rolls a 2, player A can beat him with four different outcomes, i.e. the numbers from 3 to 6. This implies that the likelihood of beating him is $\dfrac{4}{6}$.
+
+\bigskip
+
+Following this logic and applying it to all outcomes, player A will beat player B with the following probability:
+
+$\sum_{i=1}^{6} Pr(B\ rolling\ i) * Pr (A\ beating\ B | B\ rolling\ i)$
+
+\bigskip
+
+$= \dfrac{1}{6}*\dfrac{5}{6}+\dfrac{1}{6}*\dfrac{4}{6}+\dfrac{1}{6}*\dfrac{3}{6}+\dfrac{1}{6}*\dfrac{2}{6}+\dfrac{1}{6}*\dfrac{1}{6}+\dfrac{1}{6}*\dfrac{0}{6} = \dfrac{15}{36} = \dfrac{5}{12}$
+
+This is the probability for player A to win a single game against B.
+
+\bigskip
+
+We have to model the probability that player A will win four games against player B with a binomial distribution.
+
+$\binom{5}{4}(\dfrac{5}{12})^4(\dfrac{7}{12})^1 = 0.088 $
+
+Additionally, player A could also win all five games against player B, so you have to add a second probability.
+
+$\binom{5}{5}(\dfrac{5}{12})^5(\dfrac{7}{12})^0 = 0.012 $
+
+\bigskip
+
+The total probability of both outcomes is approximately 0.1 or 10 percent.
+
+
+
+\subsection*{Problem 5 (Bonus Problem)}
+
+Let's write a function to represent the Monty Hall problem. What is the proportion of successful trials, for any number of trials n, if you always switch to the other door when Monty reveals an empty one? The theoretical expectation derived from the calculation in the lecture was $2/3$. The following function returns an empirical proportion of successes for any number of trials.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{Switching} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{trials}\hlstd{) \{}
+    \hlstd{successes} \hlkwb{=} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{, trials)}
+    \hlcom{# Create a null vector with the length of the number of trials}
+    \hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{trials) \{}
+        \hlcom{# For every trial, indexed by 'i', do the following}
+        \hlstd{prizeoptions} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{)}
+        \hlcom{# The prize can be located behind door 1, 2, or 3}
+        \hlstd{prize} \hlkwb{=} \hlkwd{sample}\hlstd{(prizeoptions,} \hlkwc{size} \hlstd{=} \hlnum{1}\hlstd{)}
+        \hlcom{# Draw a random location of the prize}
+        \hlstd{doorchosen} \hlkwb{=} \hlkwd{sample}\hlstd{(prizeoptions,} \hlkwc{size} \hlstd{=} \hlnum{1}\hlstd{)}
+        \hlcom{# Choose a door at random}
+        \hlkwa{if} \hlstd{(doorchosen} \hlopt{==} \hlstd{prize) \{}
+            \hlcom{# If the door you chose is the same door as the door of the prize}
+            \hlstd{doorshown} \hlkwb{=} \hlkwd{sample}\hlstd{(prizeoptions[}\hlopt{-}\hlstd{prize],} \hlkwc{size} \hlstd{=} \hlnum{1}\hlstd{)}
+            \hlcom{# Monty will sample between the other two doors and show you one at random}
+        \hlstd{\}} \hlkwa{else} \hlstd{\{}
+            \hlcom{# If the door you chose is not the door with the prize}
+            \hlstd{doorshown} \hlkwb{=} \hlstd{prizeoptions[}\hlopt{-}\hlkwd{c}\hlstd{(prize, doorchosen)]}
+            \hlcom{# Monty has to show you the third door that is empty}
+        \hlstd{\}}
+        \hlstd{switchtodoor} \hlkwb{=} \hlstd{prizeoptions[}\hlopt{-}\hlkwd{c}\hlstd{(doorshown, doorchosen)]}
+        \hlcom{# You will always switch to the door that is NOT the door you chose}
+        \hlcom{# originally and NOT the door that Monty has revealed to be empty}
+        \hlkwa{if} \hlstd{(switchtodoor} \hlopt{==} \hlstd{prize) \{}
+            \hlcom{# If you switched to the correct door}
+            \hlstd{successes[i]} \hlkwb{=} \hlnum{1}
+            \hlcom{# The entry at position 'i' of the successes vector will be recoded to 1}
+        \hlstd{\}}
+    \hlstd{\}}
+    \hlkwd{print}\hlstd{(}\hlkwd{sum}\hlstd{(successes)}\hlopt{/}\hlstd{trials)}
+    \hlcom{# Eventually we will calculate the sum of successes and divide it by the}
+    \hlcom{# number of trials}
+\hlstd{\}}
+
+\hlkwd{Switching}\hlstd{(}\hlnum{1000}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.675
+\end{verbatim}
+\begin{alltt}
+\hlcom{# Returns approximately 0.68.}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\end{document} 

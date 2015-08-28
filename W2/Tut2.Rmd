@@ -7,9 +7,37 @@ output: pdf_document
 
 ## Agenda:
 
+0. Distributions, histograms, density plots
 1. Implement formulas for Expected Values, Variance, etc. in R (and learn vectorized operation along the way)
 2. Download data automatically from the web (no more point and click!)
 3. Draw the plots you saw from lectures in R
+
+## Jan: I added this part here because Kyle wanted it to be in the second Tutorial
+## Distributions, histograms, and density plots**
+
+Let us look at the Binomial distribution:
+
+```{r}
+binomdraws=rbinom(n=1000,size=100,prob=0.33)
+binomdraws
+```
+
+Let us plot this in a histogram, it's a discrete distribution:
+
+```{r}
+hist(binomdraws, main="1000 Draws from a Binomial(n=100,p=0.33)")
+mean(binomdraws)
+```
+
+What does this distribution look like? Why does it look like that?
+
+Let us also look at draws from a normal distribution:
+
+```{r}
+normdraws=rnorm(n=1000,mean=10,sd=5)
+normdensity=density(normdraws)
+plot(normdensity, main="Density of Draws from Normal")
+```
 
 ## 1. Implement expected value and variance formula
 
