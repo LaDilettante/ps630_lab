@@ -5,3 +5,5 @@
 *.log
 *-concordance.tex
 *.synctex.gz
+*.bbl
+*.blg
