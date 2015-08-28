@@ -9,6 +9,10 @@
 
 \begin{document}
 
+\section{Expected value problem}
+
+\section{Binomial problem}
+
 This problem is taken from Pitman (1993) Probability: Suppose a fair coin is tossed n times. Find a simple formula in terms of n and k for the following probability: $Pr(k\ heads | k-1\ heads\ or\ k\ heads)$. Please pay close attention to the formula, particularly what event is conditioned on what events. Ch. 2.1, Problem 10 b) (p. 91)
 
 \paragraph{} Hint 1: Use the binomial distribution to model this.
@@ -34,5 +38,7 @@ $\\ = \dfrac{\dfrac{n!(n-k+1)}{(n-k+1)! k!}}{\dfrac{n!(n-k+1)}{(n-k+1)! k!} + \d
 $\\ = \dfrac{n!(n-k+1)}{n!(n-k+1)+n!k}$
 $\\ = \dfrac{n-k+1}{n-k+1+k}$
 $\\= \dfrac{n-k+1}{n+1}$
+
+\section{R programming problem}
 
 \end{document}
