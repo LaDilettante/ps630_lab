@@ -96,6 +96,8 @@ benchmark(myVar1(myVec), myVar2(myVec))
 
 ### In-class exercise: Implement covariance formula
 
+You'll learn about the properties of covariance next week. For now, you can implement the following formula of covariance in R.
+
 $$cov(X, Y) = \frac{1}{N - 1} \sum_{i=1}^{N} (X_i - \bar X)(Y_i - \bar Y)$$
 
 ```{r, echo=FALSE}
@@ -137,7 +139,7 @@ head(d_gdp)
 ```
 
 
-## Draw the plots you saw from lectures in R (histograms, density plots)
+## 3. Draw the plots you saw from lectures in R (histograms, density plots)
 
 We can generate random samples from various distributions in R, using `rbinom`, `rnorm`, `rpois`, etc.
 
@@ -177,6 +179,21 @@ plot(normdensity, main="1000 draws")
 plot(density(rnorm(n = 10000, mean = 10, sd = 5)), main = "10000 draws")
 par(mfrow = c(1, 1))
 ```
+
+Another way to check whether a variable is normally distributed is the "normal quantile comparison plot".
+
+```{r}
+qqnorm(rnorm(100), main="Normal Quantile Comparison Plot of GDP per capita")
+qqline(happy$gdp2002)
+```
+
+#Box plot
+library(car)
+row.names(happy)<-happy$country_name
+Boxplot(~ gdp2002, data=happy, main="Box Plot of 2002 GDP per capita", ylab="GDP per capita")
+
+#scatter plot
+plot(happy$gdp2002, happy$happins, main="Scatter Plot of Happiness and GDP", ylab="Happiness Index", xlab="GDP per capita")
 
 ### In-class exercise: Plot the histogram and density of all countries' GDP per capita in 2010
 
