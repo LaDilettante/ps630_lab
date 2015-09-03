@@ -5,47 +5,35 @@ date: "August 25, 2015"
 output: pdf_document
 ---
 
-## Agenda:
+## Agenda (and learning goals)
 
-0. Distributions, histograms, density plots
-1. Implement formulas for Expected Values, Variance, etc. in R (and learn vectorized operation along the way)
-2. Download data automatically from the web (no more point and click!)
-3. Draw the plots you saw from lectures in R
+1. Implement formulas for Expected Values, Variance, etc. in R
+- learn vectorized operation
+2. Download data automatically from the web
+- learn `help()` in R
+- learn reproducible analysis even at the downloading data step
+3. Draw the plots you saw from lectures in R (histograms, density plots, boxplot, normal quantile plot, scatterplot)
+- learn how to generate random sample
+- learn how to inspect the distribution of real data
 
-## Jan: I added this part here because Kyle wanted it to be in the second Tutorial
-## Distributions, histograms, and density plots**
-
-Let us look at the Binomial distribution:
-
-```{r}
-binomdraws=rbinom(n=1000,size=100,prob=0.33)
-binomdraws
-```
-
-Let us plot this in a histogram, it's a discrete distribution:
-
-```{r}
-hist(binomdraws, main="1000 Draws from a Binomial(n=100,p=0.33)")
-mean(binomdraws)
-```
-
-What does this distribution look like? Why does it look like that?
-
-Let us also look at draws from a normal distribution:
-
-```{r}
-normdraws=rnorm(n=1000,mean=10,sd=5)
-normdensity=density(normdraws)
-plot(normdensity, main="Density of Draws from Normal")
-```
+4. Tips and tricks
 
 ## 1. Implement expected value and variance formula
+
+### Calculate Expected Value: 
 
 Use `sum()` (to get the sum) and `length()` (to get the number of elements in a vector). Calculate:
 
 $$E(X) = \frac{1}{n} \sum_{i = 1}^{n} X_i$$
 
-Use vectorized operation!
+```{r}
+X <- rnorm(1000)
+sum(X) / length(X)
+mean(X)
+```
+
+
+### Calculate Variance:
 
 $$Var(X) = \frac{1}{n - 1} \sum_{i = 1}^{n} (X_i - E(X))^2$$
 
@@ -106,3 +94,164 @@ library(rbenchmark) # install.packages if you don't have the package
 benchmark(myVar1(myVec), myVar2(myVec))
 ```
 
+### In-class exercise: Implement covariance formula
+
+You'll learn about the properties of covariance next week. For now, you can implement the following formula of covariance in R.
+
+$$cov(X, Y) = \frac{1}{N - 1} \sum_{i=1}^{N} (X_i - \bar X)(Y_i - \bar Y)$$
+
+```{r, echo=FALSE}
+myCov <- function(X, Y) {
+  sum((X - mean(X)) * (Y - mean(Y))) / (length(X) - 1)
+}
+```
+
+```{r}
+X <- rnorm(100)
+Y <- X + rnorm(10)
+myCov(X, Y)
+cov(X, Y)
+```
+
+
+## 2. Download data automatically from the web
+
+```{r}
+# install.packages("WDI")
+library(WDI)
+help(WDI)
+```
+
+Let's download GDP data:
+
+```{r}
+d_gdp <- WDI(country = "all", indicator = "NY.GDP.MKTP.KD", 
+             extra = TRUE, start = 2010, end = 2011)
+head(d_gdp)
+```
+
+Note how the dataset includes regions' aggregate data as well. We can exclude those rows as follows:
+
+```{r}
+# Note that the region variable is available because we specified WDI(extra=TRUE)
+d_gdp <- d_gdp[d_gdp$region != "Aggregates", ]
+head(d_gdp)
+```
+
+
+## 3. Draw the plots you saw from lectures in R (histograms, density plots)
+
+We can generate random samples from various distributions in R, using `rbinom`, `rnorm`, `rpois`, etc.
+
+### Binomial distribution:
+
+```{r}
+binomdraws <- rbinom(n=1000, size=100, prob=0.33)
+length(binomdraws)
+mean(binomdraws)
+```
+
+### Normal (Gaussian) distribution:
+
+Draw normal samples
+```{r}
+normdraws <- rnorm(n = 1000, mean = 10, sd = 5)
+length(normdraws)
+mean(normdraws)
+var(normdraws)
+```
+
+### Inspecting distribution with Histogram, Density plots, and Box plot
+
+```{r, fig.height = 3, fig.width = 8, fig.cap="Density of normal distribution"}
+par(mfrow = c(1, 3))
+
+normdraws <- rnorm(n = 1000, mean = 10, sd = 5)
+
+# Histogram
+hist(normdraws, main="Histogram")
+# Density plot
+normdensity <- density(normdraws)
+plot(normdensity, main="Density plot")
+# Box plot
+boxplot(normdraws, main="Boxplot")
+```
+
+Another way to check whether a variable is normally distributed is the "normal quantile comparison plot". The more tightly our data points hug the diagonal line, the more normally distributed it is.
+
+```{r}
+qqnorm(normdraws, main="Normal Quantile Comparison Plot")
+qqline(normdraws)
+```
+
+### Inspecting relationship with scatterplot
+
+```{r, fig.height=3, fig.length=7}
+X <- rnorm(n = 100)
+Y1 <- 2 * X + rnorm(length(X), sd=0.1)
+Y2 <- 2 * X + rnorm(length(X), sd=1)
+Y3 <- 2 * X + rnorm(length(X), sd=5)
+
+par(mfrow=c(1, 3))
+plot(X, Y1)
+plot(X, Y2)
+plot(X, Y3)
+```
+
+
+### In-class exercise: Replicate binomial histogram in your lecture slides
+
+```{r, fig.height=3, fig.width=8}
+par(mfrow=c(1, 3))
+hist(rbinom(1000, 10, 0.2), col = 'red')
+hist(rbinom(1000, 10, 0.5), col = 'red')
+hist(rbinom(1000, 10, 0.8), col = 'red')
+```
+
+### In-class exercise: Plotting GDP per capita in 2010
+
+Download GDP per capita data for all countries in 2010, using package `WDI`. Plot the histogram, density plot, and normal quantile comparison plot.
+
+```{r 'non-log GDP histogram', fig.height=3, fig.width=7}
+d_2010 <- WDI(country = "all", indicator = c("NY.GDP.PCAP.CD", "SH.DYN.MORT"),
+                 start = 2010, end = 2010, extra = TRUE)
+d_2010 <- d_2010[d_2010$region != "Aggregates", ]
+
+par(mfrow = c(1, 3))
+hist(d_2010$NY.GDP.PCAP.CD)
+plot(density(d_2010$NY.GDP.PCAP.CD, na.rm = TRUE))
+qqnorm(d_2010$NY.GDP.PCAP.CD)
+qqline(d_2010$NY.GDP.PCAP.CD)
+```
+
+The distribution of GDP is has a long right tail. This is because a country's GDP can go very high but cannot go lower than 0 (this phenomenon is called "left-censored"). Because of this, GDP is NOT normally distributed, and can misbehave in models that assume normality. A common way to deal with this is to take the `log(GDP)` instead.
+
+```{r 'log GDP histogram', fig.width=7, fig.height=4}
+par(mfrow=c(1, 2))
+hist(d_2010$NY.GDP.PCAP.CD, main="non log")
+hist(log(d_2010$NY.GDP.PCAP.CD), main="log")
+
+par(mfrow=c(1, 2))
+qqnorm(d_2010$NY.GDP.PCAP.CD, main="non log")
+qqline(d_2010$NY.GDP.PCAP.CD)
+qqnorm(log(d_2010$NY.GDP.PCAP.CD), main="log")
+qqline(log(d_2010$NY.GDP.PCAP.CD))
+```
+
+### In-class exercise: Plot the relationship between GDP per capita and child mortality ("Mortality rate, under-5 (per 1000 live births)")
+
+```{r, fig.height=4, fig.width=7}
+par(mfrow=c(1, 2))
+plot(d_2010$NY.GDP.PCAP.CD, d_2010$SH.DYN.MORT,
+     xlab = "GDP per capita, 2010", ylab = "Child mortality rate, per 1000")
+plot(log(d_2010$NY.GDP.PCAP.CD), d_2010$SH.DYN.MORT,
+     xlab = "log GDP per capita, 2010", ylab = "Child mortality rate, per 1000")
+```
+
+
+
+## 4. Tips and tricks
+
+1. You can name your knitr chunk
+
+2. You can divide your R code into sections

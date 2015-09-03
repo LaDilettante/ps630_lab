@@ -5,6 +5,17 @@ date: "September 11, 2015"
 output: pdf_document
 ---
 
+**Today's Agenda**
+
+1. Covariance
+2. Correlation
+3. Cross-tabs
+4. Central Limit Theorem
+5. t-tests
+6. p-values
+
+
+
 **Question: sometimes R gives you output like this:**
 
 2.43e-05
