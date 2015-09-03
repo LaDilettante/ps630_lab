@@ -18,31 +18,28 @@ Note 3: Make sure that the PDF files you submit do not include any references to
 
 \section*{1. Expected Value and Its Properties}
 
-\subsection*{a.} (1/4 point) (DeGroot, p. 216) Suppose that one word is to be selected at random from the sentence `the girl put on her beautiful red hat`. If X denotes the number of letters in the word that is selected, what is the value of E(X)?
+\subsection*{a.} (1 point) (DeGroot, p. 216) Suppose that one word is to be selected at random from the sentence ``the girl put on her beautiful red hat'`. If $X$ denotes the number of letters in the word that is selected, what is the value of $E(X)$?
 
-\subsection*{b.} (2/4 point) (Degroot p. 216) Suppose that one letter is to be selected at random from
-the 30 letters in the sentence given in Exercise 4. If Y
-denotes the number of letters in the word in which the
-selected letter appears, what is the value of E(Y)?
+\subsection*{b.} (2 point) (Degroot p. 216) Suppose that one letter is to be selected at random from the 30 letters in the sentence given above. If $Y$ denotes the number of letters in the word in which the selected letter appears, what is the value of $E(Y)$?
 
 Hint: 1a) and 1b) force you to think carefully about the definition of expectation value. For each problem, think about what is your random variable ($X$), which values it takes on ($x \in \{?, ?, ...\}$) and with what probability ($P(X = x) = ?$)
 
-\subsection*{c.} (1/4 point) (Degroot, p. 224) Suppose that three random variables $X_1$, $X_2$, $X_3$ are uniformly distributed on the interval [0, 1]. They are also independent. Determine the value of $E[(X_1 − 2X_2 + X_3)^2]$.
+\subsection*{c.} (1 point) (Degroot, p. 224) Suppose that three random variables $X_1$, $X_2$, $X_3$ are uniformly distributed on the interval [0, 1]. They are also independent. Determine the value of $E[(X_1 - 2 X_2 + X_3)^2]$.
 
 \section*{2. Variance and its properties}
 
 For this problem, you can use the properties of expected value.
 
-\subsection*{a.} (1/4 point) Prove that $Var(aX + b) = a^2 Var(X)$.
+\subsection*{a.} (1 point) Prove that $Var(aX + b) = a^2 Var(X)$.
 
-\subsection*{b.} (2/4 point) Prove that if two random variables are independent, the variance of the sum is the sum of the variance. In other words, if $X_1, X_2$ are independent, then
+\subsection*{b.} (2 points) Prove that if two random variables are independent, the variance of the sum is the sum of the variance. In other words, if $X_1, X_2$ are independent, then
 
 $$Var(X_1 + X_2) = Var(X_1) + Var(X_2)$$
 
-\subsection*{c.} (1/4 point) (Degroot, p. 232) Suppose that one word is selected at random from the sentence `the girl put on her beautiful red hat`. If $X$ denotes the number of letters in the word that is selected, what is the value of $Var(X)$?
+\subsection*{c.} (1 point) (Degroot, p. 232) Suppose that one word is selected at random from the sentence `the girl put on her beautiful red hat`. If $X$ denotes the number of letters in the word that is selected, what is the value of $Var(X)$?
 
 
-\section*{3. Binomial distribution}
+\section*{3. Binomial distribution (4 points)}
 
 (Credit to Jan) This problem is taken from Pitman (1993) Probability
 
@@ -58,15 +55,15 @@ This is true because: $Pr(A | B) = \dfrac{Pr (A \cap B)}{Pr (B)}$
 
 The intersection of events A and B in this case, $Pr (k\ heads \cap (k\ heads \cup k-1\ heads))$, reduces to $Pr(k\ heads)$ because the two events are mutually exclusive.
 
-\section*{4. Plotting distribution}
+\section*{4. Plotting distribution (4 points)}
 
 For this problem, you'll need to Google some R techniques (e.g. side-by-side / overlapping plot). Also, label the axes and the plots accordingly.
 
-\subsection*{a.} (1/4 point) Download a variable you are interested in, using \verb`WDI`. Plot the histogram, density plot, boxplot, and normal quantile plot.
+\subsection*{a.} (1 point) Download a variable you are interested in, using \verb`WDI`. Plot the histogram, density plot, boxplot, and normal quantile plot.
 
-\subsection*{b.} (1/4 point) Plot the histogram of that variable for Europe and Asia, 1) side by side (Hint: \verb`par(mfrow=c(?, ?))`), and 2) overlapping in the same plot.
+\subsection*{b.} (1 point) Plot the histogram of that variable for Europe and Asia, 1) side by side (Hint: \verb`par(mfrow=c(?, ?))`), and 2) overlapping in the same plot.
 
-\subsection*{c.} (1/4 point) Draw the scatterplot of that variable against another variable.
+\subsection*{c.} (1 point) Draw the scatterplot of that variable against another variable of interest. Is the bi-variate relationship as you expected?
 
-\subsection*{d.} (1/4 point) Label the point that represents your country (Hint: \href{https://chemicalstatistician.wordpress.com/2013/03/02/adding-labels-to-points-in-a-scatter-plot-in-r/}{Tutorial}) and color it red (Some Googling involved)
+\subsection*{d.} (1 point) Label the point that represents your country (Hint: \href{https://chemicalstatistician.wordpress.com/2013/03/02/adding-labels-to-points-in-a-scatter-plot-in-r/}{Tutorial}) and color it red (some Googling may be necessary)
 \end{document}
