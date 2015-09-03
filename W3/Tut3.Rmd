@@ -210,7 +210,36 @@ hist(meanstore, breaks=20) # It is approximately normally distributed, as predic
 
 
 
-**Topic 5: t-tests and p-values**
+**Topic 5: t-tests**
+
+t-tests allow us to either compare the mean of two populations or to compare the mean of one population against a theoretical example
+
+Let us create two sets of numbers that come from normal distributions with different means.
+
+```{r}
+vec1=rnorm(30,mean=2,sd=1)
+vec2=rnorm(30,mean=3,sd=1)
+```
+
+The t-test allows us to find out the likelihood that these two come from the same distribution:
+
+```{r}
+t.test(vec1,vec2)
+```
+
+What does this t-value mean? What does this p-value mean?
+
+We can also compare a single sample against a mean that we define to be our H0.
+
+```{r}
+t.test(vec1,mu=2)
+```
+
+What does this t-value mean? What does this p-value mean?
+
+
+
+**Topic 6: p-values**
 
 Typically, a p-value is related to a type-1 error rate (alpha) that we define in advance. Type-1 erors refer to the incorrect rejection of a true null hypothesis. Often we want alpha to be smaller than 0.05.
 

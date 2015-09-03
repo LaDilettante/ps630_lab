@@ -15,9 +15,11 @@
 
 \author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
-\date{Due Date: Tuesday, September 15th, 2015, 10 AM (Beginning of Class)}
+\date{Grading Due Date: Friday, September 18th, 12.15 PM (Beginning of Lab)}
  
 \maketitle
+
+
 
 \section*{R Programming}
 
@@ -116,9 +118,40 @@ correlation2(a,d)
 \subsection*{Problem 2}
 
 <<results='show',tidy=TRUE>>=
+### a
 
-### Problem 2
+vec1=rpois(50,lambda=10)
+vec2=rpois(50,lambda=12)
 
+t.test(vec1,vec2)
+
+### b
+
+tTestFunction=function(a,b){
+  numerator=mean(a)-mean(b)
+  denominator=sqrt(var(a)/length(a)+var(b)/length(b))
+  print(numerator/denominator)
+}
+
+tTestFunction(vec1,vec2)
+
+### c
+
+tTestFunction2=function(a,b){
+  if (is.numeric(a) & is.numeric(b)){
+  numerator=mean(a)-mean(b)
+  denominator=sqrt(var(a)/length(a)+var(b)/length(b))
+  print(numerator/denominator) } else {
+    print("Both vectors must be numeric.")
+  }
+}
+@
+
+
+
+\subsection*{Problem 3}
+
+<<results='show',tidy=TRUE>>=
 ### a
 
 data(swiss)
@@ -132,6 +165,8 @@ lm1=lm(Education ~ Fertility + Agriculture + Examination
 summary(lm1)
 @
 
+
+
 \subparagraph{c)} In order to get full points on this problem, you need an interpretation for each of the 5 variables.
 
 The interpretation would look like this for Fertility:
@@ -140,7 +175,7 @@ There is a negative linear relationship between Fertility and Education. For a 1
 
 The other variables are interpreted accordingly. Agriculture and Catholic are significant at all common levels of statistical significance as well. Please note that Examination is significant at a level of $p < 0.05$, $\alpha < 0.05$, and Infant.Mortality is not significant at common levels of statistical significance. The levels of significance can be found in the tutorial notes.
 
-What can we say about causality? Nothing really. There are two primary reasons for this:
+Answer to the bonus question: What can we say about causality? Nothing really. There are two primary reasons for this:
 
 First and foremost, linear regression does not per se tell us anything about causality - it primarily measures correlation between variables.
 
@@ -150,9 +185,9 @@ In short, we can't say anything about causality here.
 
 
 
-\section*{Covariance and Correlation Mathematically}
+\section*{Probability Theory: Covariance and Correlation}
 
-\subsection*{Problem 3}
+\subsection*{Problem 4}
 
 \subparagraph{a)} Both X and Y have the uniform distribution over all four points, so each outcome is equally likely.
 
@@ -250,6 +285,30 @@ ey
 ### The covariance is given by the following formula:
 
 exy - ex*ey # Returns 0.
+
+### Note: We can alternatively use vectorized operations to calculate this
+
+### For E(X)
+
+is <- rep(1:6, 6)
+js <- rep(1:6, each = 6)
+
+ex2=sum(is + js) / 36
+
+### For E(Y)
+
+is <- rep(1:6, 6)
+js <- rep(1:6, each = 6)
+
+ey2=sum(is - js) / 36
+
+### For E(XY)
+
+exy2=sum((is + js)*(is - js))/36
+
+### To get the result, we calculate
+
+exy2 - ex2*ey2 # Also returns zero
 @
 
 Why aren't X and Y independent? Let's try a similar proof by contradiction like above.
