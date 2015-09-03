@@ -14,7 +14,7 @@
 
 \author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
 
-\date{Due Date: Tuesday, XXX, 2015, 10 AM (Beginning of Class)}
+\date{Grading Due Date: Friday, September 18th, 12.15 PM (Beginning of Lab)}
  
 \maketitle 
 
