@@ -1,44 +1,61 @@
 \documentclass{article}
 
-\usepackage{amsmath}
-\usepackage{amsthm}
-\usepackage{amsfonts}
+\usepackage{amsmath, amsthm, amsfonts, xfrac}
 \usepackage{hyperref}
 
-\title{Problem Set 2}
+\title{Pol Sci 630: Problem Set 2 - Properties of Random Variables}
+\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+\date{Due Date: Tuesday, September 8, 2015, 10 AM (Beginning of Class)}
 
 \begin{document}
+\maketitle
 
-\section{Expected value problem}
+Note 1: It is absolutely essential that you show all your work, including intermediary steps, and comment on your R code to earn full credit. Showing all steps and commenting on code them will also be required in future problem sets.
 
-\section{Binomial problem}
+Note 2: Please use a *single* PDF file created through knitr to submit your answers. knitr allows you to combine R code and \LaTeX \ code in one document, meaning that you can include both the answers to R programming and math problems. Also submit the source code that generates the PDF file (i.e. either .Rnw or .Rmd files)
 
-This problem is taken from Pitman (1993) Probability: Suppose a fair coin is tossed n times. Find a simple formula in terms of n and k for the following probability: $Pr(k\ heads | k-1\ heads\ or\ k\ heads)$. Please pay close attention to the formula, particularly what event is conditioned on what events. Ch. 2.1, Problem 10 b) (p. 91)
+Note 3: Make sure that the PDF files you submit do not include any references to your identity. The grading will happen anonymously. You can submit your answer at the following website: \url{http://ps630-f15.herokuapp.com/}
 
-\paragraph{} Hint 1: Use the binomial distribution to model this.
+\section*{1. Properties of Expected Value}
 
-\paragraph{} Hint 2: Because those events are mutually exclusive, calculate the following:
+Prove the following properties, using the definition of expected values:
+
+1. $E[aX + b] = aE[X] + b$
+
+2. $E[X + Y] = E[X] + E[Y]$
+
+3. If $X$ and $Y$ are independent, $E[XY] = E[X]E[Y]$
+
+4. $Var[aX + b] = a^2 Var[X]$
+
+\section*{2. Properties of Poisson}
+
+Prove that a Poisson variable has equal mean and variance
+
+\section*{3. Binomial distribution}
+
+This problem is taken from Pitman (1993) Probability: Suppose a fair coin is tossed n times. Find a simple formula in terms of n and k for the following probability: $Pr(k\ heads | k-1\ heads\ or\ k\ heads)$. Please pay close attention to the formula, particularly what event is conditioned on what events. (Ch. 2.1, Problem 10 b) (p. 91)
+
+Hint 1: Use the binomial distribution to model this.
+
+Hint 2: Because those events are mutually exclusive, calculate the following:
 
 $\dfrac{Pr(k\ heads)}{Pr (k\ heads) + Pr (k-1\ heads)}$
 
 This is true because: $Pr(A | B) = \dfrac{Pr (A \cap B)}{Pr (B)}$
 
-\bigskip
 The intersection of events A and B in this case, $Pr (k\ heads \cap (k\ heads \cup k-1\ heads))$, reduces to $Pr(k\ heads)$ because the two events are mutually exclusive.
 
-SOLUTION
+\section*{4. Plotting distribution}
 
-$\dfrac{Pr(k\ heads)}{Pr (k\ heads) + Pr (k-1\ heads)}$
-$\\ = \dfrac{\binom{n}{k}0.5^k0.5^{n-k}}{\binom{n}{k}0.5^k0.5^{n-k} + \binom{n}{k-1}0.5^{k-1}0.5^{n-(k-1)}}$
-$\\ = \dfrac{\binom{n}{k}0.5^n}{\binom{n}{k}0.5^n + \binom{n}{k-1}0.5^n}$
-$ \\ = \dfrac{\binom{n}{k}}{\binom{n}{k} + \binom{n}{k-1}}$
-$\\ = \dfrac{\dfrac{n!}{(n-k)! k!}}{\dfrac{n!}{(n-k)! k!} + \dfrac{n!}{(n-(k-1))! (k-1)!}}$
-$\\ = \dfrac{\dfrac{n!}{(n-k)! k!} * \dfrac{n-k+1}{n-k+1}}{\dfrac{n!}{(n-k)! k!} * \dfrac{n-k+1}{n-k+1} + \dfrac{n!}{(n-k+1)! (k-1)!}*\dfrac{k}{k}}$
-$\\ = \dfrac{\dfrac{n!(n-k+1)}{(n-k+1)! k!}}{\dfrac{n!(n-k+1)}{(n-k+1)! k!} + \dfrac{n!}{(n-k+1)! k!}}$
-$\\ = \dfrac{n!(n-k+1)}{n!(n-k+1)+n!k}$
-$\\ = \dfrac{n-k+1}{n-k+1+k}$
-$\\= \dfrac{n-k+1}{n+1}$
+For this problem, you'll need to Google some R techniques.
 
-\section{R programming problem}
+1. Download GDP per capita data using the \verb`WDI` package, and plot the normal quantile comparison plot to check whether GDP per capita is normally distributed.
+
+2. Similarly, use plot to check whether log(GDP per capita) is normally distributed.
+
+3. Plot the histograms of GDP per capita for Europe and Asia, side by side. (Hint: \verb`par(mfrow=c(?, ?))`)
+
+4. Plot the histograms of GDP per capita for Europe and Asia, overlapping in the same plot.
 
 \end{document}
