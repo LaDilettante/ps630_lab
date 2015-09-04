@@ -81,9 +81,9 @@ For this problem, you can use the properties of expected value.
 
 \subsection*{a.} (1 point) Prove that $Var(aX + b) = a^2 Var(X)$.
 
-\subsection*{b.} (2 points) Prove that if two random variables are independent, the variance of the sum is the sum of the variance. In other words, if $X_1, X_2$ are independent, then
+\subsection*{b.} (2 points) Implement in \verb`R` two functions that calculates the variance of the sum of two variables in two ways. The first calculates \verb`Var(X + Y)`. The second calculates \verb`Var(X) + Var(Y) + Cov(X, Y)`.
 
-$$Var(X_1 + X_2) = Var(X_1) + Var(X_2)$$
+You should use vectorized operation and check that two functions return the same result. You may not use R's built-in \verb`var()` and \verb`cov()` functions.
 
 \subsection*{c.} (1 point) (Degroot, p. 232) Suppose that one word is selected at random from the sentence `the girl put on her beautiful red hat`. If $X$ denotes the number of letters in the word that is selected, what is the value of $Var(X)$?
 
@@ -96,13 +96,7 @@ Suppose a fair coin is tossed n times. Find a simple formula in terms of n and k
 
 Hint 1: Use the binomial distribution to model this.
 
-Hint 2: Because those events are mutually exclusive, calculate the following:
-
-$\dfrac{Pr(k\ heads)}{Pr (k\ heads) + Pr (k-1\ heads)}$
-
-This is true because: $Pr(A | B) = \dfrac{Pr (A \cap B)}{Pr (B)}$
-
-The intersection of events A and B in this case, $Pr (k\ heads \cap (k\ heads \cup k-1\ heads))$, reduces to $Pr(k\ heads)$ because the two events are mutually exclusive.
+Hint 2: Use $Pr(A | B) = \dfrac{Pr (A \cap B)}{Pr (B)}$ with $A = k\ heads$ and $B = k-1\ heads\ or\ k\ heads)$
 
 \section*{4. Plotting distribution (4 points)}
 
@@ -110,9 +104,9 @@ For this problem, you'll need to Google some R techniques (e.g. side-by-side / o
 
 \subsection*{a.} (1 point) Download a variable you are interested in, using \verb`WDI`. Plot the histogram, density plot, boxplot, and normal quantile plot.
 
-\subsection*{b.} (1 point) Plot the histogram of that variable for Europe and Asia, 1) side by side (Hint: \verb`par(mfrow=c(?, ?))`), and 2) overlapping in the same plot.
+\subsection*{b.} (1 point) Plot the density of that variable for Europe and Asia, 1) side by side (Hint: \verb`par(mfrow=c(?, ?))`), and 2) overlapping in the same plot.
 
 \subsection*{c.} (1 point) Draw the scatterplot of that variable against another variable of interest. Is the bi-variate relationship as you expected?
 
-\subsection*{d.} (1 point) Label the point that represents your country (Hint: \href{https://chemicalstatistician.wordpress.com/2013/03/02/adding-labels-to-points-in-a-scatter-plot-in-r/}{Tutorial}) and color it red (some Googling may be necessary)
+\subsection*{d.} (1 point) In the scatterplot, label the point that represents your country (Hint: \href{https://chemicalstatistician.wordpress.com/2013/03/02/adding-labels-to-points-in-a-scatter-plot-in-r/}{Tutorial}) and color it red (some Googling may be necessary)
 \end{document}
