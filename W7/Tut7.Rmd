@@ -1,0 +1,10 @@
+---
+title: "Tutorial 7: Dummy Variables and Interactions (II)"
+author: "Jan Vogler (jan.vogler@duke.edu)"
+date: "October 9, 2015"
+output: pdf_document
+---
+
+**Today's Agenda**
+
+
