@@ -35,13 +35,11 @@
 
 \paragraph{Do the following in R:}
 
-\subparagraph{a)} Create a variable $x$ that is a sequence from 1 to 1000 (intervals of 1). Then, create a variable $y$ that is linearly dependent on $x$. Now evaluate their covariance and correlation. Interpret the results. Then, create a second variable $y2$ that is linearly dependent on $x$ but additionally has some normally distributed error. Now evaluate their covariance and correlation. Interpret the results. Finally, interpret the difference between the covariances and correlations.
+\subparagraph{a)} (2 points) Create a variable $x$ that is a sequence from 1 to 1000 (intervals of 1). Then, create a variable $y$ that is linearly dependent on $x$. Now evaluate their covariance and correlation. Interpret the results. Then, create a second variable $y2$ that is linearly dependent on $x$ but additionally has some normally distributed error. Now evaluate their covariance and correlation. Interpret the results. Finally, interpret the difference between the covariances and correlations.
 
-Hint: In order to create the randomly distributed error, you have to first create a vector of length 1000 with random draws from a normal distribution, then add this vector to $y2$.
+\subparagraph{b)} (1 point) Write a function that returns the correlation between two vectors in R. For this purpose, do not use the covariance (\textit{cov}) or the correlation (\textit{cor}) functions that are built into R. Instead, please refer to the lecture and text book for the mathematical definitions of covariance and correlation and emulate those calculations in your function. Demonstrate that your function works by plugging in vectors and comparing it to the built-in \textit{cor} function in R.
 
-\subparagraph{b)} Write a function that returns the correlation between two vectors in R. For this purpose, do not use the covariance (\textit{cov}) or the correlation (\textit{cor}) functions that are built into R. Instead, please refer to the lecture and text book for the mathematical definition of covariance and correlation and emulate those calculations in your function. Demonstrate that your function works by comparing it to the built-in \textit{cor} function in R.
-
-\subparagraph{c)} Copy the function you created for problem B. Now integrate two error messages. The first message should appear if you plug in two vectors of different lengths. The second message should appear if you plug in a non-numeric vector. Demonstrate that your function works by, first, plugging in two vectors of different lengths and, second, plugging in a vector consisting of characters.
+\subparagraph{c)} (1 point) Copy the function you created for problem B. Now integrate two error messages. The first message should appear if you plug in two vectors of different lengths. The second message should appear if you plug in a non-numeric vector. Demonstrate that your function displays the correct error message by, first, plugging in two vectors of different lengths and, second, plugging in a vector consisting of characters.
 
 
 
@@ -49,29 +47,29 @@ Hint: In order to create the randomly distributed error, you have to first creat
 
 \paragraph{Do the following in R:}
 
-\subparagraph{a)} Create two vectors of length 50 with random draws from a Poisson distribution. The mean of the first vector should be 10, the mean of the second vector should be 12. Conduct a two-sample t-test for those two vectors in R.
+\subparagraph{a)} (1 point) Create two vectors of length 50 with random draws from a Poisson distribution. The mean of the first vector should be 10, the mean of the second vector should be 12. Conduct a two-sample t-test for those two vectors in R.
 
 Hint: If you don't know how to draw from a Poisson distribution, try to find out through a search engine.
 
-\subparagraph{b)} Write a function that allows you to perform a two-tail, two-sample t-test, using two vectors as input. In your calculation, assume that the two groups have different variances. The function is meant to return a t-value. Test the function by plugging in the two vectors you created for part a of this problem and see whether you get the same result as with the built-in \textit{t.test} function.
+\subparagraph{b)} (2 points) Write a function that allows you to perform a two-tail, two-sample t-test, using two vectors as input. In your calculation, assume that the two groups have different variances. The function is meant to return a t-value. Test the function by plugging in the two vectors with draws from a Poisson distribution and see whether you get the same result as with the built-in \textit{t.test} function.
 
-Note: To solve this problem, you're allowed to use built-in functions inside your function, except for the t.test function itself.
+Note: You're allowed to use built-in functions except for the t.test function itself.
 
-\subparagraph{c)} Include an error message if any vector plugged in is not numeric.
+\subparagraph{c)} (1 point) Include an error message if any vector plugged in is not numeric.
 
 
+
+\pagebreak
 
 \subsection*{Problem 3}
 
 \paragraph{Do the following in R:}
 
-\subparagraph{a)} Load the \textit{swiss} dataset in R via the command \textit{data(swiss)}. According to the documentation this is data on "Standardized fertility measure and socio-economic indicators for each of 47 French-speaking provinces of Switzerland at about 1888".
+\subparagraph{a)} (1 point) Load the \textit{swiss} dataset in R via the command \textit{data(swiss)}. According to the documentation this is data on "Standardized fertility measure and socio-economic indicators for each of 47 French-speaking provinces of Switzerland at about 1888". Display the summary statistics for every variable in the dataset. We are interested in how the level of "Education" is related to the other variables. For this purpose, use the \textit{lm} (linear model) function to estimate a regression of \textit{Education} on all other variables in the dataset. Note that R is case-sensitive.
 
-\subparagraph{b)} We are interested in how the level of "Education" is correlated with other measures. Use the lm command to run a regression of education on all other variables in the dataset. Note that R is case-sensitive.
+\subparagraph{b)} (3 points) Interpret the results for every variable in the linear model. Be specific about the meaning of p-values in particular. Say at which levels of significance each relationship is statistically significant.
 
-\subparagraph{c)} Interpret the results for every variable in the linear model. Be specific about the magnitude and direction of the linear relationships and the meaning of p-values. Say at which levels of significance each relationship is statistically significant.
-
-Bonus question: What can you say about causality with respect to the statistical relationships identified? Explain your answer.
+Bonus question (1 point): What can you say about causality with respect to the statistical relationships identified? Explain your answer.
 
 
 
@@ -79,19 +77,18 @@ Bonus question: What can you say about causality with respect to the statistical
 
 \subsection*{Problem 4}
 
-\paragraph{Do the following problems. Show every step. For all of the following problems, be aware of the following mathematical definitions:
-	\bigskip
-\\1. $Cov(X, Y) = \mathbb{E}(X*Y)-\mathbb{E}(X)*\mathbb{E}(Y)$
-\\2. $\mathbb{E}(X) = \sum_{i=1}^{n} x * Pr(X=x)$
-\\3. $\mathbb{E}(X*Y) = \sum_{i=1}^{n} x *y* Pr(X=x, Y=y)$}
+\paragraph{Do the following problems. Show every step.}
 
-\subparagraph{a)} This problem is taken from Pitman (1993) Probability: Let $(X,Y)$ have uniform distribution on the four points $(-1,0), (0,1), (0,-1), (1,0)$. Show that X and Y are uncorrelated. Then prove that they are not independent. %Ch. 6.4, Problem 4 (p. 445)
+\subparagraph{a)} (1 point) This problem is taken from Jim Pitman (1993) \textit{Probability}: Let $(X,Y)$ have uniform distribution on the four points $(-1,0), (0,1), (0,-1), (1,0)$. Show that X and Y are uncorrelated. Then prove that they are not independent. %Ch. 6.4, Problem 4 (p. 445)
 
-\subparagraph{b)} This problem is taken from Pitman (1993) Probability: Let X have uniform distribution on {-1,0,1} and let $Y=X^2$. Are X and Y uncorrelated? Are X and Y independent? Explain carefully. %Ch. 6.4, Problem 5 (p. 445)
+\subparagraph{b)} (1 point) This problem is taken from Jim Pitman (1993) \textit{Probability}: Let X have uniform distribution on {-1,0,1} and let $Y=X^2$. Are X and Y uncorrelated? Are X and Y independent? Explain carefully. %Ch. 6.4, Problem 5 (p. 445)
 
-\subparagraph{c)} This problem is taken from Pitman (1993) Probability: Let $X_{1}$ and $X_{2} $ be the numbers on two independent fair six-sided die rolls, $X = X_{1} - X_{2}$ and $Y= X_{1} + X_{2}$. Show that X and Y are uncorrelated, but not independent. %Ch. 6.4, Problem 6 (p. 445)
+\subparagraph{c)} (1 point) This problem is taken from Jim Pitman (1993) \textit{Probability}: Let $X_{1}$ and $X_{2} $ be the numbers on two independent fair six-sided die rolls, $X = X_{1} - X_{2}$ and $Y= X_{1} + X_{2}$. Show that X and Y are uncorrelated, but not independent. %Ch. 6.4, Problem 6 (p. 445)
 
-\paragraph{} Hint: For this problem, it might be most convenient to use a for loop in R to calculate the covariance. The solution will be based on an R code, too. It is also possible to calculate this manually though.
+\paragraph{} Hint: For problem c, you may calculate the covariance in R or manually.
+
+\subparagraph{d)} (1 point) Assume that d, e, f, and g are constants. Assume that $Y_1$ and $Y_2$ are random variables. Demonstrate mathematically that the following relationship holds: \\
+$Cov(dY_1 + e, fY_1 + g) = df Cov(Y_1, Y_2)$.
 
 
 

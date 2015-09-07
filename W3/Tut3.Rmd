@@ -5,7 +5,7 @@ date: "September 11, 2015"
 output: pdf_document
 ---
 
-**Today's Agenda**
+# Today's Agenda
 
 1. Covariance
 2. Correlation
@@ -24,7 +24,7 @@ output: pdf_document
 
 
 
-**Topic 1: Covariance**
+# Topic 1: Covariance
 
 Let us create two variables that are clearly linearly dependent on each other.
 
@@ -82,7 +82,7 @@ The formula can't capture the curvilinear relationship because it looks at the v
 
 
 
-**Topic 2: Correlation**
+# Topic 2: Correlation
 
 As you've learned in the lecture, the problem with covariance is that it is not to scale. It doesn't really tell us that much about how much variables vary with each other because it doesn't account for their individual variation magnitudes. However, correlation standardizes covariance by the standard deviation of the two variables. The result is that the measure of correlation is bound between -1 and 1.
 
@@ -128,7 +128,7 @@ cor(x,y6) # Returns the same value as above, meaning that R views T=1 and F=0
 
 
 
-**Topic 3: Cross-tabs**
+# Topic 3: Cross-tabs
 
 R has several built-in datasets, let's have a look at them.
 
@@ -155,7 +155,7 @@ How can we interpret this table?
 
 
 
-**Topic 4: Central Limit Theorem**
+# Topic 4: Central Limit Theorem
 
 The Central Limit Theorem says that if we have infinitely many draws of the same size from a specific distribution, the mean of this distribution will be approximately normally distributed.
 
@@ -221,7 +221,7 @@ hist(meanstore, breaks=20) # It is approximately normally distributed, as predic
 
 
 
-**Topic 5: t-tests**
+# Topic 5: t-tests
 
 t-tests allow us to either compare the mean of two populations or to compare the mean of one population against a theoretical example
 
@@ -250,7 +250,7 @@ What does this t-value mean? What does this p-value mean?
 
 
 
-**Topic 6: p-values**
+# Topic 6: p-values
 
 Typically, a p-value is related to a type-1 error rate (alpha) that we define in advance. Type-1 erors refer to the incorrect rejection of a true null hypothesis. Often we want alpha to be smaller than 0.05.
 
