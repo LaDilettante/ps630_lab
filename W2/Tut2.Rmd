@@ -201,18 +201,18 @@ plot(X, Y3)
 
 ### In-class exercise: Replicate binomial histogram in your lecture slides
 
-```{r, fig.height=3, fig.width=8}
+```{r, fig.height=3, fig.width=8, echo=FALSE}
 par(mfrow=c(1, 3))
-hist(rbinom(1000, 10, 0.2), col = 'red')
-hist(rbinom(1000, 10, 0.5), col = 'red')
-hist(rbinom(1000, 10, 0.8), col = 'red')
+hist(rbinom(1000, 10, 0.2), col = 'red', main="n=10, p=0.2")
+hist(rbinom(1000, 10, 0.5), col = 'red', main="n=10, p=0.5")
+hist(rbinom(1000, 10, 0.8), col = 'red', main="n=10, p=0.8")
 ```
 
 ### In-class exercise: Plotting GDP per capita in 2010
 
 Download GDP per capita data for all countries in 2010, using package `WDI`. Plot the histogram, density plot, and normal quantile comparison plot.
 
-```{r 'non-log GDP histogram', fig.height=3, fig.width=7}
+```{r 'non-log GDP histogram', fig.height=3, fig.width=7, echo=FALSE}
 d_2010 <- WDI(country = "all", indicator = c("NY.GDP.PCAP.CD", "SH.DYN.MORT"),
                  start = 2010, end = 2010, extra = TRUE)
 d_2010 <- d_2010[d_2010$region != "Aggregates", ]
@@ -224,7 +224,7 @@ qqnorm(d_2010$NY.GDP.PCAP.CD)
 qqline(d_2010$NY.GDP.PCAP.CD)
 ```
 
-The distribution of GDP is has a long right tail. This is because a country's GDP can go very high but cannot go lower than 0 (this phenomenon is called "left-censored"). Because of this, GDP is NOT normally distributed, and can misbehave in models that assume normality. A common way to deal with this is to take the `log(GDP)` instead.
+The distribution of GDP per capita has a long right tail. This is because a country's GDP per capita can go very high but cannot go lower than 0 (this phenomenon is called "left-censored"). Because of this, GDP per capita is NOT normally distributed, and can misbehave in models that assume normality. A common way to deal with this is to take the `log(GDP per capita)` instead.
 
 ```{r 'log GDP histogram', fig.width=7, fig.height=4}
 par(mfrow=c(1, 2))
@@ -240,7 +240,7 @@ qqline(log(d_2010$NY.GDP.PCAP.CD))
 
 ### In-class exercise: Plot the relationship between GDP per capita and child mortality ("Mortality rate, under-5 (per 1000 live births)")
 
-```{r, fig.height=4, fig.width=7}
+```{r, fig.height=4, fig.width=7, echo=FALSE}
 par(mfrow=c(1, 2))
 plot(d_2010$NY.GDP.PCAP.CD, d_2010$SH.DYN.MORT,
      xlab = "GDP per capita, 2010", ylab = "Child mortality rate, per 1000")

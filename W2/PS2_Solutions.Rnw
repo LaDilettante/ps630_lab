@@ -1,37 +1,87 @@
-\documentclass[12pt,letter]{article}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{graphicx}
-\usepackage{fullpage}
-\usepackage{setspace}
+\documentclass{article}
+
+\usepackage{amsmath, amsthm, amsfonts, xfrac}
 \usepackage{hyperref}
 
-\onehalfspacing
+\title{Pol Sci 630: Problem Set 2 Solutions - Properties of Random Variables}
+\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+\date{Due Date for Grading: Friday, September 11, 2015, 10 AM (Beginning of Class)}
 
 \begin{document}
+\maketitle
 
-\title{Pol Sci 630: Problem Set 2 - XXXX - Solutions}
+\section*{1. Expected Value and Its Properties}
 
-\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+\subsection*{a.} (1/4 point) (DeGroot, p. 216) Suppose that one word is to be selected at random from the sentence `the girl put on her beautiful red hat`. If X denotes the number of letters in the word that is selected, what is the value of E(X)?
 
+\textbf{Solution}
+
+As the number of letters in a word, $X$ can take on following values: $x \in \{2, 3, 4, 9 \}$, with probability as follows:
+
+\begin{align}
+P(X = 2) &= \frac{1}{8} \qquad \text{(1 word (``on'') out of 8 words in the sentence)} \\
+P(X = 3) &= \frac{5}{8} \\
+P(X = 4) &= \frac{1}{8} \\
+P(X = 9) &= \frac{1}{8}
+\end{align}
+
+Therefore,
+
+$$E(X) = \sum_{all x_i} x_i P(X = x_i) = 3.75$$
+
+\subsection*{b.} (2/4 point) (Degroot p. 216) Suppose that one letter is to be selected at random from
+the 30 letters in the sentence given in Exercise 4. If Y
+denotes the number of letters in the word in which the
+selected letter appears, what is the value of E(Y)?
+
+Hint: 1a) and 1b) force you to think carefully about the definition of expectation value. For each problem, think about what is your random variable ($X$), which values it takes on ($x \in \{?, ?, ...\}$) and with what probability ($P(X = x) = ?$)
+
+\subsection*{c.} (1/4 point) (Degroot, p. 224) Suppose that three random variables $X_1$, $X_2$, $X_3$ are uniformly distributed on the interval [0, 1]. They are also independent. Determine the value of $E[(X_1 − 2X_2 + X_3)^2]$.
+
+\section*{2. Variance and its properties}
+
+For this problem, you can use the properties of expected value.
+
+<<<<<<< HEAD
 \date{Grading Due Date: Friday, September 18th, 12.15 PM (Beginning of Lab)}
  
 \maketitle 
+=======
+\subsection*{a.} (1/4 point) Prove that $Var(aX + b) = a^2 Var(X)$.
+>>>>>>> origin/master
+
+\subsection*{b.} (2/4 point) Prove that if two random variables are independent, the variance of the sum is the sum of the variance. In other words, if $X_1, X_2$ are independent, then
+
+$$Var(X_1 + X_2) = Var(X_1) + Var(X_2)$$
+
+\subsection*{c.} (1/4 point) (Degroot, p. 232) Suppose that one word is selected at random from the sentence `the girl put on her beautiful red hat`. If $X$ denotes the number of letters in the word that is selected, what is the value of $Var(X)$?
 
 
-SOLUTION
+\section*{3. Binomial distribution}
+
+(Credit to Jan) This problem is taken from Pitman (1993) Probability
+
+Suppose a fair coin is tossed n times. Find a simple formula in terms of n and k for the following probability: $Pr(k\ heads | k-1\ heads\ or\ k\ heads)$. Please pay close attention to the formula, particularly what event is conditioned on what events. (Ch. 2.1, Problem 10 b) (p. 91)
+
+Hint 1: Use the binomial distribution to model this.
+
+Hint 2: Because those events are mutually exclusive, calculate the following:
 
 $\dfrac{Pr(k\ heads)}{Pr (k\ heads) + Pr (k-1\ heads)}$
-$\\ = \dfrac{\binom{n}{k}0.5^k0.5^{n-k}}{\binom{n}{k}0.5^k0.5^{n-k} + \binom{n}{k-1}0.5^{k-1}0.5^{n-(k-1)}}$
-$\\ = \dfrac{\binom{n}{k}0.5^n}{\binom{n}{k}0.5^n + \binom{n}{k-1}0.5^n}$
-$ \\ = \dfrac{\binom{n}{k}}{\binom{n}{k} + \binom{n}{k-1}}$
-$\\ = \dfrac{\dfrac{n!}{(n-k)! k!}}{\dfrac{n!}{(n-k)! k!} + \dfrac{n!}{(n-(k-1))! (k-1)!}}$
-$\\ = \dfrac{\dfrac{n!}{(n-k)! k!} * \dfrac{n-k+1}{n-k+1}}{\dfrac{n!}{(n-k)! k!} * \dfrac{n-k+1}{n-k+1} + \dfrac{n!}{(n-k+1)! (k-1)!}*\dfrac{k}{k}}$
-$\\ = \dfrac{\dfrac{n!(n-k+1)}{(n-k+1)! k!}}{\dfrac{n!(n-k+1)}{(n-k+1)! k!} + \dfrac{n!}{(n-k+1)! k!}}$
-$\\ = \dfrac{n!(n-k+1)}{n!(n-k+1)+n!k}$
-$\\ = \dfrac{n-k+1}{n-k+1+k}$
-$\\= \dfrac{n-k+1}{n+1}$
 
+This is true because: $Pr(A | B) = \dfrac{Pr (A \cap B)}{Pr (B)}$
 
+The intersection of events A and B in this case, $Pr (k\ heads \cap (k\ heads \cup k-1\ heads))$, reduces to $Pr(k\ heads)$ because the two events are mutually exclusive.
 
-\end{document} 
+\section*{4. Plotting distribution}
+
+For this problem, you'll need to Google some R techniques (e.g. side-by-side / overlapping plot). Also, label the axes and the plots accordingly.
+
+\subsection*{a.} (1/4 point) Download a variable you are interested in, using \verb`WDI`. Plot the histogram, density plot, boxplot, and normal quantile plot.
+
+\subsection*{b.} (1/4 point) Plot the histogram of that variable for Europe and Asia, 1) side by side (Hint: \verb`par(mfrow=c(?, ?))`), and 2) overlapping in the same plot.
+
+\subsection*{c.} (1/4 point) Draw the scatterplot of that variable against another variable.
+
+\subsection*{d.} (1/4 point) Label the point that represents your country (Hint: \href{https://chemicalstatistician.wordpress.com/2013/03/02/adding-labels-to-points-in-a-scatter-plot-in-r/}{Tutorial}) and color it red (Some Googling involved)
+\end{document}
