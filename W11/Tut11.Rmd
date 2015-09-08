@@ -1,0 +1,10 @@
+---
+title: "Tutorial 11: Autocorrelation across time and space"
+author: "Jan Vogler (jan.vogler@duke.edu)"
+date: "November 6, 2015"
+output: pdf_document
+---
+
+**Today's Agenda**
+
+

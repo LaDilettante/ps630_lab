@@ -27,9 +27,12 @@ P(X = 9) &= \frac{1}{8}
 
 Therefore,
 
-$$E(X) = \sum_{\text{all $x_i$}} x_i P(X = x_i) = 3.75$$
+$$E(X) = \sum_{all x_i} x_i P(X = x_i) = 3.75$$
 
-\subsection*{b.} (2/4 point) (Degroot p. 216) Suppose that one letter is to be selected at random from the 30 letters in the sentence given in Exercise 4. If Y denotes the number of letters in the word in which the selected letter appears, what is the value of E(Y)?
+\subsection*{b.} (2/4 point) (Degroot p. 216) Suppose that one letter is to be selected at random from
+the 30 letters in the sentence given in Exercise 4. If Y
+denotes the number of letters in the word in which the
+selected letter appears, what is the value of E(Y)?
 
 \textbf{Solution}
 
@@ -159,76 +162,9 @@ For this problem, you'll need to Google some R techniques (e.g. side-by-side / o
 
 \subsection*{a.} (1/4 point) Download a variable you are interested in, using \verb`WDI`. Plot the histogram, density plot, boxplot, and normal quantile plot.
 
-<<'4a', fig.width=7, fig.height=7>>=
-# install.packages("WDI")
-library(WDI)
-d_land <- WDI(indicator = c("AG.LND.ARBL.ZS", "NY.GDP.PCAP.KD"),
-              start=2010, end=2010, extra=TRUE)
-d_land <- d_land[d_land$region != "Aggregates", ]
-
-# Rename column
-colnames(d_land)[colnames(d_land) == "AG.LND.ARBL.ZS"] <- "arable_land_pct"
-colnames(d_land)[colnames(d_land) == "NY.GDP.PCAP.KD"] <- "gdp_percapita"
-
-xlabel <- "Arable land as % of total land"
-par(mfrow=c(2, 2))
-hist(d_land$arable_land_pct, main = "Histogram", xlab = xlabel)
-plot(density(d_land$arable_land_pct, na.rm = TRUE), main = "Density plot", xlab = xlabel)
-boxplot(d_land$arable_land_pct, main = "Box plot of arable land")
-qqnorm(d_land$arable_land_pct, main = "Normal Q-Q plot of arable land")
-qqline(d_land$arable_land_pct)
-@
-
-
-\subsection*{b.} (1/4 point) Plot the density plots of that variable for Europe and Asia, 1) side by side (Hint: \verb`par(mfrow=c(?, ?))`), and 2) overlapping in the same plot.
-
-<<'4b', fig.height = 3>>=
-par(mfrow=c(1, 3))
-europe_density <- density(
-  d_land[d_land$region == "Europe & Central Asia (all income levels)", "arable_land_pct"],
-  na.rm=TRUE)
-asia_density <- density(
-  d_land[d_land$region == "East Asia & Pacific (all income levels)", "arable_land_pct"],
-  na.rm=TRUE)
-plot(europe_density, main = "Arable land (Europe)")
-plot(asia_density, main = "Arable land (Asia)")
-
-# Overlaying
-plot(asia_density, xlim = c(-20, 80), col='red', main = "Asia and Europe")
-lines(europe_density, col='blue')
-legend(25, .05, c("Asia", "Europe"),
-  lty=c(1,1), # gives the legend appropriate symbols (lines)
-  lwd=c(1,1),col=c("red","blue"))
-
-# Tutorial for legend: http://www.r-bloggers.com/adding-a-legend-to-a-plot/
-@
+\subsection*{b.} (1/4 point) Plot the histogram of that variable for Europe and Asia, 1) side by side (Hint: \verb`par(mfrow=c(?, ?))`), and 2) overlapping in the same plot.
 
 \subsection*{c.} (1/4 point) Draw the scatterplot of that variable against another variable.
 
-<<>>=
-plot(d_land$arable_land_pct, log(d_land$gdp_percapita),
-     xlab = "Arable land as % of total land",
-     ylab = "log GDP per capita (2005 USD)",
-     main = "Arable land and GDP per capita")
-@
-
-
 \subsection*{d.} (1/4 point) Label the point that represents your country (Hint: \href{https://chemicalstatistician.wordpress.com/2013/03/02/adding-labels-to-points-in-a-scatter-plot-in-r/}{Tutorial}) and color it red (Some Googling involved)
-
-<<>>=
-par(mfrow=c(1, 1))
-plot(log(gdp_percapita) ~ arable_land_pct,
-     data = d_land,
-     xlab = "Arable land as % of total land",
-     ylab = "log GDP per capita (2005 USD)",
-     main = "Arable land and GDP per capita")
-d_land_Vietnam <- d_land[d_land$country == "Vietnam", ]
-with(d_land_Vietnam,
-     text(log(gdp_percapita) ~ arable_land_pct, labels = "Vietnam",
-          pos = 3, col = 'red'))
-points(d_land_Vietnam$arable_land_pct, log(d_land_Vietnam$gdp_percapita),
-       pch = 16, col = 'red')
-@
-
-
 \end{document}

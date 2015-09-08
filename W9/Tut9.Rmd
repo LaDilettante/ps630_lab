@@ -1,0 +1,10 @@
+---
+title: "Tutorial 9: Omitted Variable Bias and Endogeneity"
+author: "Jan Vogler (jan.vogler@duke.edu)"
+date: "October 23, 2015"
+output: pdf_document
+---
+
+**Today's Agenda**
+
+

@@ -1,0 +1,19 @@
+---
+title: "Tutorial 5: Regression Model Interpretation"
+author: "Jan Vogler (jan.vogler@duke.edu)"
+date: "September 25, 2015"
+output: pdf_document
+---
+
+**Today's Agenda**
+
+1. Marginal effects and intercepts
+2. Hypothesis testing
+3. Multiple Regression
+4. Coefficient plots and distributions
+5. Substantive effects
+6. Plotting residuals
+7. Simulation approaches
+
+
+
