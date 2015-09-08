@@ -223,9 +223,104 @@ For this problem, you'll need to Google some R techniques (e.g. side-by-side / o
 
 \subsection*{a.} (1/4 point) Download a variable you are interested in, using \verb`WDI`. Plot the histogram, density plot, boxplot, and normal quantile plot.
 
-\subsection*{b.} (1/4 point) Plot the histogram of that variable for Europe and Asia, 1) side by side (Hint: \verb`par(mfrow=c(?, ?))`), and 2) overlapping in the same plot.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# install.packages("WDI")}
+\hlkwd{library}\hlstd{(WDI)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: RJSONIO}}\begin{alltt}
+\hlstd{d_land} \hlkwb{<-} \hlkwd{WDI}\hlstd{(}\hlkwc{indicator} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"AG.LND.ARBL.ZS"}\hlstd{,} \hlstr{"NY.GDP.PCAP.KD"}\hlstd{),}
+              \hlkwc{start}\hlstd{=}\hlnum{2010}\hlstd{,} \hlkwc{end}\hlstd{=}\hlnum{2010}\hlstd{,} \hlkwc{extra}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+\hlstd{d_land} \hlkwb{<-} \hlstd{d_land[d_land}\hlopt{$}\hlstd{region} \hlopt{!=} \hlstr{"Aggregates"}\hlstd{, ]}
+
+\hlcom{# Rename column}
+\hlkwd{colnames}\hlstd{(d_land)[}\hlkwd{colnames}\hlstd{(d_land)} \hlopt{==} \hlstr{"AG.LND.ARBL.ZS"}\hlstd{]} \hlkwb{<-} \hlstr{"arable_land_pct"}
+\hlkwd{colnames}\hlstd{(d_land)[}\hlkwd{colnames}\hlstd{(d_land)} \hlopt{==} \hlstr{"NY.GDP.PCAP.KD"}\hlstd{]} \hlkwb{<-} \hlstr{"gdp_percapita"}
+
+\hlstd{xlabel} \hlkwb{<-} \hlstr{"Arable land as % of total land"}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{2}\hlstd{))}
+\hlkwd{hist}\hlstd{(d_land}\hlopt{$}\hlstd{arable_land_pct,} \hlkwc{main} \hlstd{=} \hlstr{"Histogram"}\hlstd{,} \hlkwc{xlab} \hlstd{= xlabel)}
+\hlkwd{plot}\hlstd{(}\hlkwd{density}\hlstd{(d_land}\hlopt{$}\hlstd{arable_land_pct,} \hlkwc{na.rm} \hlstd{=} \hlnum{TRUE}\hlstd{),} \hlkwc{main} \hlstd{=} \hlstr{"Density plot"}\hlstd{,} \hlkwc{xlab} \hlstd{= xlabel)}
+\hlkwd{boxplot}\hlstd{(d_land}\hlopt{$}\hlstd{arable_land_pct,} \hlkwc{main} \hlstd{=} \hlstr{"Box plot of arable land"}\hlstd{)}
+\hlkwd{qqnorm}\hlstd{(d_land}\hlopt{$}\hlstd{arable_land_pct,} \hlkwc{main} \hlstd{=} \hlstr{"Normal Q-Q plot of arable land"}\hlstd{)}
+\hlkwd{qqline}\hlstd{(d_land}\hlopt{$}\hlstd{arable_land_pct)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/4a-1} 
+
+\end{knitrout}
+
+
+\subsection*{b.} (1/4 point) Plot the density plots of that variable for Europe and Asia, 1) side by side (Hint: \verb`par(mfrow=c(?, ?))`), and 2) overlapping in the same plot.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{3}\hlstd{))}
+\hlstd{europe_density} \hlkwb{<-} \hlkwd{density}\hlstd{(}
+  \hlstd{d_land[d_land}\hlopt{$}\hlstd{region} \hlopt{==} \hlstr{"Europe & Central Asia (all income levels)"}\hlstd{,} \hlstr{"arable_land_pct"}\hlstd{],}
+  \hlkwc{na.rm}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+\hlstd{asia_density} \hlkwb{<-} \hlkwd{density}\hlstd{(}
+  \hlstd{d_land[d_land}\hlopt{$}\hlstd{region} \hlopt{==} \hlstr{"East Asia & Pacific (all income levels)"}\hlstd{,} \hlstr{"arable_land_pct"}\hlstd{],}
+  \hlkwc{na.rm}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+\hlkwd{plot}\hlstd{(europe_density,} \hlkwc{main} \hlstd{=} \hlstr{"Arable land (Europe)"}\hlstd{)}
+\hlkwd{plot}\hlstd{(asia_density,} \hlkwc{main} \hlstd{=} \hlstr{"Arable land (Asia)"}\hlstd{)}
+
+\hlcom{# Overlaying}
+\hlkwd{plot}\hlstd{(asia_density,} \hlkwc{xlim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlopt{-}\hlnum{20}\hlstd{,} \hlnum{80}\hlstd{),} \hlkwc{col}\hlstd{=}\hlstr{'red'}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Asia and Europe"}\hlstd{)}
+\hlkwd{lines}\hlstd{(europe_density,} \hlkwc{col}\hlstd{=}\hlstr{'blue'}\hlstd{)}
+\hlkwd{legend}\hlstd{(}\hlnum{25}\hlstd{,} \hlnum{.05}\hlstd{,} \hlkwd{c}\hlstd{(}\hlstr{"Asia"}\hlstd{,} \hlstr{"Europe"}\hlstd{),}
+  \hlkwc{lty}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{1}\hlstd{),} \hlcom{# gives the legend appropriate symbols (lines)}
+  \hlkwc{lwd}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,}\hlnum{1}\hlstd{),}\hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,}\hlstr{"blue"}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/4b-1} 
+\begin{kframe}\begin{alltt}
+\hlcom{# Tutorial for legend: http://www.r-bloggers.com/adding-a-legend-to-a-plot/}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 \subsection*{c.} (1/4 point) Draw the scatterplot of that variable against another variable.
 
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(d_land}\hlopt{$}\hlstd{arable_land_pct,} \hlkwd{log}\hlstd{(d_land}\hlopt{$}\hlstd{gdp_percapita),}
+     \hlkwc{xlab} \hlstd{=} \hlstr{"Arable land as % of total land"}\hlstd{,}
+     \hlkwc{ylab} \hlstd{=} \hlstr{"log GDP per capita (2005 USD)"}\hlstd{,}
+     \hlkwc{main} \hlstd{=} \hlstr{"Arable land and GDP per capita"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-1-1} 
+
+\end{knitrout}
+
+
 \subsection*{d.} (1/4 point) Label the point that represents your country (Hint: \href{https://chemicalstatistician.wordpress.com/2013/03/02/adding-labels-to-points-in-a-scatter-plot-in-r/}{Tutorial}) and color it red (Some Googling involved)
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlkwd{plot}\hlstd{(}\hlkwd{log}\hlstd{(gdp_percapita)} \hlopt{~} \hlstd{arable_land_pct,}
+     \hlkwc{data} \hlstd{= d_land,}
+     \hlkwc{xlab} \hlstd{=} \hlstr{"Arable land as % of total land"}\hlstd{,}
+     \hlkwc{ylab} \hlstd{=} \hlstr{"log GDP per capita (2005 USD)"}\hlstd{,}
+     \hlkwc{main} \hlstd{=} \hlstr{"Arable land and GDP per capita"}\hlstd{)}
+\hlstd{d_land_Vietnam} \hlkwb{<-} \hlstd{d_land[d_land}\hlopt{$}\hlstd{country} \hlopt{==} \hlstr{"Vietnam"}\hlstd{, ]}
+\hlkwd{with}\hlstd{(d_land_Vietnam,}
+     \hlkwd{text}\hlstd{(}\hlkwd{log}\hlstd{(gdp_percapita)} \hlopt{~} \hlstd{arable_land_pct,} \hlkwc{labels} \hlstd{=} \hlstr{"Vietnam"}\hlstd{,}
+          \hlkwc{pos} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{'red'}\hlstd{))}
+\hlkwd{points}\hlstd{(d_land_Vietnam}\hlopt{$}\hlstd{arable_land_pct,} \hlkwd{log}\hlstd{(d_land_Vietnam}\hlopt{$}\hlstd{gdp_percapita),}
+       \hlkwc{pch} \hlstd{=} \hlnum{16}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{'red'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-2-1} 
+
+\end{knitrout}
+
 \end{document}
