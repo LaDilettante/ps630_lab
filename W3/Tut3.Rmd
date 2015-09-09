@@ -11,8 +11,7 @@ output: pdf_document
 2. Correlation
 3. Cross-tabs
 4. Central Limit Theorem
-5. t-tests
-6. p-values
+5. t-tests and p-values
 
 
 
@@ -34,7 +33,7 @@ y=(x+5)
 plot(x,y)
 ```
 
-The covariance of these two variables is positive - as x increases so does y.
+The covariance of these two variables is positive - as x increases so does y. A positive covariance indicates that as x is above its mean value, y is above its mean value (on average).
 
 ```{r}
 cov(x,y)
@@ -54,7 +53,7 @@ The covariance should be close to zero - due to the randomness of the data it is
 cov(x2,y2)
 ```
 
-Note that this means even variables that are completely random and not related to each other may produce a non-zero covariance. However, the E(Cov(x2,y2)) = 0, so the distribution of the covariance is centered on the value 0.
+Note that this means even variables that are completely random and not related to each other may produce a non-zero covariance. However, the E(Cov(x2,y2)) = 0, so the distribution of the covariance is centered on the value 0. If our variables have large variances though, we might get a large value of the covariance. The problem is that covariance is not to-scale.
 
 Independence implies that the expected value of the covariance is zero.
 
@@ -66,7 +65,7 @@ y3=x3^2
 plot(x3,y3)
 ```
 
-As we can clearly see from the plot, there is a curvilinear relationship of the two variables - they are not independent.
+As we can clearly see from the plot, there is a curvilinear relationship of the two variables - they are not independent. When one variable is a function of another variable, even a quadratic function, they are not independent.
 
 ```{r}
 cov(x3,y3)
@@ -144,7 +143,8 @@ The source is a journal article from 1979: "Goodman, L. A. (1979) Simple Models 
 
 Let us assume that 1 is a low occupational status and 8 is a high occupational status (it might be the opposite). Is there a relationship between the status of the father and the son?
 
-Before using the command below, use install.packages("gmodels").
+Before using the command below, use the following command:
+install.packages("gmodels")
 
 ```{r}
 library(gmodels)
@@ -157,36 +157,9 @@ How can we interpret this table?
 
 # Topic 4: Central Limit Theorem
 
-The Central Limit Theorem says that if we have infinitely many draws of the same size from a specific distribution, the mean of this distribution will be approximately normally distributed.
+The Central Limit Theorem states that if we have infinitely many draws of the same size from a specific distribution, the mean of this distribution will be approximately normally distributed.
 
-Let us illustrate this with a simple example of the binomial distribution.
-
-```{r}
-draw1=rbinom(1,size=100,p=0.67)
-draw1
-
-draw5=rbinom(5,size=100,p=0.67)
-hist(draw5)
-
-draw10=rbinom(10,size=100,p=0.67)
-hist(draw10)
-
-draw50=rbinom(50,size=100,p=0.67)
-hist(draw50)
-
-draw100=rbinom(100,size=100,p=0.67)
-hist(draw100)
-
-draw1000=rbinom(1000,size=100,p=0.67)
-hist(draw1000)
-
-draw10000=rbinom(10000,size=100,p=0.67)
-hist(draw10000) # This really looks like a normal distribution
-```
-
-Note that this is true for any distribution, even those that are NOT normally distributed themselves (the distribution of a binomial looks similar to a normal distribution for large N).
-
-Let's try a similar example with an exponential distribution. The exponential distribution doesn't look like a normal distribution.
+Let us illustrate this with a simple example of the exponential distribution. The exponential distribution doesn't look like a normal distribution.
 
 How does an exponential distribution look like?
 
@@ -199,7 +172,8 @@ plot(x4,y4, type="l") # Use type="l" for a line plot
 
 We can also use the ggplot2 package to make it look even nicer.
 
-Use the command install.packages("ggplot2") before you run this code.
+Use the command the following command before you run this code:
+install.packages("ggplot2")
 
 ```{r}
 library(ggplot2)
@@ -219,11 +193,48 @@ for (i in 1:1000){
 hist(meanstore, breaks=20) # It is approximately normally distributed, as predicted by the CLT.
 ```
 
+Let us expand this example and increase the number of draws to 50:
+
+```{r}
+meanstore2=rep(0,1000)
+for (i in 1:1000){
+  expdraw=rexp(50, rate=0.5)
+  meanstore2[i]=mean(expdraw)
+}
+hist(meanstore2, breaks=20) # It is approximately normally distributed, as predicted by the CLT.
+```
+
+And a final example with 100 draws:
+
+```{r}
+meanstore3=rep(0,1000)
+for (i in 1:1000){
+  expdraw=rexp(100, rate=0.5)
+  meanstore3[i]=mean(expdraw)
+}
+hist(meanstore3, breaks=20) # It is approximately normally distributed, as predicted by the CLT.
+```
+
+Let's use ggplot again to make a nicer histogram:
+
+```{r}
+library(ggplot2)
+qplot(meanstore3, geom="histogram")
+```
+
+This is not perfect though, let's play a little with the function:
+
+```{r}
+library(ggplot2)
+plot2=qplot(meanstore3, geom="histogram", main="Histogram of Exponential Draws (n=100)",bindwidth=30) # Now that looks even nicer
+plot2 + geom_histogram(aes(fill = ..count..)) # Looks great
+```
 
 
-# Topic 5: t-tests
 
-t-tests allow us to either compare the mean of two populations or to compare the mean of one population against a theoretical example
+# Topic 5: t-tests and p-values
+
+t-tests allow us to either compare the mean of two populations or to compare the mean of one population against a theoretical mena value.
 
 Let us create two sets of numbers that come from normal distributions with different means.
 
@@ -244,61 +255,33 @@ We can also compare a single sample against a mean that we define to be our H0.
 
 ```{r}
 t.test(vec1,mu=2)
+t.test(vec1,mu=2.5)
+t.test(vec1,mu=3)
+t.test(vec1,mu=3.5)
 ```
 
-What does this t-value mean? What does this p-value mean?
-
-
-
-# Topic 6: p-values
+What do these t-values mean? What do these p-values mean?
 
 Typically, a p-value is related to a type-1 error rate (alpha) that we define in advance. Type-1 erors refer to the incorrect rejection of a true null hypothesis. Often we want alpha to be smaller than 0.05.
 
-Typically, our null hypothesis (H0) is that there is no relationship between two variables.
+Typically, our null hypothesis (H0) is that (1) the vectors have the same mean or (2) the mean of the observations is the same as our theoretical mean.
 
 The p-value is the probability that we get data with evidence that is such strong AGAINST H0 if H0 was true. Think about what this means. If we define a threshold of p to be p < 0.05, then we have a type-1 error rate of alpha = 0.05.
 
-Let's load another R dataset that can illustrate this. The "airquality" dataset. According to the documentation, this is "Daily air quality measurements in New York, May to September 1973."
-
-More details can be found here: 
+This produces a very small p-value:
 
 ```{r}
-data(airquality)
-airquality
-summary(airquality) # Use this command if you don't want to see the whole dataset but just a summary of it
+t.test(vec1,mu=3)
 ```
-
-Our question is: is there a linear relationship between the Ozone measures and the Solar.R measures?
-
-Let us use linear regression to answer this question:
-
-```{r}
-lm1=lm(Ozone ~ Solar.R, data=airquality)
-```
-
-The summary of this linear regression will return a t-value and a p-value for the intercept and all coefficients.
-
-```{r}
-summary(lm1)
-```
-
-The last column Pr(>|t|) is the p-value of the t-test. How do we interpret this finding?
-
-The probability to find this data if H0 is true (i.e. there is no relationship between Ozone and Solar.R) is 0.1%. This is strong evidence against H0. Therefore we reject H0 under p < 0.001. Please pay close attention to the difference between percent (0-100) and proportions (0-1).
-
-How would we interpret the finding with respect to the linear relationship between the two variables? The interpreation would look like this:
-
-There is a positive linear relationship between Ozone and Solar.R. For a 1-point increase in Solar.R, we would expect a 0.13 increase in Ozone (in a multivariate model we would have to add: "holding all other variables constant"). The associated t-value is 3.880. This t-value imples a p-value of 0.0002. This p < 0.001 corresponds to a type-1 error rate of alpha < 0.001, meaning that the relationship is significant at all common levels of statistical significance.
 
 Note that there are four important levels of statistical significane:
 
 p <= 0.001, corresponds to a type-1 error rate (alpha) of 0.001
+
 p <= 0.01, corresponds to a tye-1 error rate (alpha) of 0.01
+
 p <= 0.05, corresponds to a type-1 error rate (alpha) of 0.05
+
 p <= 0.1, corresponds to a type-1 error rate (alpha) of 0.1
 
-If a coefficient has a p-value of p < 0.001, the linear relationship is significant at all common levels of statistical significance.
-
-Note: If you have a linear regression with multiple independent variables, then the code you need to use looks like the following:
-
-lm(y ~ x1 + x2 + x3)
+A p-value of p < 0.001 implies that a test is significant at all common levels of statistical significance.
