@@ -120,19 +120,29 @@ correlation2(a,d)
 <<results='show',tidy=TRUE>>=
 ### a
 
+set.seed(2)
 vec1=rpois(50,lambda=10)
+set.seed(2)
 vec2=rpois(50,lambda=12)
 
 t.test(vec1,vec2)
+@
 
-### b
+\subparagraph{b)} The mean of the first vector is 9.5, the mean of the second vector is 11.6. Given the number of observations -- 50 in each vector -- the t.test function returns a t-value of -3.2796. This t-value is associated with a p-value of $p = 0.001454$. This p-value implies that the probability of obtaining this result if vector 1 and vector 2 were from a distribution with the same mean is approximately 0.15 percent ($= 0.00015$). This is very strong evidence against the null hypothesis ( $H_0$ ), which is that they have the same mean.
 
+
+
+\subsection*{Problem 3}
+
+<<results='show',tidy=TRUE>>=
+### a
 tTestFunction=function(a,b){
   numerator=mean(a)-mean(b)
   denominator=sqrt(var(a)/length(a)+var(b)/length(b))
   print(numerator/denominator)
 }
 
+### b
 tTestFunction(vec1,vec2)
 
 ### Bonus problem:
@@ -151,41 +161,9 @@ tTestFunction2=function(a,b){
 
 \section*{Probability Theory: Covariance and Correlation}
 
-\subsection*{Problem 3}
+\subsection*{Problem 4}
 
-\subparagraph{a)} Both X and Y have the uniform distribution over all four points, so each outcome is equally likely.
-
-$\mathbb{E}(X) = \dfrac{1}{4}*(-1) + \dfrac{1}{4}*(0) + \dfrac{1}{4}*(0) + \dfrac{1}{4}*(1) = 0$
-
-\bigskip
-
-$\mathbb{E}(Y) = \dfrac{1}{4}*(0) + \dfrac{1}{4}*(1) + \dfrac{1}{4}*(-1) + \dfrac{1}{4}*(0) = 0$
-
-\bigskip
-
-$\mathbb{E}(X*Y) = \dfrac{1}{4}*(0) + \dfrac{1}{4}*(0) + \dfrac{1}{4}*(0) + \dfrac{1}{4}*(0) = 0$
-
-\bigskip
-
-$Cov(X, Y) = \mathbb{E}(X*Y)-\mathbb{E}(X)*\mathbb{E}(Y) = 0 - 0*0 = 0$
-
-\bigskip
-
-Proof by contradiction. In order to prove that X and Y are not independent, it is sufficient to show that they violate the necessary conditions for independence in one case.
-
-For independence, the following must be true:
-
-$Pr (X=x \cap Y=y) = Pr(X=x)*Pr(Y=y)$
-
-Given this definition, it is sufficient to show that this is not true for some values of X. For example:
-
-$Pr (X=-1 \cap Y=1) = 0$ because this event never occurs.
-
-$Pr (X=-1) = \dfrac{1}{4}$ and $Pr (Y=1) = \dfrac{1}{4}$, meaning that $Pr (X=-1)*Pr(Y=1) = \dfrac{1}{16}$
-
-Accordingly, $Pr (X=-1)*Pr(Y=1) = \dfrac{1}{16} \neq 0 = Pr (X=-1 \cap Y=1)$
-
-\subparagraph{b)} $\mathbb{E}(X) = \dfrac{1}{3}*(-1) + \dfrac{1}{3}*(0) + \dfrac{1}{3}*(1) = 0$
+\subparagraph{a)} $\mathbb{E}(X) = \dfrac{1}{3}*(-1) + \dfrac{1}{3}*(0) + \dfrac{1}{3}*(1) = 0$
 
 $\mathbb{E}(Y) = \dfrac{1}{3}*(1) + \dfrac{1}{3}*(0) + \dfrac{1}{3}*(1) = \dfrac{2}{3}$
 
@@ -193,13 +171,9 @@ $\mathbb{E}(X*Y) = \dfrac{1}{3}*(-1) + \dfrac{1}{3}*(0) + \dfrac{1}{3}*(1) = 0$
 
 $Cov (X, Y) = \mathbb{E}(X*Y) - \mathbb{E}(X)*\mathbb{E}(Y) = 0 - \dfrac{2}{3} * 0 = 0$
 
-Are X and Y independent? No. We don't need to prove this because we know that $Y=X^2$, so $Y$ was defined to be a function of X. The reason why we don't capture their dependence is that they are not \textit{linearly dependent}. Instead, they are dependent through a quadratic function.
+Are X and Y independent? No. We don't need to prove this because we know that $Y=X^2$, so $Y$ was defined to be a function of X. The reason why we don't capture their dependence is that they are not \textit{linearly dependent}. Instead, they are dependent through a quadratic function. Alternatively, one can also show that they're not independent because they violate $Pr (X=x \cap Y=y) = Pr(X=x)*Pr(Y=y)$ for some values of X and Y (for example X=0 and Y=1). This would be a proof by contradiction.
 
-
-
-\subsection*{Problem 4}
-
-\subparagraph{a)} In order to solve this problem, as in the above problems, we need to calculate the following:
+\subparagraph{b)} In order to solve this problem, as in the above problems, we need to calculate the following:
 
 $Cov(X, Y) = \mathbb{E}(X*Y)-\mathbb{E}(X)*\mathbb{E}(Y)$
 
@@ -277,28 +251,12 @@ exy2=sum((is + js)*(is - js))/36
 exy2 - ex2*ey2 # Also returns zero
 @
 
-Why aren't X and Y independent? Let's try a similar proof by contradiction like above.
+Why aren't X and Y independent? Let's try a similar contradiction like above.
 
 $Pr (X=12 \cap Y=1) = 0$ because this event never occurs.
 
 $Pr (X=12) = \dfrac{1}{36}$ and $Pr (Y=1) = \dfrac{4}{36} = \dfrac{1}{9}$, meaning that $Pr (X=12)*Pr(Y=1) = \dfrac{1}{324}$
 
 Accordingly, $Pr (X=12)*Pr(Y=1) = \dfrac{1}{324} \neq 0 = Pr (X=12 \cap Y=1)$
-
-\subparagraph{b)}
-
-$Cov(dY_1 + e, fY_2 + g) = \mathbb{E}[(dY_1 + e) * (fY_2 + g)] - \mathbb{E}[dY_1 + e]*\mathbb{E}[fY_2 + g]$ \\
-
-$= \mathbb{E}[dY_1*fY_2 + dY_1*g + e*fY_2 + e*g] - (\mathbb{E}[dY_1] + \mathbb{E}[e])*(\mathbb{E}[fY_2] + \mathbb{E}[g])$ \\
-
-$= \mathbb{E}(dY_1*fY_2) + \mathbb{E}(dY_1*g) + \mathbb{E}(e*fY_2) + \mathbb{E}(e*g)$ - \mathbb{E}(dY_1)*\mathbb{E}(fY_2) - \mathbb{E}(dY_1)*\mathbb{E}(g) - \mathbb{E}(e)*\mathbb{E}(fY_2) - \mathbb{E}(e)*\mathbb{E}(g)$
-
-$= d*f*\mathbb{E}(Y_1*Y_2) + d*g*\mathbb{E}(Y_1) + e*f*\mathbb{E}(Y_2) + e*g - d*\mathbb{E}(Y_1)*f*\mathbb{E}(Y_2) - d*\mathbb{E}(Y_1)*g - e*f*\mathbb{E}(Y_2) - e*g$
-
-$= d*f*\mathbb{E}(Y_1*Y_2) - d*\mathbb{E}(Y_1)*f*\mathbb{E}(Y_2)$
-
-$= d*f*[\mathbb{E}[Y_1*Y_2) - \mathbb{E}(Y_1)*\mathbb{E}(Y_2)]$
-
-$= d*f*Cov(Y_1, Y_2)$
 
 \end{document}

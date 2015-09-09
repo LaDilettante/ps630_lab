@@ -37,7 +37,7 @@
 
 \subparagraph{a)} (2 points) Create a variable $X$ that is a sequence from 1 to 1000 (intervals of 1). Then, create a variable $Y$ that is linearly dependent on $X$. Now evaluate their covariance and correlation. Interpret the results. Then, create a second variable $Y_2$ that is linearly dependent on $X$ but additionally has some normally distributed error. Now evaluate their covariance and correlation. Interpret the results. Finally, interpret the difference between the covariances and correlations.
 
-\subparagraph{b)} (1 point) Write a function that returns the correlation between two vectors in R. For this purpose, do not use the covariance (\textit{cov}) or the correlation (\textit{cor}) functions that are built into R. Instead, please refer to the lecture and text book for the mathematical definitions of covariance and correlation and emulate those calculations in your function. Demonstrate that your function works by plugging in vectors and comparing it to the built-in \textit{cor} function in R.
+\subparagraph{b)} (2 points) Write a function that returns the correlation between two vectors in R. For this purpose, do not use the covariance (\textit{cov}) or the correlation (\textit{cor}) functions that are built into R. Instead, please refer to the lecture and text book for the mathematical definitions of covariance and correlation and emulate those calculations in your function. Demonstrate that your function works by plugging in vectors and comparing it to the built-in \textit{cor} function in R.
 
 \bigskip
 
@@ -49,11 +49,19 @@ Bonus problem: (1 point) Copy the function you created for problem B. Now integr
 
 \paragraph{Do the following in R:}
 
-\subparagraph{a)} (1 point) Create two vectors of length 50 with random draws from a Poisson distribution. The mean of the draws in the first vector should be 10, the mean of the draws in the second vector should be 12. Conduct a two-sample t-test with the \textit{t.test} function for those two vectors in R.
+\subparagraph{a)} (2 points) Create two vectors of length 50 with random draws from a Poisson distribution (\textit{set.seed(2)} for both). The theoretical mean of the draws in the first vector should be 10, the theoretical mean of the draws in the second vector should be 12. Conduct a two-sample t-test with the \textit{t.test} function for those two vectors in R.
 
 Hint: If you don't know how to draw from a Poisson distribution, try to find out through a search engine.
 
-\subparagraph{b)} (2 points) Write a function that allows you to perform a two-tail, two-sample t-test, using vectors as input (essentially a copy of the \textit{t.test} function). In your calculation, assume that the two groups have different variances. The function is meant to return a t-value. Test the function you created by plugging in the two vectors from problem 2a and verify that you get the same result again.
+\subparagraph{b)} (2 points) Interpret the result of the t-test. In your interpretation make statements about the means of both distributions, the t-value, and the meaning of the p-value.
+
+
+
+\subsection*{Problem 3}
+
+\paragraph{Do the following in R:}
+
+\subparagraph{a)} (3 points) Write a function that allows you to perform a two-tail, two-sample t-test, using vectors as input (essentially a copy of the \textit{t.test} function). In your calculation, assume that the two groups have different variances. The function is meant to return a t-value.
 
 Note: You're allowed to use built-in functions except for the \textit{t.test} function itself.
 
@@ -61,30 +69,25 @@ Note: You're allowed to use built-in functions except for the \textit{t.test} fu
 
 Bonus problem: (1 point) Include an error message if any vector plugged in is not numeric.
 
+\subparagraph{b)} (1 point) Test the function you created by plugging in the two vectors from problem 2a and verify that you get the same result again.
 
 
-\pagebreak
+
+
 
 \section*{Probability Theory: Covariance and Correlation}
 
-\subsection*{Problem 3}
+\subsection*{Problem 4}
 
 \paragraph{Do the following problems. Show every step.}
 
-\subparagraph{a)} (2 points) This problem is taken from Jim Pitman (1993) \textit{Probability}: Let $(X,Y)$ have uniform distribution on the four points $(-1,0), (0,1), (0,-1), (1,0)$. Show that X and Y are uncorrelated. Then prove that they are not independent. %Ch. 6.4, Problem 4 (p. 445)
+\subparagraph{a)} (2 points) This problem is taken from Jim Pitman (1993) \textit{Probability}: Let X have uniform distribution on the points \big\{-1, 0, 1\big\} and let $Y=X^2$. Are X and Y uncorrelated? Are X and Y independent? Show mathematically and explain carefully. %Ch. 6.4, Problem 5 (p. 445)
 
-\subparagraph{b)} (2 points) This problem is taken from Jim Pitman (1993) \textit{Probability}: Let X have uniform distribution on {-1,0,1} and let $Y=X^2$. Are X and Y uncorrelated? Are X and Y independent? Show mathematically and explain carefully. %Ch. 6.4, Problem 5 (p. 445)
+Hint: In order to solve this problem refer to the mathematical definition of covariance, correlation, and the meaning of independence.
 
+\subparagraph{b)} (2 points) This problem is taken from Jim Pitman (1993) \textit{Probability}: Let $X_{1}$ and $X_{2} $ be the numbers on two independent fair six-sided die rolls, $X = X_{1} - X_{2}$ and $Y= X_{1} + X_{2}$. Show that X and Y are uncorrelated, but not independent. %Ch. 6.4, Problem 6 (p. 445)
 
-
-\subsection*{Problem 4}
-
-\subparagraph{a)} (2 points) This problem is taken from Jim Pitman (1993) \textit{Probability}: Let $X_{1}$ and $X_{2} $ be the numbers on two independent fair six-sided die rolls, $X = X_{1} - X_{2}$ and $Y= X_{1} + X_{2}$. Show that X and Y are uncorrelated, but not independent. %Ch. 6.4, Problem 6 (p. 445)
-
-\paragraph{} Hint: For problem c, you may calculate the covariance in R or manually.
-
-\subparagraph{b)} (2 points) Assume that d, e, f, and g are constants. Assume that $Y_1$ and $Y_2$ are random variables. Demonstrate mathematically that the following relationship holds: \\
-$Cov(dY_1 + e, fY_2 + g) = df Cov(Y_1, Y_2)$.
+Hint: For this problem, you may calculate the covariance in R as this might be quicker and more convenient.
 
 
 
