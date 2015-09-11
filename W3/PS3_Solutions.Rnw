@@ -128,7 +128,7 @@ vec2=rpois(50,lambda=12)
 t.test(vec1,vec2)
 @
 
-\subparagraph{b)} The mean of the first vector is 9.5, the mean of the second vector is 11.6. Given the number of observations -- 50 in each vector -- the t.test function returns a t-value of -3.2796. This t-value is associated with a p-value of $p = 0.001454$. This p-value implies that the probability of obtaining this result if vector 1 and vector 2 were from a distribution with the same mean is approximately 0.15 percent ($= 0.00015$). This is very strong evidence against the null hypothesis ( $H_0$ ), which is that they have the same mean.
+\subparagraph{b)} The mean of the first vector is 9.5, the mean of the second vector is 11.6. Given the number of observations -- 50 in each vector -- the t.test function returns a t-value of -3.2796. The 95-percent confidence interval shows us that we are 95 percent confident that the first distribution has a mean that is lower by a number between -3.3711865 and -0.8288135. The fact that 0 is not included in this interval implies a p-value of p < 0.05. Indeed, the t-value is associated with a p-value of $p = 0.001454$. This p-value implies that the probability of obtaining this result if vector 1 and vector 2 were from a distribution with the same mean is approximately 0.15 percent ($= 0.00015$). This is very strong evidence against the null hypothesis ( $H_0$ ), which is that they have the same mean.
 
 
 

@@ -285,3 +285,23 @@ p <= 0.05, corresponds to a type-1 error rate (alpha) of 0.05
 p <= 0.1, corresponds to a type-1 error rate (alpha) of 0.1
 
 A p-value of p < 0.001 implies that a test is significant at all common levels of statistical significance.
+
+How would we compute the confidence interval of a test like the following?
+
+```{r}
+t.test(vec1,vec2)
+```
+
+Let us first get the standard error:
+
+```{r}
+standerr=sqrt(var(vec1)/length(vec1) + var(vec2)/length(vec2))
+standerr
+```
+
+To construct the 95-percent confidence interval get the difference in means and subtract and add the standard error:
+
+```{r}
+(1.754153-3.180158)-(2*standerr) # lower bound
+(1.754153-3.180158)+(2*standerr) # upper bound
+```
