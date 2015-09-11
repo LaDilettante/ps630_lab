@@ -5,6 +5,7 @@
 \usepackage{fullpage}
 \usepackage{setspace}
 \usepackage{hyperref}
+\usepackage{color}
 \onehalfspacing
 
 
@@ -19,6 +20,27 @@
  
 \maketitle
 
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
+
+\bigskip
+
+\textbf{Use the following scheme to assign points: \\
+Nothing correct: 0 points \\ 
+25 \% or more correct: 1 point \\
+50 \% or more correct: 2 points \\
+75 \% or more correct: 3 points \\
+100 \% or more correct: 4 points \\
+Correct bonus problems can add points, but not beyond the maximum of 4 points}
+
+\bigskip
+
+\textbf{In order to make your text bold and red, you need to insert the following line at the beginning of the document:}
+
+\begin{verbatim} \usepackage{color} \end{verbatim}
+
+\\ \textbf{and the following lines above the solution of the specific task:}
+
+\begin{verbatim} \textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points} \end{verbatim}
 
 
 \section*{R Programming}
@@ -128,7 +150,7 @@ vec2=rpois(50,lambda=12)
 t.test(vec1,vec2)
 @
 
-\subparagraph{b)} The mean of the first vector is 9.5, the mean of the second vector is 11.6. Given the number of observations -- 50 in each vector -- the t.test function returns a t-value of -3.2796. The 95-percent confidence interval shows us that we are 95 percent confident that the first distribution has a mean that is lower by a number between -3.3711865 and -0.8288135. The fact that 0 is not included in this interval implies a p-value of p < 0.05. Indeed, the t-value is associated with a p-value of $p = 0.001454$. This p-value implies that the probability of obtaining this result if vector 1 and vector 2 were from a distribution with the same mean is approximately 0.15 percent ($= 0.00015$). This is very strong evidence against the null hypothesis ( $H_0$ ), which is that they have the same mean.
+\subparagraph{b)} The mean of the first vector is 9.5, the mean of the second vector is 11.6. Given the number of observations -- 50 in each vector -- the t.test function returns a t-value of -3.2796. The 95-percent confidence interval shows us that we are 95 percent confident that the first distribution has a mean that is lower by a number between -3.3711865 and -0.8288135. The fact that 0 is not included in this interval implies a p-value of $p < 0.05$. Indeed, given 98 degrees of freedom, the t-value is associated with a p-value of $p = 0.001454$. This p-value implies that the probability of obtaining this result or a result with more extreme evidence against $H_0$ if vector 1 and vector 2 were from a distribution with the same mean is approximately 0.15 percent ($= 0.00015$). This is very strong evidence against the null hypothesis ( $H_0$ ), which is that they have the same mean.
 
 
 
@@ -251,7 +273,7 @@ exy2=sum((is + js)*(is - js))/36
 exy2 - ex2*ey2 # Also returns zero
 @
 
-Why aren't X and Y independent? Let's try a similar contradiction like above.
+Why aren't X and Y independent? Let's try to find a similar contradiction like above.
 
 $Pr (X=12 \cap Y=1) = 0$ because this event never occurs.
 
