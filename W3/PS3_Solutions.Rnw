@@ -17,7 +17,7 @@
 \author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
 \date{Grading Due Date: Friday, September 25th, 12.15 PM (Beginning of Lab)}
- 
+
 \maketitle
 
 \textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
@@ -25,7 +25,7 @@
 \bigskip
 
 \textbf{Use the following scheme to assign points: \\
-Nothing correct: 0 points \\ 
+Nothing correct: 0 points \\
 25 \% or more correct: 1 point \\
 50 \% or more correct: 2 points \\
 75 \% or more correct: 3 points \\
@@ -217,7 +217,7 @@ for (i in 1:6){
 This calculation returns the sum of all 36 outcomes, for all possible combinations of the first and the second die. Each of the above outcomes is equally likely with probability 1/36. We can either multiply every single value by 1/36 or we can, alternatively, simply divide the sum by 36 to get of $E(X*Y)$. The same applies to $E(X)$ and $E(Y)$ in the calculations below.
 
 <<results='show',tidy=TRUE>>=
-exy=sum/36 # = 0 
+exy=sum/36 # = 0
 exy
 
 ### In order to calculate E(X), use the following:
