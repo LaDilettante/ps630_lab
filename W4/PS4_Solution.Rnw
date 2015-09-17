@@ -14,9 +14,9 @@
 
 \maketitle
 
-Note 1: It is absolutely essential that you show all your work, including intermediary steps, and comment on your R code to earn full credit. Showing all steps and commenting on code them will also be required in future problem sets.
+Note 1: It is absolutely essential that you show all your work, including intermediary steps, and comment on your R code to earn full credit.
 
-Note 2: Please use a *single* PDF file created through knitr to submit your answers. knitr allows you to combine R code and \LaTeX \ code in one document, meaning that you can include both the answers to R programming and math problems. Also submit the source code that generates the PDF file (i.e. either .Rnw or .Rmd files)
+Note 2: Please use a *single* PDF file created through knitr to submit your answers. knitr allows you to combine R code and \LaTeX \ code in one document, meaning that you can include both the answers to R programming and math problems. Also submit the source code that generates the PDF file (i.e. .Rnw file)
 
 Note 3: Make sure that the PDF files you submit do not include any references to your identity. The grading will happen anonymously. You can submit your answer at the following website: \url{http://ps630-f15.herokuapp.com/}
 
@@ -155,12 +155,12 @@ stargazer(m1,
           model.names = TRUE)
 @
 
-\section*{4. Verify the formula for R square (4 points)}
+\section*{4. Calculate sum of squares and RMSE (4 points)}
 
 \begin{enumerate}
 \item Extract the residuals and predicted values (fitted values) from the model object (from Question 3)
 \item Calculate three ``sum of squares'' (TSS, RegSS, RSS)
-\item Calculate the R square and compare it with the R square reported by R
+\item Calculate the root mean square error and compare with R. (In R and stargazer, RMSE is called ``Residual standard error''.)
 \end{enumerate}
 
 Note: the data you feed to \verb`lm()` may have missing data, so R has to modify the data a little before using it. To extract the data that are actually used by \verb`lm()`, use \verb`my_model$model`. Use this data to calculate $\bar y$ in the sum of squares.
@@ -177,11 +177,13 @@ TSS <- sum( (y - mean(y)) ** 2)
 RegSS <- sum( (pred - mean(y)) ** 2)
 RSS <- sum( res ** 2 )
 
-Rsquare <- 1 - RSS / TSS
-Rsquare
+# Calculate root mean square error
+N <- nrow(d_wdi)
+k <- 1 # We only have 1 predictor, which is log_gdppc
+rmse <- sqrt(RSS / (N - k - 1))
 @
 
-The calculated R square is \Sexpr{Rsquare}, the same as reported by R.
+The calculated root mean square error is \Sexpr{rmse}, the same as reported by R in \verb`summary(m1)`.
 
 
 \end{document}

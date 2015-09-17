@@ -63,9 +63,9 @@
 
 \maketitle
 
-Note 1: It is absolutely essential that you show all your work, including intermediary steps, and comment on your R code to earn full credit. Showing all steps and commenting on code them will also be required in future problem sets.
+Note 1: It is absolutely essential that you show all your work, including intermediary steps, and comment on your R code to earn full credit.
 
-Note 2: Please use a *single* PDF file created through knitr to submit your answers. knitr allows you to combine R code and \LaTeX \ code in one document, meaning that you can include both the answers to R programming and math problems. Also submit the source code that generates the PDF file (i.e. either .Rnw or .Rmd files)
+Note 2: Please use a *single* PDF file created through knitr to submit your answers. knitr allows you to combine R code and \LaTeX \ code in one document, meaning that you can include both the answers to R programming and math problems. Also submit the source code that generates the PDF file (i.e. .Rnw file)
 
 Note 3: Make sure that the PDF files you submit do not include any references to your identity. The grading will happen anonymously. You can submit your answer at the following website: \url{http://ps630-f15.herokuapp.com/}
 
@@ -366,7 +366,7 @@ Hint: The options to do those things are in \verb`help(stargazer)`. I have worde
 \end{alltt}
 \end{kframe}
 % Table created by stargazer v.5.1 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Thu, Sep 17, 2015 - 10:53:27 AM
+% Date and time: Thu, Sep 17, 2015 - 11:55:39 AM
 \begin{table}[!htbp] \centering 
   \caption{} 
   \label{} 
@@ -397,12 +397,12 @@ F Statistic & 114.948$^{***}$ (df = 1; 249) \\
 \end{table} 
 
 
-\section*{4. Verify the formula for R square (4 points)}
+\section*{4. Calculate sum of squares and RMSE (4 points)}
 
 \begin{enumerate}
 \item Extract the residuals and predicted values (fitted values) from the model object (from Question 3)
 \item Calculate three ``sum of squares'' (TSS, RegSS, RSS)
-\item Calculate the R square and compare it with the R square reported by R
+\item Calculate the root mean square error and compare with R. (In R and stargazer, RMSE is called ``Residual standard error''.)
 \end{enumerate}
 
 Note: the data you feed to \verb`lm()` may have missing data, so R has to modify the data a little before using it. To extract the data that are actually used by \verb`lm()`, use \verb`my_model$model`. Use this data to calculate $\bar y$ in the sum of squares.
@@ -421,16 +421,15 @@ Note: the data you feed to \verb`lm()` may have missing data, so R has to modify
 \hlstd{RegSS} \hlkwb{<-} \hlkwd{sum}\hlstd{( (pred} \hlopt{-} \hlkwd{mean}\hlstd{(y))} \hlopt{**} \hlnum{2}\hlstd{)}
 \hlstd{RSS} \hlkwb{<-} \hlkwd{sum}\hlstd{( res} \hlopt{**} \hlnum{2} \hlstd{)}
 
-\hlstd{Rsquare} \hlkwb{<-} \hlnum{1} \hlopt{-} \hlstd{RSS} \hlopt{/} \hlstd{TSS}
-\hlstd{Rsquare}
+\hlcom{# Calculate root mean square error}
+\hlstd{N} \hlkwb{<-} \hlkwd{nrow}\hlstd{(d_wdi)}
+\hlstd{k} \hlkwb{<-} \hlnum{1} \hlcom{# We only have 1 predictor, which is log_gdppc}
+\hlstd{rmse} \hlkwb{<-} \hlkwd{sqrt}\hlstd{(RSS} \hlopt{/} \hlstd{(N} \hlopt{-} \hlstd{k} \hlopt{-} \hlnum{1}\hlstd{))}
 \end{alltt}
-\begin{verbatim}
-## [1] 0.3158362
-\end{verbatim}
 \end{kframe}
 \end{knitrout}
 
-The calculated R square is 0.3158362, the same as reported by R.
+The calculated root mean square error is 21.6783991, the same as reported by R in \verb`summary(m1)`.
 
 
 \end{document}
