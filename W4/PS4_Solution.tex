@@ -69,10 +69,10 @@ Note 2: Please use a *single* PDF file created through knitr to submit your answ
 
 Note 3: Make sure that the PDF files you submit do not include any references to your identity. The grading will happen anonymously. You can submit your answer at the following website: \url{http://ps630-f15.herokuapp.com/}
 
-\section*{1. Create a data frame}
+\section*{1. Create a data frame (4 points)}
 
-\subsection*{a) (2 points)}
-Create a data frame with 1000 rows and 3 variables:
+\subsection*{a)}
+First, \verb`set.seed(2)`. Then, create a data frame with 1000 rows and 3 variables as follows:
 \begin{enumerate}
 \item \verb`var_norm`: a normal variable with mean = 5, sd = 10
 \item \verb`var_binom`: a binomial variable with number of trial = 10, probability of success = 0.5
@@ -81,7 +81,7 @@ Create a data frame with 1000 rows and 3 variables:
 
 (Recall how to generate random sample from various distributions from previous labs.)
 
-\subsection*{b) (2 points)}
+\subsection*{b)}
 
 Plot the histograms of the three variables, arranging them nicely (with \verb`fig.width()`, \verb`fig.height()`, \verb`par(mfrow)` as you see fit). Brownie point if you plot using a for loop instead of writing \verb`hist` three times.
 
@@ -91,6 +91,7 @@ Plot the histograms of the three variables, arranging them nicely (with \verb`fi
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlcom{# Create the data frame}
+\hlkwd{set.seed}\hlstd{(}\hlnum{2}\hlstd{)}
 \hlstd{my_dataframe} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{var_norm} \hlstd{=} \hlkwd{rnorm}\hlstd{(}\hlnum{1000}\hlstd{,} \hlkwc{mean} \hlstd{=} \hlnum{5}\hlstd{,} \hlkwc{sd} \hlstd{=} \hlnum{10}\hlstd{),}
                            \hlkwc{var_binom} \hlstd{=} \hlkwd{rbinom}\hlstd{(}\hlnum{1000}\hlstd{,} \hlkwc{n} \hlstd{=} \hlnum{10}\hlstd{,} \hlkwc{prob} \hlstd{=} \hlnum{0.5}\hlstd{),}
                            \hlkwc{var_poisson} \hlstd{=} \hlkwd{rpois}\hlstd{(}\hlnum{1000}\hlstd{,} \hlkwc{lambda} \hlstd{=} \hlnum{4}\hlstd{))}
@@ -113,9 +114,9 @@ Plot the histograms of the three variables, arranging them nicely (with \verb`fi
 
 \end{knitrout}
 
-\section*{2. Subset data frame}
+\section*{2. Subset data frame (4 points)}
 
-\subsection*{a) 1 point}
+\subsection*{a)}
 
 Download the following data from \verb`WDI` and clean it as follows. Briefly comment on what each command does.
 
@@ -141,13 +142,13 @@ Download the following data from \verb`WDI` and clean it as follows. Briefly com
 
 \verb`number_of_physician`: number of physician per 1000 people
 
-\subsection*{b) 3 points}
+\subsection*{b)}
 
 Use subsetting techniques to do the following:
 
 \begin{enumerate}
 \item Show the GDP per capita of Brazil across years
-\item Show the country-years where infant mortality > 100 per 1000 live birth
+\item Show the country-years where infant mortality $>$ 100 per 1000 live birth
 \item Show the country-years where GDP per capita is above average
 \item Show the country-years where GDP per capita is above average, but number of physician is below average
 \end{enumerate}
@@ -170,7 +171,7 @@ Use subsetting techniques to do the following:
 \hlcom{# Rename some of the columns}
 \hlkwd{colnames}\hlstd{(d_wdi)[}\hlnum{3}\hlopt{:}\hlnum{5}\hlstd{]} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{'gdppc'}\hlstd{,} \hlstr{'infant_mortality'}\hlstd{,} \hlstr{'number_of_physician'}\hlstd{)}
 
-\hlcom{# Remove all missing data}
+\hlcom{# Remove all rows that have missing data}
 \hlstd{d_wdi} \hlkwb{<-} \hlkwd{na.omit}\hlstd{(d_wdi)}
 \end{alltt}
 \end{kframe}
@@ -303,13 +304,13 @@ Use subsetting techniques to do the following:
 \end{kframe}
 \end{knitrout}
 
-\section*{3. Build linear model}
+\section*{3. Build linear model (4 points)}
 
-\subsection*{a) 2 points}
+\subsection*{a)}
 
-Download variables of interest (may be maximum of 4 variables) and build a linear model using \verb`lm()`. Show the \verb`summary()` of results
+Download 2 variables of interest and build a linear model of their relationship using \verb`lm()`. Show the \verb`summary()` of results
 
-\subsection*{b) 2 points}
+\subsection*{b)}
 
 Show the result with \verb`stargazer`, customizing:
 \begin{itemize}
@@ -325,30 +326,28 @@ Hint: The options to do those things are in \verb`help(stargazer)`. I have worde
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{m1} \hlkwb{<-} \hlkwd{lm}\hlstd{(infant_mortality} \hlopt{~} \hlstd{gdppc} \hlopt{+} \hlstd{number_of_physician,} \hlkwc{data} \hlstd{= d_wdi)}
+\hlstd{m1} \hlkwb{<-} \hlkwd{lm}\hlstd{(infant_mortality} \hlopt{~} \hlstd{gdppc,} \hlkwc{data} \hlstd{= d_wdi)}
 \hlkwd{summary}\hlstd{(m1)}
 \end{alltt}
 \begin{verbatim}
 ## 
 ## Call:
-## lm(formula = infant_mortality ~ gdppc + number_of_physician, 
-##     data = d_wdi)
+## lm(formula = infant_mortality ~ gdppc, data = d_wdi)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -30.985 -12.604  -2.951   7.699  68.971 
+## -28.743 -17.413  -5.357  11.922  78.783 
 ## 
 ## Coefficients:
-##                       Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)          4.751e+01  1.748e+00  27.185  < 2e-16 ***
-## gdppc               -2.822e-04  7.432e-05  -3.797 0.000184 ***
-## number_of_physician -9.480e+00  9.492e-01  -9.988  < 2e-16 ***
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  3.775e+01  1.713e+00   22.04   <2e-16 ***
+## gdppc       -7.406e-04  6.908e-05  -10.72   <2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 18.34 on 248 degrees of freedom
-## Multiple R-squared:  0.5121,	Adjusted R-squared:  0.5082 
-## F-statistic: 130.1 on 2 and 248 DF,  p-value: < 2.2e-16
+## Residual standard error: 21.68 on 249 degrees of freedom
+## Multiple R-squared:  0.3158,	Adjusted R-squared:  0.3131 
+## F-statistic: 114.9 on 1 and 249 DF,  p-value: < 2.2e-16
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -361,13 +360,13 @@ Hint: The options to do those things are in \verb`help(stargazer)`. I have worde
 
 {\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# Please cite as: \\\#\# \\\#\#\ \ Hlavac, Marek (2014). stargazer: LaTeX code and ASCII text for well-formatted regression and summary statistics tables.\\\#\#\ \ R package version 5.1. http://CRAN.R-project.org/package=stargazer}}\begin{alltt}
 \hlkwd{stargazer}\hlstd{(m1,}
-          \hlkwc{covariate.labels} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"GDP per capita"}\hlstd{,} \hlstr{"Number of Physician"}\hlstd{),}
+          \hlkwc{covariate.labels} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"GDP per capita"}\hlstd{),}
           \hlkwc{dep.var.labels} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"Infant Mortality (per 1000 births)"}\hlstd{),}
           \hlkwc{model.names} \hlstd{=} \hlnum{TRUE}\hlstd{)}
 \end{alltt}
 \end{kframe}
 % Table created by stargazer v.5.1 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Tue, Sep 15, 2015 - 02:19:12 PM
+% Date and time: Thu, Sep 17, 2015 - 10:53:27 AM
 \begin{table}[!htbp] \centering 
   \caption{} 
   \label{} 
@@ -379,21 +378,18 @@ Hint: The options to do those things are in \verb`help(stargazer)`. I have worde
 \\[-1.8ex] & Infant Mortality (per 1000 births) \\ 
 \\[-1.8ex] & \textit{OLS} \\ 
 \hline \\[-1.8ex] 
- GDP per capita & $-$0.0003$^{***}$ \\ 
+ GDP per capita & $-$0.001$^{***}$ \\ 
   & (0.0001) \\ 
   & \\ 
- Number of Physician & $-$9.480$^{***}$ \\ 
-  & (0.949) \\ 
-  & \\ 
- Constant & 47.508$^{***}$ \\ 
-  & (1.748) \\ 
+ Constant & 37.753$^{***}$ \\ 
+  & (1.713) \\ 
   & \\ 
 \hline \\[-1.8ex] 
 Observations & 251 \\ 
-R$^{2}$ & 0.512 \\ 
-Adjusted R$^{2}$ & 0.508 \\ 
-Residual Std. Error & 18.344 (df = 248) \\ 
-F Statistic & 130.149$^{***}$ (df = 2; 248) \\ 
+R$^{2}$ & 0.316 \\ 
+Adjusted R$^{2}$ & 0.313 \\ 
+Residual Std. Error & 21.678 (df = 249) \\ 
+F Statistic & 114.948$^{***}$ (df = 1; 249) \\ 
 \hline 
 \hline \\[-1.8ex] 
 \textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
@@ -401,10 +397,10 @@ F Statistic & 130.149$^{***}$ (df = 2; 248) \\
 \end{table} 
 
 
-\section*{4. Verify the formula for R square}
+\section*{4. Verify the formula for R square (4 points)}
 
 \begin{enumerate}
-\item Extract the residuals and predicted values (fitted values) from the model object
+\item Extract the residuals and predicted values (fitted values) from the model object (from Question 3)
 \item Calculate three ``sum of squares'' (TSS, RegSS, RSS)
 \item Calculate the R square and compare it with the R square reported by R
 \end{enumerate}
@@ -429,12 +425,12 @@ Note: the data you feed to \verb`lm()` may have missing data, so R has to modify
 \hlstd{Rsquare}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.5120972
+## [1] 0.3158362
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 
-The calculated R square is 0.5120972, the same as reported by R.
+The calculated R square is 0.3158362, the same as reported by R.
 
 
 \end{document}

@@ -131,6 +131,12 @@ Log gdp per capita
 d_2010$log_gdppc <- log(d_2010$gdppc)
 ```
 
+Remove missing data
+
+```{r}
+d_2010 <- na.omit(d_2010)
+```
+
 
 ## Build a linear model
 
@@ -151,16 +157,34 @@ summary(m2)
 
 ```{r}
 str(m1)
+```
+
+You can extract the coefficients
+
+```{r}
 m1$coefficients
 m1$coefficients['(Intercept)']
 m1$coefficients['log_gdppc']
 ```
 
+You can also generate predicted / fitted values:
+
+```{r}
+d_2010$pred_infant_mortality1 <- predict(m1)
+d_2010$pred_infant_mortality2 <- m1$coefficients['(Intercept)'] + m1$coefficients['log_gdppc'] * d_2010$log_gdppc
+```
+
 Now we can use them for other things, e.g plotting
 
 ```{r}
-plot(infant_mortality ~ log_gdppc, data = d_2010)
+par(mfrow = c(1, 2))
+plot(infant_mortality ~ log_gdppc, data = d_2010, main = "Plot predicted values-method 1")
 abline(a = m1$coefficients['(Intercept)'], b = m1$coefficients['log_gdppc'])
+points(d_2010$log_gdppc, d_2010$pred_infant_mortality1, col = 'red')
+
+plot(infant_mortality ~ log_gdppc, data = d_2010, main = "Plot predicted values-method 2")
+abline(a = m1$coefficients['(Intercept)'], b = m1$coefficients['log_gdppc'])
+points(d_2010$log_gdppc, d_2010$pred_infant_mortality2, col = 'red')
 ```
 
 ## Report the model in a nice, journal-ready format
