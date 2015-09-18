@@ -5,15 +5,215 @@ date: "September 25, 2015"
 output: pdf_document
 ---
 
-**Today's Agenda**
+
+
+# Today's Agenda
 
 1. Marginal effects and intercepts
 2. Hypothesis testing
 3. Multiple Regression
-4. Coefficient plots and distributions
-5. Substantive effects
-6. Plotting residuals
-7. Simulation approaches
+4. Graphical Representation
 
 
 
+# 1. Marginal effects and intercepts
+
+An essential aspect of all linear models are the marginal effects that predictor variables are estimated to have on the response variable.
+
+Note that the word "effect" may be problematic because it implies causality. However, without any additional assumptions or additional model features, linear models allow us to make statements with respect to correlation only. This means we can't say anything about causality when just having a linear model. So let us be very cautious when we use the word "marginal effect".
+
+Every linear model has one response variable (dependent variable) and at least one predictor variable (independent variable) plus an intercept.
+
+Let's assume that Y is our response variable and X is our only predictor variable. The model may look like this:
+
+Y = 5 + 2X + error
+
+**How would we interpet the marginal effect of X?**
+
+The interpretation would be: For a 1-point increase in X we expect a 2-point increase in Y.
+
+**How would we interpret the intercept?**
+
+The intercept is the expected value of Y when X is at a value of 0.
+
+**Illustration of the marginal effect interpretation**
+
+Let's load another R dataset that can illustrate the interpretation of marginal effects. The "airquality" dataset. According to the documentation, this is "Daily air quality measurements in New York, May to September 1973."
+
+More details can be found here: 
+
+```{r}
+data(airquality)
+summary(airquality)
+```
+
+Our question is: is there a linear relationship between the Ozone measures and the Solar.R measures?
+
+Let us use linear regression to answer this question:
+
+```{r}
+lm1=lm(Ozone ~ Solar.R, data=airquality)
+```
+
+The summary of this linear regression will return a t-value and a p-value for the intercept and all coefficients.
+
+```{r}
+summary(lm1)
+```
+
+How would we interpret the finding with respect to the linear relationship between the two variables? The interpreation would look like this:
+
+There is a positive linear relationship between Ozone and Solar.R. For a 1-point increase in Solar.R, we would expect a 0.13 increase in Ozone (in a multivariate model we would have to add: "holding all other variables constant").
+
+Furthermore (already going into the next topic): The associated t-value is 3.880. This t-value imples a p-value of 0.0002. This p < 0.001 corresponds to a type-1 error rate of alpha < 0.001, meaning that the relationship is significant at all common levels of statistical significance.
+
+
+
+# 2. Hypothesis testing
+
+Let us use another dataset to conduct some hypothesis tests.
+
+We will look at data from an article that was published in the journal "International Organization", the leading journal in the field of international relations. The article was written by Helen Milner and Keiko Kubota.
+
+The article deals with the effect that democratization has on trade barriers. The authors believe that democratization has a negative effect on trade barriers in developing countries (that are scarce in capital). Their theory is based on the Stolper Samuelson theorem and the selectorate model by Bueno de Mesquita et al.
+
+Let us try to emulate their test. In order to load their dataset you need to use the following command:
+install.packages("foreign")
+
+```{r}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/W5')
+library(foreign)
+LDC=read.dta("LDC_IO_replication.dta")
+summary(LDC)
+```
+
+For information on the meaning of the variables see "LDCcodebook.pdf".
+
+An important condition for using OLS is that the predictor variables are not subject to multicollinearity. Let's check multicollinearity. We need another package for this:
+install.packages("car")
+
+```{r}
+library(car)
+
+LDC2=as.data.frame(LDC[,c("l1polity","l1signed","l1office","l1gdp_pc","l1lnpop","l1ecris2","l1bpc1","l1avnewtar")])
+cor(LDC2)
+
+LDC3=na.omit(LDC2)
+cor(LDC3)
+
+scatterplotMatrix(~ l1polity + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar, data=LDC)
+```
+
+The results above indicate that there generally is a low level of multicollinearity among our variables.
+
+Let us start with a simple model that is easy to interpet:
+
+```{r}
+simple=lm(newtar~l1polity, data=LDC)
+summary(simple)
+```
+
+What can we conclude from these statistics? What can we say about the hypothesis that there is a linear relationship between "l1polity" and "newtar"?
+
+If there's too much information in this type of summary, try another one. We need another package:
+install.packages("arm")
+
+```{r}
+library(arm)
+display(simple)
+```
+
+As you can see, this is narrowed down to just a few pieces of information. Sometimes reducing the amount of information that is displayed can be very useful.
+
+
+
+# 3. Multiple linear regression
+
+In the vast majority of cases there are good reasons to include multiple predictor variables.
+
+The most important reasons to do so are:
+
+1. Omitted Variable Bias
+2. Reviewers that demand you to include them
+
+```{r}
+main=lm(newtar ~ l1polity + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar, data = LDC)
+summary(main)
+```
+
+Again, it would be possible to reduce the amount of information with another command:
+
+```{r}
+display(main)
+```
+
+We can access different elements of our model. Let's have a look at what those are:
+
+```{r}
+names(main)
+```
+
+
+
+# 4. Graphical representation
+
+Let us first have a look at the distribution of errors in our model.
+
+```{r}
+main.res = resid(main)
+plot(main.res, main="Valus of the Error Term")
+```
+
+Let us look at the distribution of the error term:
+
+```{r}
+hist(main.res, breaks=20)
+res.density=density(main.res)
+plot(res.density, main="Density Plot of the Residual Distribution")
+```
+
+The distribution of the errors is approximately normal, so this condition of OLS is met.
+
+Let us plot some predicted values with confidence intervals for our multiple regression.
+
+In order to do that we first create a dataframe that contains different values for our main predictor variable and the average values for all variables.
+
+```{r}
+nd <- data.frame(l1polity=seq(-10,10,by=1), l1signed=rep(0.1511,21), l1office=rep(8.431,21), l1gdp_pc=rep(2888,21), l1lnpop=rep(15.10,21), l1ecris2=rep(0.0641,21), l1bpc1=rep(0.5909,21), l1avnewtar=rep(14.91,21))
+```
+
+Next we use the model we estimated to predict values based on this new dataframe.
+
+```{r}
+pred.p1 <- predict(main, type="response", se.fit=TRUE, newdata=nd)
+
+pred.table <- cbind(pred.p1$fit, pred.p1$se.fit)
+pred.table
+```
+
+Finally, we create the plot:
+
+```{r}
+fit <- pred.p1$fit
+low <- pred.p1$fit - 2*pred.p1$se.fit
+high <- pred.p1$fit + 2*pred.p1$se.fit
+cis <- cbind(fit, low, high)
+
+cis ### To extract the values
+
+plot(pred.p1$fit, type="l", ylim=c(5,20), main="Polity IV Score and Tariff Level", 
+     xlab="Polity IV Score", ylab="Tariff Level", axes=FALSE)
+axis(1, at=seq(1,21), labels=seq(-10,10,1))
+axis(2, at=seq(5,20), labels=seq(5,20))
+matlines(cis[,c(2,3)], lty=2, col="black")
+```
+
+
+
+# 5. Tips for your final paper
+
+1. Start working on it early.
+2. Consult with your professors and TAs.
+3. Try to find a comprehensive dataset in your area of interest.
+4. Work on it throughout the semester and try to include new things that you've learned.
+5. Make sure that you use all the tools you've learned: interpret your findings carefully and visualize them.

@@ -16,21 +16,15 @@
 
 \author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
-\date{Grading Due Date: Friday, September 25th, 12.15 PM (Beginning of Lab)}
+\date{Grading Due Date: Friday, September 18th, 12.15 PM (Beginning of Lab)}
  
 \maketitle
 
-\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was.}
 
 \bigskip
 
-\textbf{Use the following scheme to assign points: \\
-Nothing correct: 0 points \\ 
-25 \% or more correct: 1 point \\
-50 \% or more correct: 2 points \\
-75 \% or more correct: 3 points \\
-100 \% or more correct: 4 points \\
-Correct bonus problems can add points, but not beyond the maximum of 4 points}
+\textbf{Use the following scheme to assign points: For correctly solved problems, assign the point value that is stated in the problem (see original problem set for exact point values). For correctly solved bonus problems, add that value to the total score for a problem but do not go above 4 points per problem. If there are mistakes in any problem, subtract points according to the extent of the mistake. If you subtract points, explain why.}
 
 \bigskip
 
@@ -42,6 +36,9 @@ Correct bonus problems can add points, but not beyond the maximum of 4 points}
 
 \begin{verbatim} \textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points} \end{verbatim}
 
+
+
+\pagebreak
 
 \section*{R Programming}
 
@@ -85,7 +82,7 @@ cor(x,y2)
 
 The correlation is bound between -1 and 1. The correlation value here should be very close to 1 or -1 but not be exactly that value due to the random error. As long as some random error has been introduced to a formerly perfect linear relationship, even if that relationship is still generally linear, there will be a reduction in the absolute value of the correlation. Accordingly, the result you can expect to get here is an absolute value of approximately 0.99. The exact value, however, depends on the size of the random error that you introduced. If you introduce a random error that has a greater variance, then the value of your correlation will go down further.
 
-Interpretation: a correlation close to 1 or -1 indicates a nearly perfect linear relationship of two variables. If the relationship is positive, the following is true: as x goes above its mean, y goes above its mean. If the relationship is negative, the following is true: as x goes above its mean, y goes below its mean. The randomly distributed error will in most cases not change the generally strong linear relationship between the two variables.
+Interpretation: a correlation close to 1 or -1 indicates a nearly perfect linear relationship of two variables. If the relationship is positive, the following is true: as x goes above its mean, y goes above its mean. If the relationship is negative, the following is true: as x goes above its mean, y goes below its mean. In most cases the randomly distributed error will not change the generally strong linear relationship between the two variables.
 
 <<results='show',tidy=TRUE>>=
 ### b
@@ -150,7 +147,7 @@ vec2=rpois(50,lambda=12)
 t.test(vec1,vec2)
 @
 
-\subparagraph{b)} The mean of the first vector is 9.5, the mean of the second vector is 11.6. Given the number of observations -- 50 in each vector -- the t.test function returns a t-value of -3.2796. The 95-percent confidence interval shows us that we are 95 percent confident that the first distribution has a mean that is lower by a number between -3.3711865 and -0.8288135. The fact that 0 is not included in this interval implies a p-value of $p < 0.05$. Indeed, given 98 degrees of freedom, the t-value is associated with a p-value of $p = 0.001454$. This p-value implies that the probability of obtaining this result or a result with more extreme evidence against $H_0$ if vector 1 and vector 2 were from a distribution with the same mean is approximately 0.15 percent ($= 0.00015$). This is very strong evidence against the null hypothesis ( $H_0$ ), which is that they have the same mean.
+\subparagraph{b)} The mean of the first vector is 9.5, the mean of the second vector is 11.6. Given the number of observations -- 50 in each vector -- the t.test function returns a t-value of -3.2796. The 95-percent confidence interval shows us that we are 95 percent confident that the first distribution has a mean that is lower by a number between -3.3711865 and -0.8288135. The fact that 0 is not included in this interval implies a p-value of $p < 0.05$. Indeed, given 98 degrees of freedom, the t-value is associated with a p-value of $p = 0.001454$. This p-value implies that the probability of obtaining this result or a result with more extreme evidence against $H_0$ if vector 1 and vector 2 were from a distribution with the same mean is approximately 0.15 percent ($= 0.0015$). This is very strong evidence against the null hypothesis ( $H_0$ ), which is that they have the same mean. Given a type-1 error rate ($\alpha$) of 0.1, 0.5, or 0.01, we can reject $H_0$. (However, we cannot reject $H_0$ at a type-1 error rate of 0.001.)
 
 
 
