@@ -1,0 +1,97 @@
+\documentclass{article}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{Pol Sci 630: Problem Set 4 - Regression Model Estimation}
+
+\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+
+\date{Due Date: Tuesday, September 22nd, 2015, 10 AM (Beginning of Class)}
+
+\maketitle
+
+Note 1: It is absolutely essential that you show all your work, including intermediary steps, and comment on your R code to earn full credit.
+
+Note 2: Please use a *single* PDF file created through knitr to submit your answers. knitr allows you to combine R code and \LaTeX \ code in one document, meaning that you can include both the answers to R programming and math problems. Also submit the source code that generates the PDF file (i.e. .Rnw file)
+
+Note 3: Make sure that the PDF files you submit do not include any references to your identity. The grading will happen anonymously. You can submit your answer at the following website: \url{http://ps630-f15.herokuapp.com/}
+
+\section*{1. Create a data frame (4 points)}
+
+\subsection*{a)}
+First, \verb`set.seed(2)`. Then, create a data frame with 1000 rows and 3 variables as follows:
+\begin{enumerate}
+\item \verb`var_norm`: a normal variable with mean = 5, sd = 10
+\item \verb`var_binom`: a binomial variable with number of trial = 10, probability of success = 0.5
+\item \verb`var_poisson`: a Poisson variable with $\lambda = 4$
+\end{enumerate}
+
+(Recall how to generate random sample from various distributions from previous labs.)
+
+\subsection*{b)}
+
+Plot the histograms of the three variables, arranging them nicely (with \verb`fig.width()`, \verb`fig.height()`, \verb`par(mfrow)` as you see fit). Brownie point if you plot using a for loop instead of writing \verb`hist` three times.
+
+\section*{2. Subset data frame (4 points)}
+
+\subsection*{a)}
+
+Download the following data from \verb`WDI` and clean it as follows. Briefly comment on what each command does.
+
+<<>>=
+library(WDI)
+d_wdi <- WDI(indicator = c("NY.GDP.PCAP.CD", "SP.DYN.IMRT.IN", "SH.MED.PHYS.ZS"),
+             start = 2005, end = 2010, extra = TRUE)
+d_wdi <- d_wdi[d_wdi$region != "Aggregates",
+       c("country", "year", "NY.GDP.PCAP.CD", "SP.DYN.IMRT.IN", "SH.MED.PHYS.ZS")]
+colnames(d_wdi)[3:5] <- c('gdppc', 'infant_mortality', 'number_of_physician')
+d_wdi <- na.omit(d_wdi)
+@
+
+\verb`infant_mortality`: number of mortality per 1000 live births
+
+\verb`number_of_physician`: number of physician per 1000 people
+
+\subsection*{b)}
+
+Use subsetting techniques to do the following:
+
+\begin{enumerate}
+\item Show the GDP per capita of Brazil across years
+\item Show the country-years where infant mortality $>$ 100 per 1000 live birth
+\item Show the country-years where GDP per capita is above average
+\item Show the country-years where GDP per capita is above average, but number of physician is below average
+\end{enumerate}
+
+\section*{3. Build linear model (4 points)}
+
+\subsection*{a)}
+
+Download 2 variables of interest from \verb`WDI` and build a linear model of their relationship using \verb`lm()`. Show the \verb`summary()` of results
+
+\subsection*{b)}
+
+Show the result with \verb`stargazer`, customizing:
+\begin{itemize}
+\item The labels of the independent variables (i.e. the covariate)
+\item The label of the dependent variable
+\item Make the model name (i.e. OLS) show up
+\end{itemize}
+
+Hint: The options to do those things are in \verb`help(stargazer)`. I have worded the task in a way that should help you find the relevant options.
+
+\section*{4. Calculate sum of squares and RMSE (4 points)}
+
+\begin{enumerate}
+\item Extract the residuals and predicted values (fitted values) from the model object (from Question 3)
+\item Calculate three ``sum of squares'' (TSS, RegSS, RSS)
+\item Calculate the root mean square error and compare with R. (In R and stargazer, RMSE is called ``Residual standard error''.)
+\end{enumerate}
+
+Note: the data you feed to \verb`lm()` may have missing data, so R has to modify the data a little before using it. To extract the data that are actually used by \verb`lm()`, use \verb`my_model$model`. Use this data to calculate $\bar y$ in the sum of squares.
+
+\end{document}

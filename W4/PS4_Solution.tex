@@ -185,8 +185,8 @@ Use subsetting techniques to do the following:
 \end{alltt}
 \begin{verbatim}
 ##    country year     gdppc
-## 94  Brazil 2008  8836.914
-## 95  Brazil 2010 11318.057
+## 94  Brazil 2008  8700.613
+## 95  Brazil 2010 11124.077
 \end{verbatim}
 \begin{alltt}
 \hlcom{# 2. Show the country-years where infant mortality > 100 per 1000 live birth}
@@ -205,19 +205,19 @@ Use subsetting techniques to do the following:
 \end{alltt}
 \begin{verbatim}
 ##                  country year     gdppc
-## 16               Andorra 2010  42952.72
-## 17               Andorra 2009  46401.09
-## 20  United Arab Emirates 2010  33885.93
+## 16               Andorra 2010  39639.39
+## 17               Andorra 2009  42701.45
+## 20  United Arab Emirates 2010  34341.91
 ## 43               Austria 2010  46593.39
 ## 48             Australia 2010  51801.05
-## 62              Barbados 2010  15854.36
+## 62              Barbados 2010  15901.43
 ## 67               Belgium 2010  44360.90
 ## 69               Belgium 2008  48561.36
-## 76               Bahrain 2008  23037.64
-## 77               Bahrain 2010  20545.75
-## 88     Brunei Darussalam 2008  37094.86
-## 89     Brunei Darussalam 2010  30882.40
-## 99          Bahamas, The 2008  23674.14
+## 76               Bahrain 2008  23043.03
+## 77               Bahrain 2010  20386.02
+## 88     Brunei Darussalam 2008  37799.28
+## 89     Brunei Darussalam 2010  31453.01
+## 99          Bahamas, The 2008  23657.37
 ## 113               Canada 2008  46400.44
 ## 114               Canada 2010  47463.63
 ## 124          Switzerland 2010  74277.12
@@ -234,8 +234,8 @@ Use subsetting techniques to do the following:
 ## 202              Finland 2009  47107.16
 ## 203              Finland 2010  46205.17
 ## 204              Finland 2008  53401.31
-## 214               France 2008  45415.81
-## 215               France 2010  40708.50
+## 214               France 2008  45413.07
+## 215               France 2010  40705.77
 ## 222       United Kingdom 2010  38362.22
 ## 245               Greece 2010  26863.01
 ## 246               Greece 2008  31700.49
@@ -253,9 +253,9 @@ Use subsetting techniques to do the following:
 ## 312                Japan 2008  37865.62
 ## 334          Korea, Rep. 2008  20474.89
 ## 336          Korea, Rep. 2010  22151.21
-## 337               Kuwait 2010  38580.41
-## 338               Kuwait 2008  54540.42
-## 339               Kuwait 2009  37158.42
+## 337               Kuwait 2010  37724.27
+## 338               Kuwait 2008  54478.55
+## 339               Kuwait 2009  36756.81
 ## 367            Lithuania 2008  14961.72
 ## 371           Luxembourg 2010 102863.10
 ## 423                Malta 2010  19694.08
@@ -265,13 +265,13 @@ Use subsetting techniques to do the following:
 ## 461               Norway 2010  87646.27
 ## 462               Norway 2008  96880.51
 ## 467          New Zealand 2010  33394.07
-## 472                 Oman 2010  20922.66
-## 474                 Oman 2008  23483.63
+## 472                 Oman 2010  19920.65
+## 474                 Oman 2008  22963.38
 ## 504             Portugal 2010  22539.99
-## 512                Qatar 2010  71510.19
-## 538         Saudi Arabia 2008  19714.40
-## 539         Saudi Arabia 2010  19326.58
-## 540         Saudi Arabia 2009  16013.28
+## 512                Qatar 2010  70870.23
+## 538         Saudi Arabia 2008  19436.86
+## 539         Saudi Arabia 2010  18753.98
+## 540         Saudi Arabia 2009  15655.08
 ## 550               Sweden 2008  55746.84
 ## 551               Sweden 2010  52076.43
 ## 552               Sweden 2009  46207.06
@@ -292,13 +292,13 @@ Use subsetting techniques to do the following:
 \end{alltt}
 \begin{verbatim}
 ##                 country year    gdppc
-## 76              Bahrain 2008 23037.64
-## 77              Bahrain 2010 20545.75
-## 88    Brunei Darussalam 2008 37094.86
-## 89    Brunei Darussalam 2010 30882.40
-## 538        Saudi Arabia 2008 19714.40
-## 539        Saudi Arabia 2010 19326.58
-## 540        Saudi Arabia 2009 16013.28
+## 76              Bahrain 2008 23043.03
+## 77              Bahrain 2010 20386.02
+## 88    Brunei Darussalam 2008 37799.28
+## 89    Brunei Darussalam 2010 31453.01
+## 538        Saudi Arabia 2008 19436.86
+## 539        Saudi Arabia 2010 18753.98
+## 540        Saudi Arabia 2009 15655.08
 ## 626 Trinidad and Tobago 2010 15494.70
 \end{verbatim}
 \end{kframe}
@@ -336,12 +336,12 @@ Hint: The options to do those things are in \verb`help(stargazer)`. I have worde
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -28.743 -17.413  -5.357  11.922  78.783 
+## -28.721 -17.361  -5.818  11.914  78.797 
 ## 
 ## Coefficients:
 ##               Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)  3.775e+01  1.713e+00   22.04   <2e-16 ***
-## gdppc       -7.406e-04  6.908e-05  -10.72   <2e-16 ***
+## (Intercept)  3.774e+01  1.712e+00   22.05   <2e-16 ***
+## gdppc       -7.423e-04  6.924e-05  -10.72   <2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -366,7 +366,7 @@ Hint: The options to do those things are in \verb`help(stargazer)`. I have worde
 \end{alltt}
 \end{kframe}
 % Table created by stargazer v.5.1 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Thu, Sep 17, 2015 - 11:55:39 AM
+% Date and time: Fri, Sep 18, 2015 - 04:21:14 PM
 \begin{table}[!htbp] \centering 
   \caption{} 
   \label{} 
@@ -381,15 +381,15 @@ Hint: The options to do those things are in \verb`help(stargazer)`. I have worde
  GDP per capita & $-$0.001$^{***}$ \\ 
   & (0.0001) \\ 
   & \\ 
- Constant & 37.753$^{***}$ \\ 
-  & (1.713) \\ 
+ Constant & 37.740$^{***}$ \\ 
+  & (1.712) \\ 
   & \\ 
 \hline \\[-1.8ex] 
 Observations & 251 \\ 
 R$^{2}$ & 0.316 \\ 
 Adjusted R$^{2}$ & 0.313 \\ 
-Residual Std. Error & 21.678 (df = 249) \\ 
-F Statistic & 114.948$^{***}$ (df = 1; 249) \\ 
+Residual Std. Error & 21.679 (df = 249) \\ 
+F Statistic & 114.931$^{***}$ (df = 1; 249) \\ 
 \hline 
 \hline \\[-1.8ex] 
 \textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
@@ -429,7 +429,7 @@ Note: the data you feed to \verb`lm()` may have missing data, so R has to modify
 \end{kframe}
 \end{knitrout}
 
-The calculated root mean square error is 21.6783991, the same as reported by R in \verb`summary(m1)`.
+The calculated root mean square error is 21.6789142, the same as reported by R in \verb`summary(m1)`.
 
 
 \end{document}
