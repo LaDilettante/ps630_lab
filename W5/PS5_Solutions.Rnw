@@ -1,0 +1,101 @@
+\documentclass[12pt,letter]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{color}
+\onehalfspacing
+
+
+
+\begin{document}
+
+\title{Pol Sci 630: Problem Set 5 - Regression Model Interpretation - Solutions}
+
+\author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
+
+\date{Grading Due Date: Friday, September 25th, 12.15 PM (Beginning of Lab)}
+ 
+\maketitle
+
+
+
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
+
+\bigskip
+
+\textbf{Use the following scheme to assign points: \\
+Nothing correct: 0 points \\ 
+25 \% or more correct: 1 point \\
+50 \% or more correct: 2 points \\
+75 \% or more correct: 3 points \\
+100 \% or more correct: 4 points \\
+Correct bonus problems can add points, but not beyond the maximum of 4 points}
+
+\bigskip
+
+\textbf{In order to make your text bold and red, you need to insert the following line at the beginning of the document:}
+
+\begin{verbatim} \usepackage{color} \end{verbatim}
+
+\\ \textbf{and the following lines above the solution of the specific task:}
+
+\begin{verbatim} \textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points} \end{verbatim}
+
+
+
+\section*{R Programming}
+
+\subsection*{Problem 1}
+
+<<results='show',tidy=TRUE>>=
+### a
+
+data(swiss)
+summary(swiss)
+
+### b
+
+lm1=lm(Education ~ Fertility + Agriculture + Examination
+       + Catholic + Infant.Mortality, data=swiss)
+
+summary(lm1)
+@
+
+\subparagraph{c)} In order to get full points on this problem, you need an interpretation for each of the 5 variables.
+
+The interpretation would look like this for Fertility:
+
+There is a negative linear relationship between Fertility and Education. For a 1-point increase in Fertility, we expect a 0.41-point decrease in Education, holding all other variables constant. The t-value is -4.758. This t-value implies a p-value of $2.43*10^{-5}$. This $p < 0.001$ corresponds to a type-1 error rate of $\alpha < 0.001$, meaning that the statistical relationship is significant at all common levels of statistical significance.
+
+The other variables are interpreted accordingly. Agriculture and Catholic are significant at all common levels of statistical significance as well. Please note that Examination is significant at a level of $p < 0.05$, $\alpha < 0.05$, and Infant.Mortality is not significant at common levels of statistical significance. The levels of significance can be found in the tutorial notes.
+
+
+
+\subsection*{Problem 3}
+
+\subsection{a)} 
+
+\subsection{b)} What can we say about causality? Nothing really. There are two primary reasons for this:
+
+First and foremost, linear regression does not per se tell us anything about causality - it primarily measures correlation between variables.
+
+Second, we do not have any theory regarding the relationship of Education on the other covariates and so we cannot make any causal claims that are grounded in theory. In particular, there might be a mutual influence between Education and the other variables that we regress it on. This phenomenon is called "endogeneity" and there are various ways to deal with it that you will learn about in the class.
+
+In short, we can't say anything about causality here.
+
+
+
+\section*{Probability Theory: Linear Model Interpretation}
+
+\subsection*{Problem 4}
+
+\subparagraph{a)} 
+
+\subparagraph{b)}
+
+
+
+\end{document}

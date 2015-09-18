@@ -1,0 +1,194 @@
+\documentclass[12pt,letter]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{color}
+\onehalfspacing
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\title{Pol Sci 630: Problem Set 5 - Regression Model Interpretation - Solutions}
+
+\author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
+
+\date{Grading Due Date: Friday, September 25th, 12.15 PM (Beginning of Lab)}
+ 
+\maketitle
+
+
+
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
+
+\bigskip
+
+\textbf{Use the following scheme to assign points: \\
+Nothing correct: 0 points \\ 
+25 \% or more correct: 1 point \\
+50 \% or more correct: 2 points \\
+75 \% or more correct: 3 points \\
+100 \% or more correct: 4 points \\
+Correct bonus problems can add points, but not beyond the maximum of 4 points}
+
+\bigskip
+
+\textbf{In order to make your text bold and red, you need to insert the following line at the beginning of the document:}
+
+\begin{verbatim} \usepackage{color} \end{verbatim}
+
+\\ \textbf{and the following lines above the solution of the specific task:}
+
+\begin{verbatim} \textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points} \end{verbatim}
+
+
+
+\section*{R Programming}
+
+\subsection*{Problem 1}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### a}
+
+\hlkwd{data}\hlstd{(swiss)}
+\hlkwd{summary}\hlstd{(swiss)}
+\end{alltt}
+\begin{verbatim}
+##    Fertility      Agriculture     Examination      Education    
+##  Min.   :35.00   Min.   : 1.20   Min.   : 3.00   Min.   : 1.00  
+##  1st Qu.:64.70   1st Qu.:35.90   1st Qu.:12.00   1st Qu.: 6.00  
+##  Median :70.40   Median :54.10   Median :16.00   Median : 8.00  
+##  Mean   :70.14   Mean   :50.66   Mean   :16.49   Mean   :10.98  
+##  3rd Qu.:78.45   3rd Qu.:67.65   3rd Qu.:22.00   3rd Qu.:12.00  
+##  Max.   :92.50   Max.   :89.70   Max.   :37.00   Max.   :53.00  
+##     Catholic       Infant.Mortality
+##  Min.   :  2.150   Min.   :10.80   
+##  1st Qu.:  5.195   1st Qu.:18.15   
+##  Median : 15.140   Median :20.00   
+##  Mean   : 41.144   Mean   :19.94   
+##  3rd Qu.: 93.125   3rd Qu.:21.70   
+##  Max.   :100.000   Max.   :26.60
+\end{verbatim}
+\begin{alltt}
+\hlcom{### b}
+
+\hlstd{lm1} \hlkwb{=} \hlkwd{lm}\hlstd{(Education} \hlopt{~} \hlstd{Fertility} \hlopt{+} \hlstd{Agriculture} \hlopt{+} \hlstd{Examination} \hlopt{+} \hlstd{Catholic} \hlopt{+} \hlstd{Infant.Mortality,}
+    \hlkwc{data} \hlstd{= swiss)}
+
+\hlkwd{summary}\hlstd{(lm1)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Education ~ Fertility + Agriculture + Examination + 
+##     Catholic + Infant.Mortality, data = swiss)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -11.3949  -2.3716  -0.2856   2.8108  11.2985 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)      32.74414    8.87888   3.688 0.000657 ***
+## Fertility        -0.40851    0.08585  -4.758 2.43e-05 ***
+## Agriculture      -0.16242    0.04488  -3.619 0.000804 ***
+## Examination       0.41980    0.16339   2.569 0.013922 *  
+## Catholic          0.10023    0.02150   4.663 3.29e-05 ***
+## Infant.Mortality  0.20408    0.28390   0.719 0.476305    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.907 on 41 degrees of freedom
+## Multiple R-squared:  0.7678,	Adjusted R-squared:  0.7395 
+## F-statistic: 27.12 on 5 and 41 DF,  p-value: 5.223e-12
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\subparagraph{c)} In order to get full points on this problem, you need an interpretation for each of the 5 variables.
+
+The interpretation would look like this for Fertility:
+
+There is a negative linear relationship between Fertility and Education. For a 1-point increase in Fertility, we expect a 0.41-point decrease in Education, holding all other variables constant. The t-value is -4.758. This t-value implies a p-value of $2.43*10^{-5}$. This $p < 0.001$ corresponds to a type-1 error rate of $\alpha < 0.001$, meaning that the statistical relationship is significant at all common levels of statistical significance.
+
+The other variables are interpreted accordingly. Agriculture and Catholic are significant at all common levels of statistical significance as well. Please note that Examination is significant at a level of $p < 0.05$, $\alpha < 0.05$, and Infant.Mortality is not significant at common levels of statistical significance. The levels of significance can be found in the tutorial notes.
+
+
+
+\subsection*{Problem 3}
+
+\subsection{a)} 
+
+\subsection{b)} What can we say about causality? Nothing really. There are two primary reasons for this:
+
+First and foremost, linear regression does not per se tell us anything about causality - it primarily measures correlation between variables.
+
+Second, we do not have any theory regarding the relationship of Education on the other covariates and so we cannot make any causal claims that are grounded in theory. In particular, there might be a mutual influence between Education and the other variables that we regress it on. This phenomenon is called "endogeneity" and there are various ways to deal with it that you will learn about in the class.
+
+In short, we can't say anything about causality here.
+
+
+
+\section*{Probability Theory: Linear Model Interpretation}
+
+\subsection*{Problem 4}
+
+\subparagraph{a)} 
+
+\subparagraph{b)}
+
+
+
+\end{document}
