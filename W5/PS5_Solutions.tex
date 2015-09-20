@@ -69,17 +69,11 @@
 
 
 
-\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was.}
 
 \bigskip
 
-\textbf{Use the following scheme to assign points: \\
-Nothing correct: 0 points \\ 
-25 \% or more correct: 1 point \\
-50 \% or more correct: 2 points \\
-75 \% or more correct: 3 points \\
-100 \% or more correct: 4 points \\
-Correct bonus problems can add points, but not beyond the maximum of 4 points}
+\textbf{Use the following scheme to assign points: For correctly solved problems, assign the point value that is stated in the problem (see original problem set for exact point values). For correctly solved bonus problems, add that value to the total score for a problem but do not go above 4 points per problem. If there are mistakes in any problem, subtract points according to the extent of the mistake. If you subtract points, explain why.}
 
 \bigskip
 
@@ -163,21 +157,146 @@ The interpretation would look like this for Fertility:
 
 There is a negative linear relationship between Fertility and Education. For a 1-point increase in Fertility, we expect a 0.41-point decrease in Education, holding all other variables constant. The t-value is -4.758. This t-value implies a p-value of $2.43*10^{-5}$. This $p < 0.001$ corresponds to a type-1 error rate of $\alpha < 0.001$, meaning that the statistical relationship is significant at all common levels of statistical significance.
 
-The other variables are interpreted accordingly. Agriculture and Catholic are significant at all common levels of statistical significance as well. Please note that Examination is significant at a level of $p < 0.05$, $\alpha < 0.05$, and Infant.Mortality is not significant at common levels of statistical significance. The levels of significance can be found in the tutorial notes.
+The other variables are interpreted accordingly. Agriculture and Catholic are significant at all common levels of statistical significance as well. Please note that Examination is significant at a level of $p < 0.05$, $\alpha < 0.05$, and Infant.Mortality is not significant at common levels of statistical significance.
+
+The R-squared statistic shows us that our model explains 76.78 percent (multiple R-squared) or 73.95 percent (adjusted R-squared) of the variation in the dependent variable --- depending on whether we are penalized for introducing further variables into our model.
 
 
 
 \subsection*{Problem 3}
 
-\subsection{a)} 
+\subparagraph{a)} In this task you have to formulate a hypothesis regarding the relationship of several political and economic factors and the level of FDI inflows. For example, you could claim that economic crises generally lead to a lower inflow of foreign investment because countries that experience crises are less attractive to investors. In a well-known paper in International Organization, Nathan Jensen made the claim that democratic institutions can make more credible commitments to upholding property rights, which means that foreign investors trust democratic governments more than authoritarian governments. Regardless of which variable you choose, your hypothesis should look similar to this one:
 
-\subsection{b)} What can we say about causality? Nothing really. There are two primary reasons for this:
+Hypothesis: If a country experiences an economic crisis, it will experience less foreign direct investment (as percentage of GDP) than a country that does not experience an economic crisis.
 
-First and foremost, linear regression does not per se tell us anything about causality - it primarily measures correlation between variables.
+Or, alternatively:
 
-Second, we do not have any theory regarding the relationship of Education on the other covariates and so we cannot make any causal claims that are grounded in theory. In particular, there might be a mutual influence between Education and the other variables that we regress it on. This phenomenon is called "endogeneity" and there are various ways to deal with it that you will learn about in the class.
+Hypothesis: Countries with higher levels of democracy experience more foreign direct investment (as percentage of GDP) than coutnries with lower levels of democracy.
 
-In short, we can't say anything about causality here.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### b}
+\hlkwd{setwd}\hlstd{(}\hlstr{"C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/W5"}\hlstd{)}
+\hlkwd{library}\hlstd{(foreign)}
+\hlstd{LDC} \hlkwb{=} \hlkwd{read.dta}\hlstd{(}\hlstr{"LDC_IO_replication.dta"}\hlstd{)}
+
+\hlstd{lm_fdi} \hlkwb{=} \hlkwd{lm}\hlstd{(fdignp} \hlopt{~} \hlstd{l1polity} \hlopt{+} \hlstd{l1signed} \hlopt{+} \hlstd{l1office} \hlopt{+} \hlstd{l1gdp_pc} \hlopt{+} \hlstd{l1lnpop} \hlopt{+} \hlstd{l1ecris2} \hlopt{+}
+    \hlstd{l1bpc1} \hlopt{+} \hlstd{l1avnewtar,} \hlkwc{data} \hlstd{= LDC)}
+\hlkwd{summary}\hlstd{(lm_fdi)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = fdignp ~ l1polity + l1signed + l1office + l1gdp_pc + 
+##     l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar, data = LDC)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -17.943  -1.537  -0.724   0.358 181.394 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  1.051e+01  1.542e+00   6.814 1.33e-11 ***
+## l1polity     3.976e-02  2.316e-02   1.717   0.0862 .  
+## l1signed    -4.802e-01  3.347e-01  -1.435   0.1516    
+## l1office    -1.222e-02  1.948e-02  -0.628   0.5304    
+## l1gdp_pc    -2.231e-05  9.383e-05  -0.238   0.8121    
+## l1lnpop     -4.945e-01  9.033e-02  -5.474 5.07e-08 ***
+## l1ecris2     8.480e-01  4.806e-01   1.765   0.0778 .  
+## l1bpc1      -2.411e-02  2.956e-01  -0.082   0.9350    
+## l1avnewtar  -3.311e-02  1.482e-02  -2.234   0.0256 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 5.665 on 1649 degrees of freedom
+##   (3712 observations deleted due to missingness)
+## Multiple R-squared:  0.0272,	Adjusted R-squared:  0.02248 
+## F-statistic: 5.764 on 8 and 1649 DF,  p-value: 2.883e-07
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Let us interpret our findings for the two hypotheses above:
+
+Regarding \textit{l1polity}: For a 1-point increase in the Polity IV Score, we would expect a 0.0397 (0.04) increase in the level of foreign direct investment as percentage of GDP, holding all other variable constant. The associated p-value of 0.0862 means that this relationship is statistically significant at p < 0.1 (\alpha < 0.1) but not at p < 0.05 (\alpha < 0.05). This means that there is some support for the hypothesis that democracy leads to higher levels of foreign investment, although the evidence is not as strong as we might have expected.
+
+Regarding \textit{l1ecris2}: If a country experiences an economic crisis, we would expect a 0.848 (0.85) increase in the level of foreign direct investment as percentage of GDP, holding all other variable constant. The p-value of 0.0778 means that this relationship is statistically significant at p < 0.1 (\alpha < 0.1) but not at p < 0.05 (\alpha < 0.05). This means that the empirical evidence speaks against the hypothesis that there is a negative effect of economic crises on foreign direct investment. This result may appear counter intuitive and could be the result of omitted variable bias or endogeneity.
+
+The R-squared statistic shows us that our model explains 2.72 percent (multiple R-squared) or 2.25 percent (adjusted R-squared) of the variation in the dependent variable --- depending on whether we are penalized for introducing further variables into our model.
+
+Finally, we show the effect of the Polity IV Score on FDI graphically:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### We create a new dataframe with the average values for every variable and}
+\hlcom{### vary Polity IV}
+\hlstd{nd} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{l1polity} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlopt{-}\hlnum{10}\hlstd{,} \hlnum{10}\hlstd{,} \hlkwc{by} \hlstd{=} \hlnum{1}\hlstd{),} \hlkwc{l1signed} \hlstd{=} \hlkwd{rep}\hlstd{(}\hlnum{0.1511}\hlstd{,} \hlnum{21}\hlstd{),}
+    \hlkwc{l1office} \hlstd{=} \hlkwd{rep}\hlstd{(}\hlnum{8.431}\hlstd{,} \hlnum{21}\hlstd{),} \hlkwc{l1gdp_pc} \hlstd{=} \hlkwd{rep}\hlstd{(}\hlnum{2888}\hlstd{,} \hlnum{21}\hlstd{),} \hlkwc{l1lnpop} \hlstd{=} \hlkwd{rep}\hlstd{(}\hlnum{15.1}\hlstd{,}
+        \hlnum{21}\hlstd{),} \hlkwc{l1ecris2} \hlstd{=} \hlkwd{rep}\hlstd{(}\hlnum{0.0641}\hlstd{,} \hlnum{21}\hlstd{),} \hlkwc{l1bpc1} \hlstd{=} \hlkwd{rep}\hlstd{(}\hlnum{0.5909}\hlstd{,} \hlnum{21}\hlstd{),} \hlkwc{l1avnewtar} \hlstd{=} \hlkwd{rep}\hlstd{(}\hlnum{14.91}\hlstd{,}
+        \hlnum{21}\hlstd{))}
+
+\hlstd{pred.p1} \hlkwb{<-} \hlkwd{predict}\hlstd{(lm_fdi,} \hlkwc{type} \hlstd{=} \hlstr{"response"}\hlstd{,} \hlkwc{se.fit} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{newdata} \hlstd{= nd)}
+
+\hlstd{pred.table} \hlkwb{<-} \hlkwd{cbind}\hlstd{(pred.p1}\hlopt{$}\hlstd{fit, pred.p1}\hlopt{$}\hlstd{se.fit)}
+
+\hlstd{fit} \hlkwb{<-} \hlstd{pred.p1}\hlopt{$}\hlstd{fit}
+\hlstd{low} \hlkwb{<-} \hlstd{pred.p1}\hlopt{$}\hlstd{fit} \hlopt{-} \hlnum{2} \hlopt{*} \hlstd{pred.p1}\hlopt{$}\hlstd{se.fit}
+\hlstd{high} \hlkwb{<-} \hlstd{pred.p1}\hlopt{$}\hlstd{fit} \hlopt{+} \hlnum{2} \hlopt{*} \hlstd{pred.p1}\hlopt{$}\hlstd{se.fit}
+\hlstd{cis} \hlkwb{<-} \hlkwd{cbind}\hlstd{(fit, low, high)}
+
+\hlstd{cis}  \hlcom{### To extract the values}
+\end{alltt}
+\begin{verbatim}
+##         fit      low     high
+## 1  1.951736 1.280473 2.622999
+## 2  1.991497 1.355123 2.627871
+## 3  2.031258 1.428231 2.634285
+## 4  2.071019 1.499528 2.642509
+## 5  2.110780 1.568698 2.652861
+## 6  2.150540 1.635376 2.665705
+## 7  2.190301 1.699152 2.681450
+## 8  2.230062 1.759582 2.700542
+## 9  2.269823 1.816208 2.723438
+## 10 2.309584 1.868594 2.750574
+## 11 2.349345 1.916368 2.782322
+## 12 2.389106 1.959272 2.818939
+## 13 2.428867 1.997201 2.860532
+## 14 2.468627 2.030216 2.907039
+## 15 2.508388 2.058538 2.958239
+## 16 2.548149 2.082513 3.013786
+## 17 2.587910 2.102565 3.073255
+## 18 2.627671 2.119150 3.136192
+## 19 2.667432 2.132719 3.202144
+## 20 2.707193 2.143692 3.270693
+## 21 2.746954 2.152446 3.341461
+\end{verbatim}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(pred.p1}\hlopt{$}\hlstd{fit,} \hlkwc{type} \hlstd{=} \hlstr{"l"}\hlstd{,} \hlkwc{ylim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{4}\hlstd{),} \hlkwc{main} \hlstd{=} \hlstr{"Polity IV Score and FDI"}\hlstd{,}
+    \hlkwc{xlab} \hlstd{=} \hlstr{"Polity IV Score"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"FDI (Percentage of GDP)"}\hlstd{,} \hlkwc{axes} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\hlkwd{axis}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{at} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{21}\hlstd{),} \hlkwc{labels} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlopt{-}\hlnum{10}\hlstd{,} \hlnum{10}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlkwd{axis}\hlstd{(}\hlnum{2}\hlstd{,} \hlkwc{at} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{4}\hlstd{,} \hlkwc{by} \hlstd{=} \hlnum{0.5}\hlstd{),} \hlkwc{labels} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{4}\hlstd{,} \hlkwc{by} \hlstd{=} \hlnum{0.5}\hlstd{))}
+\hlkwd{matlines}\hlstd{(cis[,} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{3}\hlstd{)],} \hlkwc{lty} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{"black"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-3-1} 
+
+\end{knitrout}
+
+
+
+\subsection*{Problem 3}
+
+\subsection{a)} If we do not include polynomials of higher order, OLS regression can adequately model linear relationships between one dependent variable (response variable) and multiple independent variables (predictor variables). The reason for this is that our model assumes that for every independent variable there is only one slope coefficient that is constant for all values of that independent variable.
+
+\subsection{b)} A probabilistic linear relationship means that two variables vary with each other in a way that knowing one of them (let's say X) allows us to make relatively precise predictions about the average of the other variable (let's say Y) --- but not about its exact values. A probabilistic relationship therefore means that there are other factors that cause some variation in Y and that cannot be explained through X, even though X is systematically related to Y.
+
+A deterministic linear relationship means that two variables vary with each other in a way that knowing one of them (X) allows us to make precise predictions about the exact value of the other variable (Y). A deterministic relationship therefore means that X is the sole factor that influences the value of Y.
+
+OLS can model both relationships. The difference is that in probabilistic relationships the error term will correct for the difference in prediction and true value. Although most relationships modeled by OLS are probabilistic, OLS can also display deterministic relationships. If a relationship is truly deterministic, then the error term would be zero but the linear model would still be a meaningful representation of the underlying relationship.
+
+\subsection{c)} OLS regression does not per se tell us anything about causality. OLS regression primarily measures linear relationships between two variables and can give us an answer to the question how to variables are correlated with each other. However, without a strong theory, OLS does not allow us to make statements regarding causality. There could be reverse causality, meaning that the response variable in our model has a causal effect on the predictor variable. There could be endogeneity, meaning that there is mutual causal influence of response and predictor variables. Finally, there could be omitted variable bias, meaning that a third variable influences both the predictor and the response variable.
 
 
 

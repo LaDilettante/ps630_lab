@@ -13,6 +13,7 @@ output: pdf_document
 2. Hypothesis testing
 3. Multiple Regression
 4. Graphical Representation
+5. Tips for your final paper
 
 
 
@@ -67,6 +68,8 @@ There is a positive linear relationship between Ozone and Solar.R. For a 1-point
 
 Furthermore (already going into the next topic): The associated t-value is 3.880. This t-value imples a p-value of 0.0002. This p < 0.001 corresponds to a type-1 error rate of alpha < 0.001, meaning that the relationship is significant at all common levels of statistical significance.
 
+How do we interpret the R-squared statistic? Our model explains a proportion of the total variation in the dependent variable. The R-squared statistic returns this proportion. How well does our model do?
+
 
 
 # 2. Hypothesis testing
@@ -92,7 +95,7 @@ For information on the meaning of the variables see "LDCcodebook.pdf".
 An important condition for using OLS is that the predictor variables are not subject to multicollinearity. Let's check multicollinearity. We need another package for this:
 install.packages("car")
 
-```{r}
+```{r, warning=FALSE}
 library(car)
 
 LDC2=as.data.frame(LDC[,c("l1polity","l1signed","l1office","l1gdp_pc","l1lnpop","l1ecris2","l1bpc1","l1avnewtar")])
@@ -113,7 +116,7 @@ simple=lm(newtar~l1polity, data=LDC)
 summary(simple)
 ```
 
-What can we conclude from these statistics? What can we say about the hypothesis that there is a linear relationship between "l1polity" and "newtar"?
+What can we conclude from these statistics? What can we say about the hypothesis that there is a linear relationship between "l1polity" and "newtar"? What is the total variation that is explained by our model?
 
 If there's too much information in this type of summary, try another one. We need another package:
 install.packages("arm")
@@ -140,6 +143,8 @@ The most important reasons to do so are:
 main=lm(newtar ~ l1polity + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar, data = LDC)
 summary(main)
 ```
+
+How well does our model do compared to the simple linear regression? Do we observe an improvement in the total variation that is explained by our model?
 
 Again, it would be possible to reduce the amount of information with another command:
 

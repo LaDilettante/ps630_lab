@@ -22,17 +22,11 @@
 
 
 
-\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was.}
 
 \bigskip
 
-\textbf{Use the following scheme to assign points: \\
-Nothing correct: 0 points \\ 
-25 \% or more correct: 1 point \\
-50 \% or more correct: 2 points \\
-75 \% or more correct: 3 points \\
-100 \% or more correct: 4 points \\
-Correct bonus problems can add points, but not beyond the maximum of 4 points}
+\textbf{Use the following scheme to assign points: For correctly solved problems, assign the point value that is stated in the problem (see original problem set for exact point values). For correctly solved bonus problems, add that value to the total score for a problem but do not go above 4 points per problem. If there are mistakes in any problem, subtract points according to the extent of the mistake. If you subtract points, explain why.}
 
 \bigskip
 
@@ -70,21 +64,77 @@ The interpretation would look like this for Fertility:
 
 There is a negative linear relationship between Fertility and Education. For a 1-point increase in Fertility, we expect a 0.41-point decrease in Education, holding all other variables constant. The t-value is -4.758. This t-value implies a p-value of $2.43*10^{-5}$. This $p < 0.001$ corresponds to a type-1 error rate of $\alpha < 0.001$, meaning that the statistical relationship is significant at all common levels of statistical significance.
 
-The other variables are interpreted accordingly. Agriculture and Catholic are significant at all common levels of statistical significance as well. Please note that Examination is significant at a level of $p < 0.05$, $\alpha < 0.05$, and Infant.Mortality is not significant at common levels of statistical significance. The levels of significance can be found in the tutorial notes.
+The other variables are interpreted accordingly. Agriculture and Catholic are significant at all common levels of statistical significance as well. Please note that Examination is significant at a level of $p < 0.05$, $\alpha < 0.05$, and Infant.Mortality is not significant at common levels of statistical significance.
+
+The R-squared statistic shows us that our model explains 76.78 percent (multiple R-squared) or 73.95 percent (adjusted R-squared) of the variation in the dependent variable --- depending on whether we are penalized for introducing further variables into our model.
 
 
 
 \subsection*{Problem 3}
 
-\subsection{a)} 
+\subparagraph{a)} In this task you have to formulate a hypothesis regarding the relationship of several political and economic factors and the level of FDI inflows. For example, you could claim that economic crises generally lead to a lower inflow of foreign investment because countries that experience crises are less attractive to investors. In a well-known paper in International Organization, Nathan Jensen made the claim that democratic institutions can make more credible commitments to upholding property rights, which means that foreign investors trust democratic governments more than authoritarian governments. Regardless of which variable you choose, your hypothesis should look similar to this one:
 
-\subsection{b)} What can we say about causality? Nothing really. There are two primary reasons for this:
+Hypothesis: If a country experiences an economic crisis, it will experience less foreign direct investment (as percentage of GDP) than a country that does not experience an economic crisis.
 
-First and foremost, linear regression does not per se tell us anything about causality - it primarily measures correlation between variables.
+Or, alternatively:
 
-Second, we do not have any theory regarding the relationship of Education on the other covariates and so we cannot make any causal claims that are grounded in theory. In particular, there might be a mutual influence between Education and the other variables that we regress it on. This phenomenon is called "endogeneity" and there are various ways to deal with it that you will learn about in the class.
+Hypothesis: Countries with higher levels of democracy experience more foreign direct investment (as percentage of GDP) than coutnries with lower levels of democracy.
 
-In short, we can't say anything about causality here.
+<<results='show',tidy=TRUE>>=
+### b
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/W5')
+library(foreign)
+LDC=read.dta("LDC_IO_replication.dta")
+
+lm_fdi=lm(fdignp ~ l1polity + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar, data = LDC)
+summary(lm_fdi)
+@
+
+Let us interpret our findings for the two hypotheses above:
+
+Regarding \textit{l1polity}: For a 1-point increase in the Polity IV Score, we would expect a 0.0397 (0.04) increase in the level of foreign direct investment as percentage of GDP, holding all other variable constant. The associated p-value of 0.0862 means that this relationship is statistically significant at p < 0.1 (\alpha < 0.1) but not at p < 0.05 (\alpha < 0.05). This means that there is some support for the hypothesis that democracy leads to higher levels of foreign investment, although the evidence is not as strong as we might have expected.
+
+Regarding \textit{l1ecris2}: If a country experiences an economic crisis, we would expect a 0.848 (0.85) increase in the level of foreign direct investment as percentage of GDP, holding all other variable constant. The p-value of 0.0778 means that this relationship is statistically significant at p < 0.1 (\alpha < 0.1) but not at p < 0.05 (\alpha < 0.05). This means that the empirical evidence speaks against the hypothesis that there is a negative effect of economic crises on foreign direct investment. This result may appear counter intuitive and could be the result of omitted variable bias or endogeneity.
+
+The R-squared statistic shows us that our model explains 2.72 percent (multiple R-squared) or 2.25 percent (adjusted R-squared) of the variation in the dependent variable --- depending on whether we are penalized for introducing further variables into our model.
+
+Finally, we show the effect of the Polity IV Score on FDI graphically:
+
+<<results='show',tidy=TRUE>>=
+### We create a new dataframe with the average values for every variable and vary Polity IV
+nd <- data.frame(l1polity=seq(-10,10,by=1), l1signed=rep(0.1511,21), l1office=rep(8.431,21), l1gdp_pc=rep(2888,21), l1lnpop=rep(15.10,21), l1ecris2=rep(0.0641,21), l1bpc1=rep(0.5909,21), l1avnewtar=rep(14.91,21))
+
+pred.p1 <- predict(lm_fdi, type="response", se.fit=TRUE, newdata=nd)
+
+pred.table <- cbind(pred.p1$fit, pred.p1$se.fit)
+
+fit <- pred.p1$fit
+low <- pred.p1$fit - 2*pred.p1$se.fit
+high <- pred.p1$fit + 2*pred.p1$se.fit
+cis <- cbind(fit, low, high)
+
+cis ### To extract the values
+
+plot(pred.p1$fit, type="l", ylim=c(0,4), main="Polity IV Score and FDI", 
+     xlab="Polity IV Score", ylab="FDI (Percentage of GDP)", axes=FALSE)
+axis(1, at=seq(1,21), labels=seq(-10,10,1))
+axis(2, at=seq(0,4,by=0.5), labels=seq(0,4,by=0.5))
+matlines(cis[,c(2,3)], lty=2, col="black")
+@
+
+
+
+\subsection*{Problem 3}
+
+\subsection{a)} If we do not include polynomials of higher order, OLS regression can adequately model linear relationships between one dependent variable (response variable) and multiple independent variables (predictor variables). The reason for this is that our model assumes that for every independent variable there is only one slope coefficient that is constant for all values of that independent variable.
+
+\subsection{b)} A probabilistic linear relationship means that two variables vary with each other in a way that knowing one of them (let's say X) allows us to make relatively precise predictions about the average of the other variable (let's say Y) --- but not about its exact values. A probabilistic relationship therefore means that there are other factors that cause some variation in Y and that cannot be explained through X, even though X is systematically related to Y.
+
+A deterministic linear relationship means that two variables vary with each other in a way that knowing one of them (X) allows us to make precise predictions about the exact value of the other variable (Y). A deterministic relationship therefore means that X is the sole factor that influences the value of Y.
+
+OLS can model both relationships. The difference is that in probabilistic relationships the error term will correct for the difference in prediction and true value. Although most relationships modeled by OLS are probabilistic, OLS can also display deterministic relationships. If a relationship is truly deterministic, then the error term would be zero but the linear model would still be a meaningful representation of the underlying relationship.
+
+\subsection{c)} OLS regression does not per se tell us anything about causality. OLS regression primarily measures linear relationships between two variables and can give us an answer to the question how to variables are correlated with each other. However, without a strong theory, OLS does not allow us to make statements regarding causality. There could be reverse causality, meaning that the response variable in our model has a causal effect on the predictor variable. There could be endogeneity, meaning that there is mutual causal influence of response and predictor variables. Finally, there could be omitted variable bias, meaning that a third variable influences both the predictor and the response variable.
 
 
 
@@ -92,7 +142,7 @@ In short, we can't say anything about causality here.
 
 \subsection*{Problem 4}
 
-\subparagraph{a)} 
+\subparagraph{a)}
 
 \subparagraph{b)}
 

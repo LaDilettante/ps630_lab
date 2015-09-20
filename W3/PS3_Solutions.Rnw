@@ -16,30 +16,17 @@
 
 \author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
-<<<<<<< HEAD
 \date{Grading Due Date: Friday, September 18th, 12.15 PM (Beginning of Lab)}
- 
-=======
-\date{Grading Due Date: Friday, September 25th, 12.15 PM (Beginning of Lab)}
 
->>>>>>> origin/master
+
+
 \maketitle
 
 \textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was.}
 
 \bigskip
 
-<<<<<<< HEAD
 \textbf{Use the following scheme to assign points: For correctly solved problems, assign the point value that is stated in the problem (see original problem set for exact point values). For correctly solved bonus problems, add that value to the total score for a problem but do not go above 4 points per problem. If there are mistakes in any problem, subtract points according to the extent of the mistake. If you subtract points, explain why.}
-=======
-\textbf{Use the following scheme to assign points: \\
-Nothing correct: 0 points \\
-25 \% or more correct: 1 point \\
-50 \% or more correct: 2 points \\
-75 \% or more correct: 3 points \\
-100 \% or more correct: 4 points \\
-Correct bonus problems can add points, but not beyond the maximum of 4 points}
->>>>>>> origin/master
 
 \bigskip
 

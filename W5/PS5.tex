@@ -35,9 +35,11 @@
 
 \paragraph{Do the following in R:}
 
-\subparagraph{a)} (1 point) Load the \textit{swiss} dataset in R via the command \textit{data(swiss)}. According to the documentation this is data on "Standardized fertility measure and socio-economic indicators for each of 47 French-speaking provinces of Switzerland at about 1888". Display the summary statistics for every variable in the dataset. We are interested in how the level of "Education" is related to the other variables. For this purpose, use the \textit{lm} (linear model) function to estimate a regression of \textit{Education} on all other variables in the dataset. Note that R is case-sensitive.
+\subparagraph{a)} (1 point) Load the \textit{swiss} dataset in R via the command \textit{data(swiss)}. According to the documentation this is data on "Standardized fertility measure and socio-economic indicators for each of 47 French-speaking provinces of Switzerland at about 1888". Display the summary statistics for every variable in the dataset.
 
-\subparagraph{b)} (3 points) Interpret the results for every variable in the linear model. Be specific about marginal effects and the meaning of p-values. State at which levels of significance each estimated relationship is statistically significant.
+We are interested in how the level of "Education" is related to the other variables. For this purpose, use the \textit{lm} (linear model) function to estimate a regression of \textit{Education} on all other variables in the dataset.
+
+\subparagraph{b)} (3 points) Interpret the results for every variable in the linear model. Be specific about marginal effects and the meaning of p-values. State at which levels of significance each estimated relationship is statistically significant. Then, interpret the R-squared statistic.
 
 
 
@@ -45,48 +47,43 @@
 
 \paragraph{Do the following in R:}
 
-\subparagraph{a)} (2 points) Load the \textit{LDC\_IO\_replication} dataset that was introduced in the tutorial. We are interested in the relationship between \textit{fdignp}, which is defined as "Net change in foreign investment in the reporting country", and other variables in the dataset. This variable shows changes in terms of investment coming from other countries. Which political and economic factors may influence foreign investment? Consider all the variables that we used in the tutorial when we predicted the level of trade barriers. Choose one of them \textit{before} running any model and explain which kind of relationship --- positive, negative, or no influence --- you would expect. Formulate a succinct hypothesis that you can test empirically.
+\subparagraph{a)} (2 points) Load the \textit{LDC\_IO\_replication} dataset that was introduced in the tutorial. We are interested in the relationship between \textit{fdignp}, which is defined as "Net change in foreign investment in the reporting country", and other variables in the dataset. This variable shows changes in terms of investment coming from other countries.
 
-\subparagraph{b)} (2 points) Run the regression with the variable you chose as the main predictor variable (independent variable). Include all other variables that we used previously as control variables. Interpret the results with respect to your variable. Then, graphically show the marginal effect of your main predictor variable when you hold all other variables at their mean value and include confidence intervals in your graphic.
+Which political and economic factors may influence foreign investment and in which way? Consider all the variables that we used in the tutorial when we predicted the level of trade barriers. Choose one of them \textit{before} running any model and explain which kind of relationship --- positive, negative, or no influence --- you would expect. Make a succinct claim and formulate a hypothesis that you can test empirically.
+
+\subparagraph{b)} (2 points) Run a linear regression with the variable you chose as the main predictor variable (independent variable). Include all other variables that we used previously as control variables.
+
+Then, interpret the results with respect to your variable and the R-squared statistic. Finally, show the marginal effect of your main predictor variable when you hold all other variables at their mean value graphically. Include confidence intervals in your graphic.
 
 
 
-\section*{Regression Model Interpretation Issues}
+\pagebreak
+
+\section*{Regression Models Interpretation Questions}
 
 \subsection*{Problem 3}
 
 \paragraph{Answer the following questions.}
 
-\subparagraph{a)} (1 point) What types of relationships between variables can be adequately modeled by OLS regression?
+\subparagraph{a)} (1 point) What types of relationships between variables can be adequately modeled by OLS regression without including polynomials of higher order than one (i.e. without including squared terms etc.)?
 
-\subparagraph{b)} (1 point) What is a probabilistic relationship and how is it different than a deterministic relationship? Which type of relationship can be modeled by OLS?
+\subparagraph{b)} (1 point) What is a probabilistic (linear) relationship and how is it different than a deterministic (linear) relationship? Which types of relationship can be modeled by OLS?
 
-\subparagraph{c)} (2 points) What can you say about causality with respect to the statistical relationships identified by OLS regression?
+\subparagraph{c)} (2 points) What can one generally say about causality with respect to the statistical relationships identified by OLS regression?
 
 
 
-\section*{Statistical Theory: Regression Model Estimation}
+\section*{Statistical Theory: Regression Models}
 
 \subsection*{Problem 4}
 
 \paragraph{Do the following problems. Show every step.}
 
-\subparagraph{a)} (2 points) Assume that you have the following linear model
+\subparagraph{a)} You have empirical data on two variables, X and Y. You estimate two OLS regressions: \^{Y} $= a + bx + \epsilon$ \ and \^{X} $= a' + b'y + \epsilon$. Is it true or false that the slopes of b and b' will always have the same sign (i.e. positive, negative, or zero)? Carefully explain your answer and show it mathematically.
 
-$Y = 10 + 5*X_1 + (-2)*X_2 + (-1)*X_1*X_2 + \epsilon$
+Hint: Consider the definition of b and b'.
 
-Calculate the first derivative of Y with respect to X1 and X2. Then plot the effect that $X_1$ has on $Y$ at different levels of $X_2$. Assume that $X2 \in [-10,10]$. You may use R to plot the effect of $X_1$ on $Y$.
-
-\subparagraph{b)} (2 points) Assume that you have two sets of points from the data on which the model was estimated:
-
-\begin{enumerate}
-	\item $Y = 16, X_1=6, X_2=3$
-	\item $Y = 17, X_1=7, X_2=3$
-\end{enumerate}
-
-Please plug $X_1$ and $X_2$ into the model and write down the value of Y that you obtain.
-
-Is any of the two sets of points inconsistent with the linear model estimated above? Explain your answer carefully.
+\subparagraph{b)} Following the task above, is it true or false that the intercepts a and a' will always have the same sign (i.e. positive, negative, or zero)? Carefully explain your answer and show it mathematically.
 
 
 
