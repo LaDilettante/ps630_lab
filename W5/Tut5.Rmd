@@ -222,3 +222,4 @@ matlines(cis[,c(2,3)], lty=2, col="black")
 3. Try to find a comprehensive dataset in your area of interest.
 4. Work on it throughout the semester and try to include new things that you've learned.
 5. Make sure that you use all the tools you've learned: interpret your findings carefully and visualize them.
+6. Annotate your code extensively and explain what you did.

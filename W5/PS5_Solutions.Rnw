@@ -40,6 +40,8 @@
 
 
 
+\pagebreak
+
 \section*{R Programming}
 
 \subsection*{Problem 1}
@@ -60,19 +62,19 @@ summary(lm1)
 
 \subparagraph{c)} In order to get full points on this problem, you need an interpretation for each of the 5 variables.
 
-The interpretation would look like this for Fertility:
+The interpretation would look like this for \textit{Fertility}:
 
-There is a negative linear relationship between Fertility and Education. For a 1-point increase in Fertility, we expect a 0.41-point decrease in Education, holding all other variables constant. The t-value is -4.758. This t-value implies a p-value of $2.43*10^{-5}$. This $p < 0.001$ corresponds to a type-1 error rate of $\alpha < 0.001$, meaning that the statistical relationship is significant at all common levels of statistical significance.
+There is a negative linear relationship between \textit{Fertility} and \textit{Education}. For a 1-point increase in Fertility, we expect a 0.41-point decrease in Education, holding all other variables constant. The t-value is -4.758. This t-value implies a p-value of $2.43*10^{-5}$. This $p < 0.001$ corresponds to a type-1 error rate of $\alpha < 0.001$, meaning that the statistical relationship is significant at all common levels of statistical significance.
 
-The other variables are interpreted accordingly. Agriculture and Catholic are significant at all common levels of statistical significance as well. Please note that Examination is significant at a level of $p < 0.05$, $\alpha < 0.05$, and Infant.Mortality is not significant at common levels of statistical significance.
+The other variables are interpreted accordingly. \textit{Agriculture} and \textit{Catholic} are significant at all common levels of statistical significance as well. Please note that \textit{Examination} is significant at a level of $p < 0.05$, $\alpha < 0.05$, and \textit{Infant.Mortality} is not significant at common levels of statistical significance.
 
-The R-squared statistic shows us that our model explains 76.78 percent (multiple R-squared) or 73.95 percent (adjusted R-squared) of the variation in the dependent variable --- depending on whether we are penalized for introducing further variables into our model.
+The R-squared statistic shows us that our model explains 76.78 percent (multiple R-squared) or 73.95 percent (adjusted R-squared) of the variation in the dependent variable --- depending on whether one is penalized for introducing further variables into the model.
 
 
 
 \subsection*{Problem 3}
 
-\subparagraph{a)} In this task you have to formulate a hypothesis regarding the relationship of several political and economic factors and the level of FDI inflows. For example, you could claim that economic crises generally lead to a lower inflow of foreign investment because countries that experience crises are less attractive to investors. In a well-known paper in International Organization, Nathan Jensen made the claim that democratic institutions can make more credible commitments to upholding property rights, which means that foreign investors trust democratic governments more than authoritarian governments. Regardless of which variable you choose, your hypothesis should look similar to this one:
+\paragraph{a)} In this task you have to formulate a hypothesis regarding the relationship of several political and economic factors and the level of FDI inflows. For example, you could claim that economic crises generally lead to a lower inflow of foreign investment because countries that experience crises are less attractive to investors. In a well-known paper in International Organization, Nathan Jensen made the claim that democratic institutions can make more credible commitments to upholding property rights, which means that foreign investors trust democratic governments more than authoritarian governments. Regardless of which variable you choose, your hypothesis should look similar to this one:
 
 Hypothesis: If a country experiences an economic crisis, it will experience less foreign direct investment (as percentage of GDP) than a country that does not experience an economic crisis.
 
@@ -92,11 +94,11 @@ summary(lm_fdi)
 
 Let us interpret our findings for the two hypotheses above:
 
-Regarding \textit{l1polity}: For a 1-point increase in the Polity IV Score, we would expect a 0.0397 (0.04) increase in the level of foreign direct investment as percentage of GDP, holding all other variable constant. The associated p-value of 0.0862 means that this relationship is statistically significant at p < 0.1 (\alpha < 0.1) but not at p < 0.05 (\alpha < 0.05). This means that there is some support for the hypothesis that democracy leads to higher levels of foreign investment, although the evidence is not as strong as we might have expected.
+Regarding \textit{l1polity}: For a 1-point increase in the Polity IV Score, we would expect a 0.0397 (0.04) increase in the level of foreign direct investment as percentage of GDP, holding all other variable constant. The associated p-value of 0.0862 means that this relationship is statistically significant at $p < 0.1 \ (\alpha < 0.1)$ but not at $p < 0.05 \ (\alpha < 0.05)$. This means that there is some support for the hypothesis that democracy leads to higher levels of foreign investment, although the evidence is not as strong as we might have expected.
 
-Regarding \textit{l1ecris2}: If a country experiences an economic crisis, we would expect a 0.848 (0.85) increase in the level of foreign direct investment as percentage of GDP, holding all other variable constant. The p-value of 0.0778 means that this relationship is statistically significant at p < 0.1 (\alpha < 0.1) but not at p < 0.05 (\alpha < 0.05). This means that the empirical evidence speaks against the hypothesis that there is a negative effect of economic crises on foreign direct investment. This result may appear counter intuitive and could be the result of omitted variable bias or endogeneity.
+Regarding \textit{l1ecris2}: If a country experiences an economic crisis, we would expect a 0.848 (0.85) increase in the level of foreign direct investment as percentage of GDP, holding all other variable constant. The p-value of 0.0778 means that this relationship is statistically significant at $p < 0.1 (\alpha < 0.1)$ but not at $p < 0.05 (\alpha < 0.05)$. This means that the empirical evidence speaks against the hypothesis that there is a negative effect of economic crises on foreign direct investment. This result may appear counter intuitive and could be the result of omitted variable bias or endogeneity.
 
-The R-squared statistic shows us that our model explains 2.72 percent (multiple R-squared) or 2.25 percent (adjusted R-squared) of the variation in the dependent variable --- depending on whether we are penalized for introducing further variables into our model.
+The R-squared statistic shows us that our model explains 2.72 percent (multiple R-squared) or 2.25 percent (adjusted R-squared) of the variation in the dependent variable --- depending on whether one is penalized for introducing further variables into the model.
 
 Finally, we show the effect of the Polity IV Score on FDI graphically:
 
@@ -124,21 +126,23 @@ matlines(cis[,c(2,3)], lty=2, col="black")
 
 
 
+\section*{Linear Regression Models Interpretation Questions}
+
 \subsection*{Problem 3}
 
-\subsection{a)} If we do not include polynomials of higher order, OLS regression can adequately model linear relationships between one dependent variable (response variable) and multiple independent variables (predictor variables). The reason for this is that our model assumes that for every independent variable there is only one slope coefficient that is constant for all values of that independent variable.
+\paragraph*{a)} If we do not include polynomials of higher order, OLS regression can adequately model linear relationships between one dependent variable (response variable) and multiple independent variables (predictor variables). The reason for this is that our model assumes that for every independent variable there is only one slope coefficient that is constant for all values of that independent variable.
 
-\subsection{b)} A probabilistic linear relationship means that two variables vary with each other in a way that knowing one of them (let's say X) allows us to make relatively precise predictions about the average of the other variable (let's say Y) --- but not about its exact values. A probabilistic relationship therefore means that there are other factors that cause some variation in Y and that cannot be explained through X, even though X is systematically related to Y.
+\paragraph*{b)} A probabilistic linear relationship means that two variables vary with each other in a way that knowing one of them (let's say X) allows us to make relatively precise predictions about the average of the other variable (let's say Y) --- but not about its exact values. A probabilistic relationship therefore means that there are other factors that cause some variation in Y and that cannot be explained through X, even though X is systematically related to Y.
 
 A deterministic linear relationship means that two variables vary with each other in a way that knowing one of them (X) allows us to make precise predictions about the exact value of the other variable (Y). A deterministic relationship therefore means that X is the sole factor that influences the value of Y.
 
 OLS can model both relationships. The difference is that in probabilistic relationships the error term will correct for the difference in prediction and true value. Although most relationships modeled by OLS are probabilistic, OLS can also display deterministic relationships. If a relationship is truly deterministic, then the error term would be zero but the linear model would still be a meaningful representation of the underlying relationship.
 
-\subsection{c)} OLS regression does not per se tell us anything about causality. OLS regression primarily measures linear relationships between two variables and can give us an answer to the question how to variables are correlated with each other. However, without a strong theory, OLS does not allow us to make statements regarding causality. There could be reverse causality, meaning that the response variable in our model has a causal effect on the predictor variable. There could be endogeneity, meaning that there is mutual causal influence of response and predictor variables. Finally, there could be omitted variable bias, meaning that a third variable influences both the predictor and the response variable.
+\paragraph*{c)} OLS regression does not per se tell us anything about causality. OLS regression primarily measures linear relationships between two variables and can give us an answer to the question how to variables are correlated with each other. However, without a strong theory, OLS does not allow us to make statements regarding causality. There could be reverse causality, meaning that the response variable in our model has a causal effect on the predictor variable. There could be endogeneity, meaning that there is mutual causal influence of response and predictor variables. Finally, there could be omitted variable bias, meaning that a third variable influences both the predictor and the response variable.
 
 
 
-\section*{Probability Theory: Linear Model Interpretation}
+\section*{Statistical Theory: Linear Regression Models}
 
 \subsection*{Problem 4}
 

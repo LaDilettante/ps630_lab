@@ -1,4 +1,4 @@
-\documentclass[12pt,letter]{article}
+\documentclass[12pt]{article}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
@@ -47,19 +47,19 @@ We are interested in how the level of "Education" is related to the other variab
 
 \paragraph{Do the following in R:}
 
-\subparagraph{a)} (2 points) Load the \textit{LDC\_IO\_replication} dataset that was introduced in the tutorial. We are interested in the relationship between \textit{fdignp}, which is defined as "Net change in foreign investment in the reporting country", and other variables in the dataset. This variable shows changes in terms of investment coming from other countries.
+\subparagraph{a)} (2 points) Load the \textit{LDC\_IO\_replication} dataset that was introduced in the tutorial. We are interested in the relationship between \textit{fdignp}, which is defined as "Net change in foreign investment in the reporting country", and other variables in the dataset. This variable shows investment coming from other countries (foreign investment) in terms of GDP. For a more detailed description please see the codebook.
 
 Which political and economic factors may influence foreign investment and in which way? Consider all the variables that we used in the tutorial when we predicted the level of trade barriers. Choose one of them \textit{before} running any model and explain which kind of relationship --- positive, negative, or no influence --- you would expect. Make a succinct claim and formulate a hypothesis that you can test empirically.
 
 \subparagraph{b)} (2 points) Run a linear regression with the variable you chose as the main predictor variable (independent variable). Include all other variables that we used previously as control variables.
 
-Then, interpret the results with respect to your variable and the R-squared statistic. Finally, show the marginal effect of your main predictor variable when you hold all other variables at their mean value graphically. Include confidence intervals in your graphic.
+Then, interpret the results with respect to your variable and the R-squared statistic. Finally, show the marginal effect of your main predictor variable graphically, holding all other variables at their mean value. Include confidence intervals in your graphic.
 
 
 
 \pagebreak
 
-\section*{Regression Models Interpretation Questions}
+\section*{Linear Regression Models Interpretation Questions}
 
 \subsection*{Problem 3}
 
@@ -67,23 +67,23 @@ Then, interpret the results with respect to your variable and the R-squared stat
 
 \subparagraph{a)} (1 point) What types of relationships between variables can be adequately modeled by OLS regression without including polynomials of higher order than one (i.e. without including squared terms etc.)?
 
-\subparagraph{b)} (1 point) What is a probabilistic (linear) relationship and how is it different than a deterministic (linear) relationship? Which types of relationship can be modeled by OLS?
+\subparagraph{b)} (1 point) What is a probabilistic (linear) relationship and how is it different from a deterministic (linear) relationship? Which types of relationships can be modeled by OLS?
 
-\subparagraph{c)} (2 points) What can one generally say about causality with respect to the statistical relationships identified by OLS regression?
+\subparagraph{c)} (2 points) What can one generally say about the level of causality of the statistical relationships identified by OLS regression?
 
 
 
-\section*{Statistical Theory: Regression Models}
+\section*{Statistical Theory: Linear Regression Models}
 
 \subsection*{Problem 4}
 
 \paragraph{Do the following problems. Show every step.}
 
-\subparagraph{a)} You have empirical data on two variables, X and Y. You estimate two OLS regressions: \^{Y} $= a + bx + \epsilon$ \ and \^{X} $= a' + b'y + \epsilon$. Is it true or false that the slopes of b and b' will always have the same sign (i.e. positive, negative, or zero)? Carefully explain your answer and show it mathematically.
+\subparagraph{a)} (2 points) You have empirical data on two variables, X and Y. You estimate two OLS regressions: \^{Y} $= a + bx + \epsilon$ \ and \^{X} $= a' + b'y + \epsilon$. Is it true or false that the slopes of b and b' will always have the same sign (i.e. positive, negative, or zero)? Carefully explain your answer and show it mathematically.
 
 Hint: Consider the definition of b and b'.
 
-\subparagraph{b)} Following the task above, is it true or false that the intercepts a and a' will always have the same sign (i.e. positive, negative, or zero)? Carefully explain your answer and show it mathematically.
+\subparagraph{b)} (2 points) Following the task above, is it true or false that the intercepts a and a' will always have the same sign (i.e. positive, negative, or zero)? Carefully explain your answer and show it mathematically.
 
 
 
