@@ -6,7 +6,7 @@
 
 \begin{document}
 
-\title{Pol Sci 630: Problem Set 4 - Regression Model Estimation}
+\title{Pol Sci 630: Problem Set 4 Solution - Regression Model Estimation}
 
 \author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
 
@@ -21,6 +21,8 @@ Note 2: Please use a *single* PDF file created through knitr to submit your answ
 Note 3: Make sure that the PDF files you submit do not include any references to your identity. The grading will happen anonymously. You can submit your answer at the following website: \url{http://ps630-f15.herokuapp.com/}
 
 \section*{1. Create a data frame (4 points)}
+
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
 
 \subsection*{a)}
 First, \verb`set.seed(2)`. Then, create a data frame with 1000 rows and 3 variables as follows:
@@ -56,6 +58,8 @@ for (i in 1:3) {
 @
 
 \section*{2. Subset data frame (4 points)}
+
+\textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points}
 
 \subsection*{a)}
 
@@ -125,6 +129,8 @@ d_wdi[d_wdi$gdppc > mean(d_wdi$gdppc) &
 
 \section*{3. Build linear model (4 points)}
 
+\textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points}
+
 \subsection*{a)}
 
 Download 2 variables of interest and build a linear model of their relationship using \verb`lm()`. Show the \verb`summary()` of results
@@ -156,6 +162,8 @@ stargazer(m1,
 @
 
 \section*{4. Calculate sum of squares and RMSE (4 points)}
+
+\textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points}
 
 \begin{enumerate}
 \item Extract the residuals and predicted values (fitted values) from the model object (from Question 3)
