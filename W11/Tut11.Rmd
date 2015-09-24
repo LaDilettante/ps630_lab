@@ -5,6 +5,13 @@ date: "November 6, 2015"
 output: pdf_document
 ---
 
-**Today's Agenda**
+# Today's Agenda
 
 
+# X. The most important R packages for applied work
+
+1. car --- associated with Fox & Weisberg's book "Companion to Applied Regression""
+2. arm --- associated with Gelman & Hill's book on "Regression and Multilevel/Hierarchical Models""
+3. Zelig --- by political science professor Gary King
+4. ggplot2 --- introduced extensively in Chang's "R Graphics Cookbook"
+5. stargazer

@@ -11,15 +11,15 @@ output: pdf_document
 
 1. Marginal effects and intercepts
 2. Hypothesis testing
-3. Multiple Regression
-4. Graphical Representation
+3. Multiple linear regression
+4. Graphical representation
 5. Tips for your final paper
 
 
 
 # 1. Marginal effects and intercepts
 
-An essential aspect of all linear models are the marginal effects that predictor variables are estimated to have on the response variable.
+An essential aspect of all linear models are the marginal effects that predictor variables (independent variables) are estimated to have on the response variable (dependent variable).
 
 Note that the word "effect" may be problematic because it implies causality. However, without any additional assumptions or additional model features, linear models allow us to make statements with respect to correlation only. This means we can't say anything about causality when just having a linear model. So let us be very cautious when we use the word "marginal effect".
 
@@ -83,16 +83,23 @@ The article deals with the effect that democratization has on trade barriers. Th
 Let us try to emulate their test. In order to load their dataset you need to use the following command:
 install.packages("foreign")
 
+Note that the working directory you set depends on where you have the file on your computer.
+
 ```{r}
 setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/W5')
+# Sets the working directory
 library(foreign)
+# Allows you to read more data formats
 LDC=read.dta("LDC_IO_replication.dta")
 summary(LDC)
 ```
 
 For information on the meaning of the variables see "LDCcodebook.pdf".
 
-An important condition for using OLS is that the predictor variables are not subject to multicollinearity. Let's check multicollinearity. We need another package for this:
+Let's have a look at our data.
+
+We need a package for generating a scatterplot matrix that allows us to see relationships in our matrix.
+
 install.packages("car")
 
 ```{r, warning=FALSE}
@@ -136,13 +143,16 @@ In the vast majority of cases there are good reasons to include multiple predict
 
 The most important reasons to do so are:
 
-1. Omitted Variable Bias
-2. Reviewers that demand you to include them
+1. Potential omitted variable bias
+2. Theoretical reasons
+3. Reviewers that demand you to include them
 
 ```{r}
 main=lm(newtar ~ l1polity + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar, data = LDC)
 summary(main)
 ```
+
+In the multiple linear regression, how would our expectation for the average tariff level change if our Polity Score increased from -10 to 10 and we had an economic crisis?
 
 How well does our model do compared to the simple linear regression? Do we observe an improvement in the total variation that is explained by our model?
 
@@ -166,7 +176,7 @@ Let us first have a look at the distribution of errors in our model.
 
 ```{r}
 main.res = resid(main)
-plot(main.res, main="Valus of the Error Term")
+plot(main.res, main="Values of the Error Term")
 ```
 
 Let us look at the distribution of the error term:
@@ -177,7 +187,9 @@ res.density=density(main.res)
 plot(res.density, main="Density Plot of the Residual Distribution")
 ```
 
-The distribution of the errors is approximately normal, so this condition of OLS is met.
+The distribution of the errors is approximately normal. If this condition is met, then more precise statements about the distribution of the coefficients can be made (they're also normal). ALso, under these conditions, OLS is equivalent to a maximum likelihood approach.
+
+*Plotting predicted values*
 
 Let us plot some predicted values with confidence intervals for our multiple regression.
 

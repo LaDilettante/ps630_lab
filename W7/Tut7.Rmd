@@ -5,6 +5,6 @@ date: "October 9, 2015"
 output: pdf_document
 ---
 
-**Today's Agenda**
+# Today's Agenda
 
 
