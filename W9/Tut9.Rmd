@@ -7,4 +7,5 @@ output: pdf_document
 
 # Today's Agenda
 
-
+1. Data management (transforming and merging)
+2. 

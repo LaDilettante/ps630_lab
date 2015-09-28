@@ -7,4 +7,94 @@ output: pdf_document
 
 # Today's Agenda
 
+1. Interaction terms with two interval-level variables
+2. Graphical representation of interactions
+3. Analysis of Variance (ANOVA)
+4. Expectations for research proposal
 
+
+
+# 1. Interaction terms with two interval-level variables
+
+In today's session we will build upon the last lab and continue to work on interaction effects.
+
+Last time we looked at interactions between a continuous and a binary variable. This time both our variables will be continuous.
+
+For this purpose we will again refer to the dataset by Milner and Kubota.
+
+Let us try to test a hypothesis that combines claims from modernization theory and the literature on FDI.
+
+Modernization theory claims that as countries develop economically, societies become more complex and people more educated which leads to a process of democratization. The literature on FDI claims that FDI is one of the key drivers of economic development and can speed up this process by allowing for technology transfers from other countries. Therefore, one might think that there is a positive interaction of GDP and FDI inflows.
+
+Let us test this hypothesis through an regression model with an interaction term.
+
+```{R}
+# First: load the data
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/W7')
+library(foreign)
+LDC=read.dta("LDC_IO_replication.dta")
+```
+
+Let us first specifically look at the variables that we are interested in.
+
+```{R}
+summary(LDC$polityiv_update2)
+summary(LDC$l1gdp_pc)
+summary(LDC$l1fdi)
+```
+
+It might be interesting to see what the extreme outliers are in those cases.
+
+Let us check this with the following commands:
+
+```{R}
+which(LDC$l1gdp_pc > 20000)
+
+# It's Kuwait
+LDC[1472,]
+
+which(LDC$l1fdi > 50)
+```
+
+
+
+```{R}
+# Second: estimate the model
+intmodel=lm(polityiv_update2~l1gdp_pc+l1fdi+l1gdp_pc*l1fdi, data=LDC)
+summary(intmodel)
+```
+
+
+
+# 2. Graphical representation of interactions
+
+
+
+
+# In-class exercise: interaction terms with two interval-level variables
+
+Assume that you have the following linear model
+
+Y = 10 + 5 * X1 + (2) * X2 + (1) * X1 * X2 + epsilon
+
+1. Calculate the derivative of Y with respect to X1 and X2.
+2. Use R to plot the marginal effect of X1 at different levels of X2. Assume that X2 is an integer that varies between -10 and 10.
+
+Hint: To plot this in R you need to create a vector with values for X2 for your x-axis and a vector with the respective marginal effect of X1 on your y-axis.
+
+
+
+# 3. Analysis of Variance (ANOVA)
+
+
+
+# 4. Expectations for research proposal
+
+1. What is your area of interest?
+2. What is your theory?
+3. How can you turn this theory into a testable hypothesis?
+4. Which data is out there that would allow you to test your hypothesis?
+
+
+
+# Have a great fall break!
