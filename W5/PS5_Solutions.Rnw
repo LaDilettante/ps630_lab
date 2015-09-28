@@ -70,13 +70,15 @@ The other variables are interpreted accordingly. \textit{Agriculture} and \texti
 
 The $R^2$ statistic shows us that our model explains 76.78 percent (multiple $R^2$) or 73.95 percent (adjusted $R^2$) of the variation in the dependent variable --- depending on whether one is penalized for introducing further variables into the model.
 
+The F-statistic shows us that the joint statistical significance of all variables in our model when predicting levels of Education is high. With a p-value of $p < 0.001$, our model estimates a relationship that is significant at all common levels of statistical significance.
+
 
 
 \subsection*{Problem 3}
 
 \paragraph{a)} In this task you have to formulate a hypothesis regarding the relationship of several political and economic factors and the level of FDI inflows. For example, you could claim that economic crises generally lead to a lower inflow of foreign investment because countries that experience crises are less attractive to investors.
 
-In a well-known paper in \textit{International Organization}, Nathan Jensen made the claim that democratic institutions can make more credible commitments to upholding property rights, which means that foreign investors trust democratic governments more than authoritarian governments. Regardless of which variable you choose, your hypothesis should look similar to this one:
+In a well-known paper in \textit{International Organization}, Nathan Jensen made the claim that democratic institutions can make more credible commitments to upholding property rights, which means that foreign investors trust democratic governments more than authoritarian governments. This implies that countries with democratic political systems should experience more FDI inflows that countries with authoritarian political systems. Regardless of which variable you choose, your hypothesis should look similar to this one:
 
 Hypothesis: Countries with higher levels of democracy experience more foreign direct investment (as percentage of GDP) than countries with lower levels of democracy.
 
@@ -94,6 +96,8 @@ Let us interpret our findings for the hypothesis above:
 \textit{l1polity}: For a 1-point increase in the Polity IV Score, we would expect a 0.0397 (0.04) increase in the level of foreign direct investment as percentage of GDP, holding all other variable constant. The associated p-value of 0.0862 means that this relationship is statistically significant at $p < 0.1 \ (\alpha < 0.1)$ but not at $p < 0.05 \ (\alpha < 0.05)$. This means that there is some support for the hypothesis that democracy leads to higher levels of foreign investment, although the evidence is not as strong as we might have expected.
 
 The $R^2$ statistic shows us that our model explains 2.72 percent (multiple $R^2$) or 2.25 percent (adjusted $R^2$) of the variation in the dependent variable --- depending on whether one is penalized for introducing further variables into the model.
+
+The F-statistic shows us that the joint statistical significance of all variables in our model when predicting levels of Education is high. With a p-value of $p < 0.001$, our model estimates a relationship that is significant at all common levels of statistical significance.
 
 Finally, we show the effect of the Polity IV Score on FDI graphically:
 
