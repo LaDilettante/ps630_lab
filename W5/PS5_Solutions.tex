@@ -73,7 +73,7 @@
 
 \bigskip
 
-\textbf{Use the following scheme to assign points: For problems that were solved correctly in their entirety, assign the full point value of four. For correctly solved bonus problems, add that value to the total score for a problem but do not go above 4 points per problem. If there are mistakes in any problem, subtract points according to the extent of the mistake. If you subtract points, explain why.}
+\textbf{Use the following scheme to assign points: For problems that were solved correctly in their entirety, assign the full point value of 4. For correctly solved bonus problems, add that value to the total score for a problem but do not go above 4 points per problem. If there are mistakes in any problem, subtract points according to the extent of the mistake. If you subtract points, explain why.}
 
 \bigskip
 
@@ -153,7 +153,7 @@
 \end{kframe}
 \end{knitrout}
 
-\subparagraph{c)} In order to get full points on this problem, you need an interpretation for each of the 5 variables.
+\subparagraph{c)} \textbf{In order to get full points on this problem, you need an interpretation for each of the 5 variables.}
 
 The interpretation would look like this for \textit{Fertility}:
 
@@ -161,19 +161,51 @@ There is a negative linear relationship between \textit{Fertility} and \textit{E
 
 The other variables are interpreted accordingly. \textit{Agriculture} and \textit{Catholic} are significant at all common levels of statistical significance as well. Please note that \textit{Examination} is significant at a level of $p < 0.05$ ($\alpha < 0.05$) and \textit{Infant.Mortality} is not significant at common levels of statistical significance.
 
-The $R^2$ statistic shows us that our model explains 76.78 percent (multiple $R^2$) or 73.95 percent (adjusted $R^2$) of the variation in the dependent variable --- depending on whether one is penalized for introducing further variables into the model.
+The $R^2$ statistic shows us that our model explains 76.78 percent (multiple $R^2$) or 73.95 percent (adjusted $R^2$) of the variation in the dependent variabl. The adjusted $R^2$ is smaller because we are penalized for every variable that is introduced into our model.
 
-The F-statistic shows us that the joint statistical significance of all variables in our model when predicting levels of Education is high. With a p-value of $p < 0.001$, our model estimates a relationship that is significant at all common levels of statistical significance.
+The F-statistic shows us that the joint statistical significance of the variables in our model when predicting levels of \textit{Education} is high. With a p-value of $p < 0.001$, our model has an overall predictive capability that is significant at all common levels of statistical significance.
 
-
+\begin{table}[!htbp] \centering 
+  \caption{Regression: Education} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{1}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-2} 
+\\[-1.8ex] & Education \\ 
+\hline \\[-1.8ex] 
+ Fertility & $-$0.409$^{***}$ \\ 
+  & (0.086) \\ 
+  Agriculture & $-$0.162$^{***}$ \\ 
+  & (0.045) \\ 
+  Examination & 0.420$^{**}$ \\ 
+  & (0.163) \\ 
+  Catholic & 0.100$^{***}$ \\ 
+  & (0.021) \\ 
+  Infant.Mortality & 0.204 \\ 
+  & (0.284) \\ 
+  Constant & 32.744$^{***}$ \\ 
+  & (8.879) \\ 
+ \hline \\[-1.8ex] 
+Observations & 47 \\ 
+R$^{2}$ & 0.768 \\ 
+Adjusted R$^{2}$ & 0.740 \\ 
+Residual Std. Error & 4.907 (df = 41) \\ 
+F Statistic & 27.121$^{***}$ (df = 5; 41) \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
+\end{table}
 
 \subsection*{Problem 3}
 
-\paragraph{a)} In this task you have to formulate a hypothesis regarding the relationship of several political and economic factors and the level of FDI inflows. For example, you could claim that economic crises generally lead to a lower inflow of foreign investment because countries that experience crises are less attractive to investors.
+\paragraph{a)} In this task you have to formulate a hypothesis regarding the relationship of one political or economic factor and the level of FDI inflows. For example, you could claim that economic crises generally lead to a lower inflow of foreign investment because countries that experience crises are less attractive to investors.
 
-In a well-known paper in \textit{International Organization}, Nathan Jensen made the claim that democratic institutions can make more credible commitments to upholding property rights, which means that foreign investors trust democratic governments more than authoritarian governments. This implies that countries with democratic political systems should experience more FDI inflows that countries with authoritarian political systems. Regardless of which variable you choose, your hypothesis should look similar to this one:
+In a well-known paper in \textit{International Organization} titled \textit{Democratic Governance and Multinational Corporations: Political Regimes and Inflows of Foreign Direct Investment} (2003), Nathan Jensen made the claim that democratic institutions can make more credible commitments to upholding property rights. This means that foreign investors trust democratic governments more than authoritarian governments. This implies that countries with democratic political systems should experience more FDI inflows that countries with authoritarian political systems. We can easily generate a hypothesis from this theoretical claim.
 
-Hypothesis: Countries with higher levels of democracy experience more foreign direct investment (as percentage of GDP) than countries with lower levels of democracy.
+Hypothesis: Countries with higher levels of democracy receive higher levels of foreign direct investment (as percentage of GDP) annually than countries with lower levels of democracy. (Regardless of which variable you choose, your hypothesis should look similar to this one.)
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -220,11 +252,51 @@ Hypothesis: Countries with higher levels of democracy experience more foreign di
 
 Let us interpret our findings for the hypothesis above:
 
-\textit{l1polity}: For a 1-point increase in the Polity IV Score, we would expect a 0.0397 (0.04) increase in the level of foreign direct investment as percentage of GDP, holding all other variable constant. The associated p-value of 0.0862 means that this relationship is statistically significant at $p < 0.1 \ (\alpha < 0.1)$ but not at $p < 0.05 \ (\alpha < 0.05)$. This means that there is some support for the hypothesis that democracy leads to higher levels of foreign investment, although the evidence is not as strong as we might have expected.
+\textit{l1polity}: For a 1-point increase in the Polity IV Score, we would expect a 0.0397 (0.04) increase in the level of foreign direct investment as percentage of GDP in a given year, holding all other variable constant. The associated p-value of 0.0862 means that this relationship is statistically significant at $p < 0.1 \ (\alpha < 0.1)$ but not at $p < 0.05 \ (\alpha < 0.05)$. This means that there is some support for the hypothesis that democracy leads to higher levels of foreign investment, although the evidence is not as strong as we might have expected.
 
-The $R^2$ statistic shows us that our model explains 2.72 percent (multiple $R^2$) or 2.25 percent (adjusted $R^2$) of the variation in the dependent variable --- depending on whether one is penalized for introducing further variables into the model.
+The $R^2$ statistic shows us that our model explains 2.72 percent (multiple $R^2$) or 2.25 percent (adjusted $R^2$) of the variation in the dependent variable. The adjusted $R^2$ is smaller because we are penalized for every variable that is introduced into our model.
 
-The F-statistic shows us that the joint statistical significance of all variables in our model when predicting levels of Education is high. With a p-value of $p < 0.001$, our model estimates a relationship that is significant at all common levels of statistical significance.
+The F-statistic shows us that the joint statistical significance of the variables in our model when predicting levels of FDI inflows is high. With a p-value of $p < 0.001$, our model has an overall predictive capability that is significant at all common levels of statistical significance.
+
+\begin{table}[!htbp] \centering 
+  \caption{Regression: Change in FDI (\% GDP)} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{1}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-2} 
+\\[-1.8ex] & Change in FDI (\% of GDP) \\ 
+\hline \\[-1.8ex] 
+ Polity IV Score (t-1) & 0.040$^{*}$ \\ 
+  & (0.023) \\ 
+  IMF Treaty (t-1) & $-$0.480 \\ 
+  & (0.335) \\ 
+  Years in Office (t-1) & $-$0.012 \\ 
+  & (0.019) \\ 
+  GDP per capita (t-1) & $-$0.00002 \\ 
+  & (0.0001) \\ 
+  Log of Pop. (t-1) & $-$0.494$^{***}$ \\ 
+  & (0.090) \\ 
+  Economic Crisis (t-1) & 0.848$^{*}$ \\ 
+  & (0.481) \\ 
+  BoP Crisis (t-1) & $-$0.024 \\ 
+  & (0.296) \\ 
+  Average Tariff Level (t-1) & $-$0.033$^{**}$ \\ 
+  & (0.015) \\ 
+  Constant & 10.509$^{***}$ \\ 
+  & (1.542) \\ 
+ \hline \\[-1.8ex] 
+Observations & 1,658 \\ 
+R$^{2}$ & 0.027 \\ 
+Adjusted R$^{2}$ & 0.022 \\ 
+Residual Std. Error & 5.665 (df = 1649) \\ 
+F Statistic & 5.764$^{***}$ (df = 8; 1649) \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
+\end{table} 
 
 Finally, we show the effect of the Polity IV Score on FDI graphically:
 
@@ -291,11 +363,13 @@ Finally, we show the effect of the Polity IV Score on FDI graphically:
 
 \subsection*{Problem 3}
 
-\paragraph*{a)} If we do not include polynomials of higher order, OLS regression can adequately model only \textbf{linear} relationships between one dependent variable (response variable) and multiple independent variables (predictor variables). The reason for why we can only model linear relationships is that our model assumes that for every independent variable there is only a single slope coefficient that is constant for all values of that independent variable. Polynomials of higher order would allow us to have different slopes at different values of the independent variable.
+\paragraph*{a)} If we do not include polynomials of higher order, OLS regression can adequately model only \textbf{linear} relationships between one dependent variable (response variable) and one or multiple independent variables (predictor variables).
+
+The reason for why we can only model linear relationships is that our model assumes that for every independent variable there is only a single slope coefficient that is constant for all values of that independent variable. The additional inclusion of polynomials of higher order would allow us to have different slopes at different values of the independent variable.
 
 \paragraph*{b)} OLS regression does not per se tell us anything about causality. OLS regression primarily measures linear relationships between two variables and can give us an answer to the question how to variables are correlated with each other. However, without a strong theory, OLS does not allow us to make statements regarding causality.
 
-There are several reasons for this. First, there could be reverse causality, meaning that the response variable in our model has a causal effect on the predictor variable. Second, there could be endogeneity, meaning that there is mutual causal influence of response and predictor variables. Finally, there could be omitted variable bias, meaning that a third variable influences both the predictor and the response variable. These are the three main reasons why we should not per se view the results of a linear regression as reflecting causality.
+There are several reasons for this. First, there could be reverse causality, meaning that the response variable in our model has a causal effect on the predictor variable. Second, there could be endogeneity, meaning that there is mutual causal influence of response and predictor variables. Third, there could be omitted variable bias, meaning that a third variable influences both the predictor and the response variable. Fourth, there could be "parallel trends", meaning that although two variables have no relationship to each other, they only move simultaneously. For example, two variables could both increase over time for completeley different reasons, potentially giving the wrong impression that they are causally connected. These are the four main reasons why we should not per se view the results of a linear regression as reflecting causality.
 
 \paragraph*{c)} The Residual Sum of Squares (RSS) can be found through the following calculation involving the Root Mean Squared Error (RMSE):
 
@@ -305,7 +379,7 @@ RSS = $(RMSE^2)*(Degrees\ of \ Freedom)$
 
 \bigskip
 
-Furthermore, once we know the RSS, we can use the fact that $R^2 = 1 - \dfrac{RSS}{TSS}$ to find that:
+Furthermore, given that we know $R^2$, once we know the RSS, we can use the fact that $R^2 = 1 - \dfrac{RSS}{TSS}$ to find that:
 
 \bigskip
 
@@ -344,8 +418,6 @@ If $Cov(X,Y) = 0$, then $b = \dfrac{0}{+}$ and $b' = \dfrac{0}{+}$, meaning that
 \bigskip
 
 It follows that b and b' always have the same sign.
-
-
 
 \subparagraph{b)} The intercepts, a and a', do not always have the same sign as we can show with a simple counter example.
 
