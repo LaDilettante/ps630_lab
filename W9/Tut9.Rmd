@@ -7,5 +7,5 @@ output: pdf_document
 
 # Today's Agenda
 
-1. Data management (transforming and merging)
-2. 
+1. Data management I (data transformation)
+2. Data management II (creating new variables from existing ones)
