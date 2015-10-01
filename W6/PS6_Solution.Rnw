@@ -1,0 +1,175 @@
+\documentclass{article}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{Pol Sci 630: Problem Set 6 Solutions: Dummy Variables and Interactions}
+
+\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+
+\date{Due Date: Friday, Oct 9, 2015, 12 AM (Beginning of Lab)}
+
+\maketitle
+
+\section*{1. Merging data (8 points)}
+
+The most common merging task in political science is to merge datasets based on country-year. The biggest obstacle is that country codes can come in many forms (country name, World Bank code, COW code, ISO2, ISO3, etc.)
+
+This exercise will let you dip your toes in the sea of pain that is merging real world data. You're expected to Google and read help files to figure out two packages: 1) \verb`countrycode`, which converts between different types of country codes, and 2) \verb`psData`, a package that automates the downloading of many common Political Science dataset.
+
+This exercise is not technically hard, just requires you to figure out things on your own.
+
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
+
+\subsection*{a)}
+
+Download GDP per capita ('NY.GDP.PCAP.CD') and FDI ('BX.KLT.DINV.CD.WD') from WDI, 2007-2009, \verb`extra = FALSE`. What country indicators are there?
+
+Note: There should be 747 rows
+
+\textbf{Solution}
+
+<<>>=
+library(WDI)
+d_wdi <- WDI(indicator = c("NY.GDP.PCAP.CD", 'BX.KLT.DINV.CD.WD'),
+             start = 2007, end = 2009, extra = FALSE)
+
+names(d_wdi)
+nrow(d_wdi)
+@
+
+The two indicators are 'country' and' 'iso2c'
+
+\subsection*{b)}
+
+Use \verb`PolityGet()` in package \verb`psData` to download Polity data. Download the 'polity2' variable (\textit{not} the entire dataset). Use 'iso3c' as the format for the country code.
+
+What country indicators are there?
+
+Note: There should be 15811 rows
+
+\textbf{Solution}
+
+<<cache=TRUE>>=
+library(psData)
+d_polity <- PolityGet(vars = 'polity2', OutCountryID = 'iso3c')
+names(d_polity)
+nrow(d_polity)
+@
+
+The country indicators are 'country' and 'iso3c'
+
+\subsection*{c)}
+
+To merge WDI and Polity data we must first create a common country ID. (We can't use country name, because there's no guarantee they will be the same). Use package \verb`countrycode` to convert the country code in WDI data from 'iso2c' to 'iso3c'. Store this newly created country code in the WDI data frame.
+
+\textbf{Solution}
+
+<<>>=
+library(countrycode)
+d_wdi$iso3c <- countrycode(d_wdi$iso2c,
+                           origin = 'iso2c', destination = 'iso3c')
+@
+
+\subsection*{d)}
+
+Merge the WDI and the Polity data based on 'iso3c' and 'year' (Note: There should be 492 rows).
+
+There are two variables showing country names in the merged dataset. Why? Clean them up so we only have 1 country name variable in the merged dataset.
+
+\textbf{Solution}
+<<>>=
+d_merged <- merge(d_wdi, d_polity, by = c("iso3c", "year"))
+nrow(d_merged)
+head(d_merged)
+
+# Drop extra country variable and clean up
+d_merged$country.y <- NULL
+colnames(d_merged)[colnames(d_merged) == "country.x"] <- "country"
+@
+
+\subsection*{e)}
+
+(Challenging, but not optional) Figure out which country years appear in WDI data but not in Polity data. Note: There should be 255 unmatched records.
+
+In real research, this is useful to check that you are not throwing away data erroneously. There are more than one way to do this and should require some Googling.
+
+\textbf{Solution}
+
+<<>>=
+# My favorite way
+library(dplyr)
+d_unmatched <- anti_join(d_wdi, d_polity, by = c("iso3c", "year"))
+nrow(d_unmatched)
+@
+
+\section*{2. Factors (2 points)}
+
+Create a new factor variable in your merged dataset, called \verb`polity2_binary` that is 1 (labeled 'democracy') when \verb`polity2` $\geq 0$, and 0 (labeled 'dictatorship') otherwise.
+
+\textbf{Solution}
+
+<<>>=
+d_merged$polity2_binary <- ifelse(d_merged$polity2 >= 0, 1, 0)
+
+d_merged$polity2_binary <- factor(d_merged$polity2_binary,
+                                  levels = c(0, 1),
+                                  labels = c("dictatorship", "democracy"))
+@
+
+\section*{3. Regression with interaction (6 points)}
+
+\subsection*{a) One binary variable}
+
+Regress FDI on the binary variable \verb`polity2_binary`. From the regression result, report the average amount of FDI that democracy and dictatorship gets.
+
+Note: You should know this from the regression result, not from running \verb`mean()`
+
+\textbf{Solution}
+
+<<>>=
+# Fancy way (dplyr) to rename variables that you'll learn one day
+d_merged <- d_merged %>%
+  rename(gdppc = NY.GDP.PCAP.CD, fdi = BX.KLT.DINV.CD.WD)
+
+m_3a <- lm(fdi ~ polity2_binary, data = d_merged)
+summary(m_3a)
+@
+
+The average FDI for dictatorship is \Sexpr{m_3a$coefficients['(Intercept)']} USD.
+
+The average FDI for democracy is \Sexpr{m_3a$coefficients['(Intercept)'] + m_3a$coefficients['polity2_binarydemocracy']} USD.
+
+\subsection*{b) Interaction}
+
+Regress FDI against \verb`polity2_binary`, gdppc, and their interaction term.
+
+Imagine that we have a country with median gdppc. What would be its FDI if it were a 1) dictatorship and 2) democracy? Hint: You could either calculate using regression formula, or feed \verb`newdata` to \verb`predict`
+
+\textbf{Solution}
+
+Run regression
+<<>>=
+m_3b <- lm(fdi ~ polity2_binary + gdppc + polity2_binary * gdppc,
+           data = d_merged)
+summary(m_3b)
+@
+
+FDI for democracy with median gdppc
+<<>>=
+newdata <- data.frame(polity2_binary = factor("democracy"),
+                      gdppc = median(d_merged$gdppc, na.rm=TRUE))
+predict(m_3b, newdata = newdata)
+@
+
+FDI for dictatorship with median gdppc
+<<>>=
+newdata <- data.frame(polity2_binary = factor("dictatorship"),
+                      gdppc = median(d_merged$gdppc, na.rm=TRUE))
+predict(m_3b, newdata = newdata)
+@
+
+\end{document}

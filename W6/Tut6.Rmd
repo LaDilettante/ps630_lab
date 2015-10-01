@@ -1,0 +1,166 @@
+---
+title: 'Tutorial 6: Dummy Variables and Interactions'
+author: "Anh Le (anh.le@duke.edu)"
+date: "Oct 2, 2015"
+output: pdf_document
+---
+
+# Agenda
+
+1. Merging data
+2. Factor
+3. Regression with factors
+4. Regression with interaction term
+
+5. Tips & Tricks 
+- the etymology of dummy vs binary
+- Latex location syncing between pdf and source code
+- Google R style guide <https://google-styleguide.googlecode.com/svn/trunk/Rguide.xml>
+
+# 1. Merging data
+
+Walk through syntax examples in <http://www.princeton.edu/~otorres/Merge101R.pdf>
+
+Extended practice in homework
+
+# 2. Factor
+
+Factor is an `R` data type to encode categorical data. (Factor is a `R` term, categorical data is a Statistics term).
+
+In the real world, categorical data come in two forms: numeric and characters.
+
+## Consider when the raw data is numeric
+
+`schtyp` refers to school type, with 0 = private and 1 = public
+
+```{r}
+set.seed(124)
+schtyp <- sample(0:1, 20, replace = TRUE)
+schtyp
+is.factor(schtyp)
+is.numeric(schtyp)
+```
+
+We convert the raw data into a factor as follows:
+
+```{r}
+schtyp.f1 <- factor(schtyp)
+schtyp.f1
+is.factor(schtyp.f1)
+```
+
+```{r}
+# Note how we also supply the labels
+schtyp.f2 <- factor(schtyp, 
+                    levels = c(0, 1),
+                    labels = c("private", "public"))
+schtyp.f2
+is.factor(schtyp.f2)
+```
+
+## Consider when the raw data is character. 
+
+`ses` referes to social economic status.
+
+```{r}
+ses <- c("low", "middle", "low", "low", "low", "low", "middle", "low", "middle",
+    "middle", "middle", "middle", "middle", "high", "high", "low", "middle",
+    "middle", "low", "high")
+is.factor(ses)
+is.character(ses)
+```
+
+```{r}
+factor(ses)
+```
+
+Note how the levels are arranged alphabetically  and may not correspond to "real-world" order. Whether this is a problem depends on whether you want to model your data as categorical or ordinal. Usually, you want to model your data as categorical, as `R` treats ordinal variable strangely.
+
+# 2. Interaction term
+
+```{r}
+# Load the LDC_IO dataset that you used for homework
+library(foreign)
+d <- read.dta('LDC_IO_replication.dta')
+```
+
+## Regression with 1 dummy. 
+
+`aclpn` is a binary variable, with 1 = democracy
+
+```{r}
+summary(lm(fdignp ~ factor(aclpn), data = d))
+```
+
+## Regression with multiple dummies to encode a categorical variable
+
+`dictator1` is a categorical variable that denotes the regime type. For example, 1: single party, ..., 7: sp/pers/mil, 8: democracy
+
+If we put it straight in the regression, what would be the problem?
+
+```{r}
+summary(lm(fdignp ~ bpc1 + dictator1, data = d))
+```
+
+So `R` mistakenly thought that `dictator1` is a continuous variable above. We want to model `dictator1` as a categorical variable instead.
+```{r}
+summary(lm(fdignp ~ bpc1 + factor(dictator1), data = d))
+```
+
+The output will look a lot better with label
+```{r}
+d$dictator1 <- factor(d$dictator1,
+                      levels = c(1, 2, 3, 4, 5, 6, 7, 8),
+                      labels = c('sp', 'pers', 'mil', 
+                                 'sp/pers', 'pers/mil', 'sp/mil', 
+                                 'sp/pers/mil', 'democracy'))
+summary(lm(fdignp ~ bpc1 + dictator1, data = d))
+```
+
+Note that a level is missing. Why?
+
+At this point, the coefficient is a comparison of all categories against `dictator1 = 1 (sp)`. This may not be a good category to base our comparison against. 
+
+Theoretically, we want to compare all types of dictatorships against democracy instead. In R, If we want to choose another category to compare against, we need to change the "reference level" of the factor variable as follows.
+
+```{r}
+# Change the reference level to 'democracy'
+d$dictator1 <- relevel(d$dictator1, ref = 'democracy')
+
+# Note how democracy is now the reference level, and thus omitted
+summary(lm(fdignp ~ bpc1 + dictator1, data = d))
+```
+
+## Food for thought: What to do when the categorical variable has a lot of levels?
+
+`polityiv_update2` has 20 levels, ranging from -10 (most undemocratic) to 10 (most democratic). What to do?
+
+```{r}
+summary(lm(fdignp ~ bpc1 + factor(polityiv_update2), data = d))
+
+summary(lm(fdignp ~ bpc1 + polityiv_update2, data = d))
+```
+
+This is no longer a statistical issue but a theoretical / substantive question. On the one hand, `polityiv_update2` has a lot of levels, so it kinda looks more like a continuous variable rather than 20 categories. On the other hand, if we do so, there's only one coefficient for the variable `polityiv_update2`, meaning that for each 1 unit increase in `polityiv_update1`, `fdignp` increases by that same amount. Are you comfortable with considering all one-unit changes in `polityiv` (e.g. from -10 to -9, 0 to 1, or 9 to 10) as equivalent?
+
+It's a tricky question. (I guess that's why a lot of people don't use Polity IV anymore).
+
+# Regression with interaction term
+
+`bpc1` is a binary variable, with 1 = having a balance of payment crisis
+`aclpn` is a binary variable, with 1 = democracy
+
+```{r}
+d$aclpn <- factor(d$aclpn)
+m_interaction <- lm(fdignp ~ bpc1 + aclpn + bpc1 * aclpn, data = d)
+summary(m_interaction)
+```
+
+We can visualize the interaction effect as follows. (Next lab we will cover how to plot interaction in details.)
+```{r}
+library(effects)
+plot(Effect(c("aclpn", "bpc1"), mod=m_interaction, se=TRUE), 
+     x.var = "bpc1",
+     multiline=TRUE, ci.style = 'bands')
+```
+

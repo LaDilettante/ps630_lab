@@ -1,0 +1,375 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\title{Pol Sci 630: Problem Set 6 Solutions: Dummy Variables and Interactions}
+
+\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+
+\date{Due Date: Friday, Oct 9, 2015, 12 AM (Beginning of Lab)}
+
+\maketitle
+
+\section*{1. Merging data (8 points)}
+
+The most common merging task in political science is to merge datasets based on country-year. The biggest obstacle is that country codes can come in many forms (country name, World Bank code, COW code, ISO2, ISO3, etc.)
+
+This exercise will let you dip your toes in the sea of pain that is merging real world data. You're expected to Google and read help files to figure out two packages: 1) \verb`countrycode`, which converts between different types of country codes, and 2) \verb`psData`, a package that automates the downloading of many common Political Science dataset.
+
+This exercise is not technically hard, just requires you to figure out things on your own.
+
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
+
+\subsection*{a)}
+
+Download GDP per capita ('NY.GDP.PCAP.CD') and FDI ('BX.KLT.DINV.CD.WD') from WDI, 2007-2009, \verb`extra = FALSE`. What country indicators are there?
+
+Note: There should be 747 rows
+
+\textbf{Solution}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(WDI)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: RJSONIO}}\begin{alltt}
+\hlstd{d_wdi} \hlkwb{<-} \hlkwd{WDI}\hlstd{(}\hlkwc{indicator} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"NY.GDP.PCAP.CD"}\hlstd{,} \hlstr{'BX.KLT.DINV.CD.WD'}\hlstd{),}
+             \hlkwc{start} \hlstd{=} \hlnum{2007}\hlstd{,} \hlkwc{end} \hlstd{=} \hlnum{2009}\hlstd{,} \hlkwc{extra} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+
+\hlkwd{names}\hlstd{(d_wdi)}
+\end{alltt}
+\begin{verbatim}
+## [1] "iso2c"             "country"           "year"             
+## [4] "NY.GDP.PCAP.CD"    "BX.KLT.DINV.CD.WD"
+\end{verbatim}
+\begin{alltt}
+\hlkwd{nrow}\hlstd{(d_wdi)}
+\end{alltt}
+\begin{verbatim}
+## [1] 747
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+The two indicators are 'country' and' 'iso2c'
+
+\subsection*{b)}
+
+Use \verb`PolityGet()` in package \verb`psData` to download Polity data. Download the 'polity2' variable (\textit{not} the entire dataset). Use 'iso3c' as the format for the country code.
+
+What country indicators are there?
+
+Note: There should be 15811 rows
+
+\textbf{Solution}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(psData)}
+\hlstd{d_polity} \hlkwb{<-} \hlkwd{PolityGet}\hlstd{(}\hlkwc{vars} \hlstd{=} \hlstr{'polity2'}\hlstd{,} \hlkwc{OutCountryID} \hlstd{=} \hlstr{'iso3c'}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# 577 duplicated values were created when standardising the country ID with iso3c.\\\#\# 749 observations dropped based on missing values of the standardised ID variable.}}\begin{alltt}
+\hlkwd{names}\hlstd{(d_polity)}
+\end{alltt}
+\begin{verbatim}
+## [1] "iso3c"   "country" "year"    "polity2"
+\end{verbatim}
+\begin{alltt}
+\hlkwd{nrow}\hlstd{(d_polity)}
+\end{alltt}
+\begin{verbatim}
+## [1] 15811
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+The country indicators are 'country' and 'iso3c'
+
+\subsection*{c)}
+
+To merge WDI and Polity data we must first create a common country ID. (We can't use country name, because there's no guarantee they will be the same). Use package \verb`countrycode` to convert the country code in WDI data from 'iso2c' to 'iso3c'. Store this newly created country code in the WDI data frame.
+
+\textbf{Solution}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(countrycode)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# Attaching package: 'countrycode'\\\#\# \\\#\# The following object is masked from 'package:psData':\\\#\# \\\#\#\ \ \ \  countrycode\_data}}\begin{alltt}
+\hlstd{d_wdi}\hlopt{$}\hlstd{iso3c} \hlkwb{<-} \hlkwd{countrycode}\hlstd{(d_wdi}\hlopt{$}\hlstd{iso2c,}
+                           \hlkwc{origin} \hlstd{=} \hlstr{'iso2c'}\hlstd{,} \hlkwc{destination} \hlstd{=} \hlstr{'iso3c'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\subsection*{d)}
+
+Merge the WDI and the Polity data based on 'iso3c' and 'year' (Note: There should be 492 rows).
+
+There are two variables showing country names in the merged dataset. Why? Clean them up so we only have 1 country name variable in the merged dataset.
+
+\textbf{Solution}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{d_merged} \hlkwb{<-} \hlkwd{merge}\hlstd{(d_wdi, d_polity,} \hlkwc{by} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"iso3c"}\hlstd{,} \hlstr{"year"}\hlstd{))}
+\hlkwd{nrow}\hlstd{(d_merged)}
+\end{alltt}
+\begin{verbatim}
+## [1] 492
+\end{verbatim}
+\begin{alltt}
+\hlkwd{head}\hlstd{(d_merged)}
+\end{alltt}
+\begin{verbatim}
+##   iso3c year iso2c   country.x NY.GDP.PCAP.CD BX.KLT.DINV.CD.WD
+## 1   AFG 2007    AF Afghanistan       380.4010         188690000
+## 2   AFG 2008    AF Afghanistan       384.1317          87276201
+## 3   AFG 2009    AF Afghanistan       458.9558         213670260
+## 4   AGO 2007    AO      Angola      3151.0207        -893342152
+## 5   AGO 2008    AO      Angola      4242.3657        1678971010
+## 6   AGO 2009    AO      Angola      3678.9492        2205298180
+##     country.y polity2
+## 1 Afghanistan      NA
+## 2 Afghanistan      NA
+## 3 Afghanistan      NA
+## 4      Angola      -2
+## 5      Angola      -2
+## 6      Angola      -2
+\end{verbatim}
+\begin{alltt}
+\hlcom{# Drop extra country variable and clean up}
+\hlstd{d_merged}\hlopt{$}\hlstd{country.y} \hlkwb{<-} \hlkwa{NULL}
+\hlkwd{colnames}\hlstd{(d_merged)[}\hlkwd{colnames}\hlstd{(d_merged)} \hlopt{==} \hlstr{"country.x"}\hlstd{]} \hlkwb{<-} \hlstr{"country"}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\subsection*{e)}
+
+(Challenging, but not optional) Figure out which country years appear in WDI data but not in Polity data. Note: There should be 255 unmatched records.
+
+In real research, this is useful to check that you are not throwing away data erroneously. There are more than one way to do this and should require some Googling.
+
+\textbf{Solution}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# My favorite way}
+\hlkwd{library}\hlstd{(dplyr)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# Attaching package: 'dplyr'\\\#\# \\\#\# The following objects are masked from 'package:stats':\\\#\# \\\#\#\ \ \ \  filter, lag\\\#\# \\\#\# The following objects are masked from 'package:base':\\\#\# \\\#\#\ \ \ \  intersect, setdiff, setequal, union}}\begin{alltt}
+\hlstd{d_unmatched} \hlkwb{<-} \hlkwd{anti_join}\hlstd{(d_wdi, d_polity,} \hlkwc{by} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"iso3c"}\hlstd{,} \hlstr{"year"}\hlstd{))}
+\hlkwd{nrow}\hlstd{(d_unmatched)}
+\end{alltt}
+\begin{verbatim}
+## [1] 255
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\section*{2. Factors (2 points)}
+
+Create a new factor variable in your merged dataset, called \verb`polity2_binary` that is 1 (labeled 'democracy') when \verb`polity2` $\geq 0$, and 0 (labeled 'dictatorship') otherwise.
+
+\textbf{Solution}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{d_merged}\hlopt{$}\hlstd{polity2_binary} \hlkwb{<-} \hlkwd{ifelse}\hlstd{(d_merged}\hlopt{$}\hlstd{polity2} \hlopt{>=} \hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{)}
+
+\hlstd{d_merged}\hlopt{$}\hlstd{polity2_binary} \hlkwb{<-} \hlkwd{factor}\hlstd{(d_merged}\hlopt{$}\hlstd{polity2_binary,}
+                                  \hlkwc{levels} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{1}\hlstd{),}
+                                  \hlkwc{labels} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"dictatorship"}\hlstd{,} \hlstr{"democracy"}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\section*{3. Regression with interaction (6 points)}
+
+\subsection*{a) One binary variable}
+
+Regress FDI on the binary variable \verb`polity2_binary`. From the regression result, report the average amount of FDI that democracy and dictatorship gets.
+
+Note: You should know this from the regression result, not from running \verb`mean()`
+
+\textbf{Solution}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Fancy way (dplyr) to rename variables that you'll learn one day}
+\hlstd{d_merged} \hlkwb{<-} \hlstd{d_merged} \hlopt{%>%}
+  \hlkwd{rename}\hlstd{(}\hlkwc{gdppc} \hlstd{= NY.GDP.PCAP.CD,} \hlkwc{fdi} \hlstd{= BX.KLT.DINV.CD.WD)}
+
+\hlstd{m_3a} \hlkwb{<-} \hlkwd{lm}\hlstd{(fdi} \hlopt{~} \hlstd{polity2_binary,} \hlkwc{data} \hlstd{= d_merged)}
+\hlkwd{summary}\hlstd{(m_3a)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = fdi ~ polity2_binary, data = d_merged)
+## 
+## Residuals:
+##        Min         1Q     Median         3Q        Max 
+## -4.445e+10 -1.554e+10 -9.421e+09 -5.007e+09  7.178e+11 
+## 
+## Coefficients:
+##                          Estimate Std. Error t value Pr(>|t|)  
+## (Intercept)             6.868e+09  4.145e+09   1.657   0.0982 .
+## polity2_binarydemocracy 9.321e+09  4.917e+09   1.896   0.0586 .
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.869e+10 on 475 degrees of freedom
+##   (15 observations deleted due to missingness)
+## Multiple R-squared:  0.00751,	Adjusted R-squared:  0.00542 
+## F-statistic: 3.594 on 1 and 475 DF,  p-value: 0.05859
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+The average FDI for dictatorship is \ensuremath{6.8682351\times 10^{9}} USD.
+
+The average FDI for democracy is \ensuremath{1.6189052\times 10^{10}} USD.
+
+\subsection*{b) Interaction}
+
+Regress FDI against \verb`polity2_binary`, gdppc, and their interaction term.
+
+Imagine that we have a country with median gdppc. What would be its FDI if it were a 1) dictatorship and 2) democracy? Hint: You could either calculate using regression formula, or feed \verb`newdata` to \verb`predict`
+
+\textbf{Solution}
+
+Run regression
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{m_3b} \hlkwb{<-} \hlkwd{lm}\hlstd{(fdi} \hlopt{~} \hlstd{polity2_binary} \hlopt{+} \hlstd{gdppc} \hlopt{+} \hlstd{polity2_binary} \hlopt{*} \hlstd{gdppc,}
+           \hlkwc{data} \hlstd{= d_merged)}
+\hlkwd{summary}\hlstd{(m_3b)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = fdi ~ polity2_binary + gdppc + polity2_binary * 
+##     gdppc, data = d_merged)
+## 
+## Residuals:
+##        Min         1Q     Median         3Q        Max 
+## -1.345e+11 -6.706e+09 -4.356e+09 -2.047e+09  6.804e+11 
+## 
+## Coefficients:
+##                                 Estimate Std. Error t value Pr(>|t|)   
+## (Intercept)                    6.639e+09  4.598e+09   1.444  0.14942   
+## polity2_binarydemocracy       -4.759e+09  5.536e+09  -0.860  0.39046   
+## gdppc                          8.061e+04  2.932e+05   0.275  0.78352   
+## polity2_binarydemocracy:gdppc  9.372e+05  3.189e+05   2.939  0.00346 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.616e+10 on 462 degrees of freedom
+##   (26 observations deleted due to missingness)
+## Multiple R-squared:  0.131,	Adjusted R-squared:  0.1254 
+## F-statistic: 23.22 on 3 and 462 DF,  p-value: 5.164e-14
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+FDI for democracy with median gdppc
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{newdata} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{polity2_binary} \hlstd{=} \hlkwd{factor}\hlstd{(}\hlstr{"democracy"}\hlstd{),}
+                      \hlkwc{gdppc} \hlstd{=} \hlkwd{median}\hlstd{(d_merged}\hlopt{$}\hlstd{gdppc,} \hlkwc{na.rm}\hlstd{=}\hlnum{TRUE}\hlstd{))}
+\hlkwd{predict}\hlstd{(m_3b,} \hlkwc{newdata} \hlstd{= newdata)}
+\end{alltt}
+\begin{verbatim}
+##          1 
+## 5961997155
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+FDI for dictatorship with median gdppc
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{newdata} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{polity2_binary} \hlstd{=} \hlkwd{factor}\hlstd{(}\hlstr{"dictatorship"}\hlstd{),}
+                      \hlkwc{gdppc} \hlstd{=} \hlkwd{median}\hlstd{(d_merged}\hlopt{$}\hlstd{gdppc,} \hlkwc{na.rm}\hlstd{=}\hlnum{TRUE}\hlstd{))}
+\hlkwd{predict}\hlstd{(m_3b,} \hlkwc{newdata} \hlstd{= newdata)}
+\end{alltt}
+\begin{verbatim}
+##          1 
+## 6962634500
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\end{document}
