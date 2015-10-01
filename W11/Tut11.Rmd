@@ -7,6 +7,9 @@ output: pdf_document
 
 # Today's Agenda
 
+X. The most important R packages for applied work
+
+
 
 # X. The most important R packages for applied work
 
