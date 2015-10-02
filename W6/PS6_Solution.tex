@@ -55,7 +55,7 @@
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
-\title{Pol Sci 630: Problem Set 6 Solutions: Dummy Variables and Interactions}
+\title{Pol Sci 630:  Problem Set 6 Solutions: Dummy Variables and Interactions}
 
 \author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
 
@@ -63,7 +63,9 @@
 
 \maketitle
 
-\section*{1. Merging data (8 points)}
+\section{Merging data (8 points)}
+
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 8/8 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
 
 The most common merging task in political science is to merge datasets based on country-year. The biggest obstacle is that country codes can come in many forms (country name, World Bank code, COW code, ISO2, ISO3, etc.)
 
@@ -71,9 +73,8 @@ This exercise will let you dip your toes in the sea of pain that is merging real
 
 This exercise is not technically hard, just requires you to figure out things on your own.
 
-\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
 
-\subsection*{a)}
+\subsection{Download WDI data}
 
 Download GDP per capita ('NY.GDP.PCAP.CD') and FDI ('BX.KLT.DINV.CD.WD') from WDI, 2007-2009, \verb`extra = FALSE`. What country indicators are there?
 
@@ -109,7 +110,7 @@ Note: There should be 747 rows
 
 The two indicators are 'country' and' 'iso2c'
 
-\subsection*{b)}
+\subsection{Download Polity data}
 
 Use \verb`PolityGet()` in package \verb`psData` to download Polity data. Download the 'polity2' variable (\textit{not} the entire dataset). Use 'iso3c' as the format for the country code.
 
@@ -144,7 +145,7 @@ Note: There should be 15811 rows
 
 The country indicators are 'country' and 'iso3c'
 
-\subsection*{c)}
+\subsection{Convert country code}
 
 To merge WDI and Polity data we must first create a common country ID. (We can't use country name, because there's no guarantee they will be the same). Use package \verb`countrycode` to convert the country code in WDI data from 'iso2c' to 'iso3c'. Store this newly created country code in the WDI data frame.
 
@@ -154,17 +155,13 @@ To merge WDI and Polity data we must first create a common country ID. (We can't
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{library}\hlstd{(countrycode)}
-\end{alltt}
-
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# Attaching package: 'countrycode'\\\#\# \\\#\# The following object is masked from 'package:psData':\\\#\# \\\#\#\ \ \ \  countrycode\_data}}\begin{alltt}
 \hlstd{d_wdi}\hlopt{$}\hlstd{iso3c} \hlkwb{<-} \hlkwd{countrycode}\hlstd{(d_wdi}\hlopt{$}\hlstd{iso2c,}
                            \hlkwc{origin} \hlstd{=} \hlstr{'iso2c'}\hlstd{,} \hlkwc{destination} \hlstd{=} \hlstr{'iso3c'}\hlstd{)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
 
-\subsection*{d)}
+\subsection{Merge}
 
 Merge the WDI and the Polity data based on 'iso3c' and 'year' (Note: There should be 492 rows).
 
@@ -207,9 +204,9 @@ There are two variables showing country names in the merged dataset. Why? Clean 
 \end{kframe}
 \end{knitrout}
 
-\subsection*{e)}
+\subsection{Check merged result}
 
-(Challenging, but not optional) Figure out which country years appear in WDI data but not in Polity data. Note: There should be 255 unmatched records.
+(Optional) Figure out which country years appear in WDI data but not in Polity data. Note: There should be 255 unmatched records.
 
 In real research, this is useful to check that you are not throwing away data erroneously. There are more than one way to do this and should require some Googling.
 
@@ -233,7 +230,11 @@ In real research, this is useful to check that you are not throwing away data er
 \end{kframe}
 \end{knitrout}
 
-\section*{2. Factors (2 points)}
+\section{Factors and Regression with Factors (8 points)}
+
+\textbf{\color{red} "GRADER COMMENT: everything is correct! - 8/8 Points"}
+
+\subsection{Dichotomize a continuous variable}
 
 Create a new factor variable in your merged dataset, called \verb`polity2_binary` that is 1 (labeled 'democracy') when \verb`polity2` $\geq 0$, and 0 (labeled 'dictatorship') otherwise.
 
@@ -251,9 +252,7 @@ Create a new factor variable in your merged dataset, called \verb`polity2_binary
 \end{kframe}
 \end{knitrout}
 
-\section*{3. Regression with interaction (6 points)}
-
-\subsection*{a) One binary variable}
+\subsection{Regression with one binary variable}
 
 Regress FDI on the binary variable \verb`polity2_binary`. From the regression result, report the average amount of FDI that democracy and dictatorship gets.
 
@@ -299,11 +298,11 @@ The average FDI for dictatorship is \ensuremath{6.8682351\times 10^{9}} USD.
 
 The average FDI for democracy is \ensuremath{1.6189052\times 10^{10}} USD.
 
-\subsection*{b) Interaction}
+\subsection{Regression with interaction and interpretation}
 
 Regress FDI against \verb`polity2_binary`, gdppc, and their interaction term.
 
-Imagine that we have a country with median gdppc. What would be its FDI if it were a 1) dictatorship and 2) democracy? Hint: You could either calculate using regression formula, or feed \verb`newdata` to \verb`predict`
+I want to plot FDI against gdppc with two lines, one representing democracy, the other representing dictatorship (similar to the last plot in the lab). What would be the intercept and slope of these two lines?
 
 \textbf{Solution}
 
@@ -341,6 +340,22 @@ Run regression
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
+
+Intercept of dictatorship line: \ensuremath{6.6393899\times 10^{9}}
+Intercept of democracy line: \ensuremath{1.8805533\times 10^{9}}
+
+Slope of dictatorship line: \ensuremath{8.0606641\times 10^{4}}
+Slope of democracy line: \ensuremath{1.0177786\times 10^{6}}
+
+\subsection{Demonstrating substative meaning of coefficients}
+
+In research, we usually have to demonstrate the substantive meaning of our regression result. A common way to do it is to give the estimated outcome for a ``typical'' country, varying one important factor.
+
+For example, imagine that we have a country with median gdppc. What would be its FDI if it were a 1) dictatorship and 2) democracy, holding gdppc at the median value?
+
+Hint: You could either calculate using regression formula, or feed \verb`newdata` to \verb`predict`
+
+\textbf{Solution}
 
 FDI for democracy with median gdppc
 \begin{knitrout}

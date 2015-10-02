@@ -1,22 +1,75 @@
-\documentclass{article}
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
 
 \usepackage{amsmath, amssymb}
 \usepackage{graphicx}
 \usepackage{hyperref}
-
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
-\title{Pol Sci 630:  Problem Set 6 Solutions: Dummy Variables and Interactions}
+\title{Pol Sci 630:  Problem Set 6: Dummy Variables and Interactions}
 
 \author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
 
-\date{Due Date: Friday, Oct 9, 2015, 12 AM (Beginning of Lab)}
+\date{Due Date: Tuesday, Oct 6, 2015, 10 AM (Beginning of Class)}
 
 \maketitle
 
-\section{Merging data (8 points)}
+Note 1: It is absolutely essential that you show all your work, including intermediary steps, and comment on your R code to earn full credit.
 
-\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 8/8 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
+Note 2: Please use a *single* PDF file created through knitr to submit your answers. knitr allows you to combine R code and \LaTeX \ code in one document, meaning that you can include both the answers to R programming and math problems. Also submit the source code that generates the PDF file (i.e. .Rnw file)
+
+Note 3: Make sure that the PDF files you submit do not include any references to your identity. The grading will happen anonymously. You can submit your answer at the following website: \url{http://ps630-f15.herokuapp.com/}
+
+\section{Merging data (8 points)}
 
 The most common merging task in political science is to merge datasets based on country-year. The biggest obstacle is that country codes can come in many forms (country name, World Bank code, COW code, ISO2, ISO3, etc.)
 
@@ -24,25 +77,11 @@ This exercise will let you dip your toes in the sea of pain that is merging real
 
 This exercise is not technically hard, just requires you to figure out things on your own.
 
-
 \subsection{Download WDI data}
 
 Download GDP per capita ('NY.GDP.PCAP.CD') and FDI ('BX.KLT.DINV.CD.WD') from WDI, 2007-2009, \verb`extra = FALSE`. What country indicators are there?
 
 Note: There should be 747 rows
-
-\textbf{Solution}
-
-<<>>=
-library(WDI)
-d_wdi <- WDI(indicator = c("NY.GDP.PCAP.CD", 'BX.KLT.DINV.CD.WD'),
-             start = 2007, end = 2009, extra = FALSE)
-
-names(d_wdi)
-nrow(d_wdi)
-@
-
-The two indicators are 'country' and' 'iso2c'
 
 \subsection{Download Polity data}
 
@@ -52,28 +91,9 @@ What country indicators are there?
 
 Note: There should be 15811 rows
 
-\textbf{Solution}
-
-<<cache=TRUE>>=
-library(psData)
-d_polity <- PolityGet(vars = 'polity2', OutCountryID = 'iso3c')
-names(d_polity)
-nrow(d_polity)
-@
-
-The country indicators are 'country' and 'iso3c'
-
 \subsection{Convert country code}
 
 To merge WDI and Polity data we must first create a common country ID. (We can't use country name, because there's no guarantee they will be the same). Use package \verb`countrycode` to convert the country code in WDI data from 'iso2c' to 'iso3c'. Store this newly created country code in the WDI data frame.
-
-\textbf{Solution}
-
-<<>>=
-library(countrycode)
-d_wdi$iso3c <- countrycode(d_wdi$iso2c,
-                           origin = 'iso2c', destination = 'iso3c')
-@
 
 \subsection{Merge}
 
@@ -81,49 +101,17 @@ Merge the WDI and the Polity data based on 'iso3c' and 'year' (Note: There shoul
 
 There are two variables showing country names in the merged dataset. Why? Clean them up so we only have 1 country name variable in the merged dataset.
 
-\textbf{Solution}
-<<>>=
-d_merged <- merge(d_wdi, d_polity, by = c("iso3c", "year"))
-nrow(d_merged)
-head(d_merged)
-
-# Drop extra country variable and clean up
-d_merged$country.y <- NULL
-colnames(d_merged)[colnames(d_merged) == "country.x"] <- "country"
-@
-
 \subsection{Check merged result}
 
 (Optional) Figure out which country years appear in WDI data but not in Polity data. Note: There should be 255 unmatched records.
 
 In real research, this is useful to check that you are not throwing away data erroneously. There are more than one way to do this and should require some Googling.
 
-\textbf{Solution}
-
-<<>>=
-# My favorite way
-library(dplyr)
-d_unmatched <- anti_join(d_wdi, d_polity, by = c("iso3c", "year"))
-nrow(d_unmatched)
-@
-
 \section{Factors and Regression with Factors (8 points)}
-
-\textbf{\color{red} "GRADER COMMENT: everything is correct! - 8/8 Points"}
 
 \subsection{Dichotomize a continuous variable}
 
 Create a new factor variable in your merged dataset, called \verb`polity2_binary` that is 1 (labeled 'democracy') when \verb`polity2` $\geq 0$, and 0 (labeled 'dictatorship') otherwise.
-
-\textbf{Solution}
-
-<<>>=
-d_merged$polity2_binary <- ifelse(d_merged$polity2 >= 0, 1, 0)
-
-d_merged$polity2_binary <- factor(d_merged$polity2_binary,
-                                  levels = c(0, 1),
-                                  labels = c("dictatorship", "democracy"))
-@
 
 \subsection{Regression with one binary variable}
 
@@ -131,41 +119,11 @@ Regress FDI on the binary variable \verb`polity2_binary`. From the regression re
 
 Note: You should know this from the regression result, not from running \verb`mean()`
 
-\textbf{Solution}
-
-<<>>=
-# Fancy way (dplyr) to rename variables that you'll learn one day
-d_merged <- d_merged %>%
-  rename(gdppc = NY.GDP.PCAP.CD, fdi = BX.KLT.DINV.CD.WD)
-
-m_3a <- lm(fdi ~ polity2_binary, data = d_merged)
-summary(m_3a)
-@
-
-The average FDI for dictatorship is \Sexpr{m_3a$coefficients['(Intercept)']} USD.
-
-The average FDI for democracy is \Sexpr{m_3a$coefficients['(Intercept)'] + m_3a$coefficients['polity2_binarydemocracy']} USD.
-
 \subsection{Regression with interaction and interpretation}
 
 Regress FDI against \verb`polity2_binary`, gdppc, and their interaction term.
 
-I want to plot FDI against gdppc with two lines, one representing democracy, the other representing dictatorship (similar to the last plot in the lab). What would be the intercept and slope of these two lines?
-
-\textbf{Solution}
-
-Run regression
-<<>>=
-m_3b <- lm(fdi ~ polity2_binary + gdppc + polity2_binary * gdppc,
-           data = d_merged)
-summary(m_3b)
-@
-
-Intercept of dictatorship line: \Sexpr{m_3b$coefficients['(Intercept)']}
-Intercept of democracy line: \Sexpr{m_3b$coefficients['(Intercept)'] + m_3b$coefficients['polity2_binarydemocracy']}
-
-Slope of dictatorship line: \Sexpr{m_3b$coefficients['gdppc']}
-Slope of democracy line: \Sexpr{m_3b$coefficients['gdppc'] + m_3b$coefficients['polity2_binarydemocracy:gdppc']}
+Let's say that I want to plot FDI against gdppc with two lines, one representing democracy, the other representing dictatorship (similar to the last plot in the lab). What would be the intercept and slope of these two lines?
 
 \subsection{Demonstrating substative meaning of coefficients}
 
@@ -174,21 +132,5 @@ In research, we usually have to demonstrate the substantive meaning of our regre
 For example, imagine that we have a country with median gdppc. What would be its FDI if it were a 1) dictatorship and 2) democracy, holding gdppc at the median value?
 
 Hint: You could either calculate using regression formula, or feed \verb`newdata` to \verb`predict`
-
-\textbf{Solution}
-
-FDI for democracy with median gdppc
-<<>>=
-newdata <- data.frame(polity2_binary = factor("democracy"),
-                      gdppc = median(d_merged$gdppc, na.rm=TRUE))
-predict(m_3b, newdata = newdata)
-@
-
-FDI for dictatorship with median gdppc
-<<>>=
-newdata <- data.frame(polity2_binary = factor("dictatorship"),
-                      gdppc = median(d_merged$gdppc, na.rm=TRUE))
-predict(m_3b, newdata = newdata)
-@
 
 \end{document}
