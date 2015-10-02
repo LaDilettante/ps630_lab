@@ -76,7 +76,7 @@ factor(ses)
 
 Note how the levels are arranged alphabetically  and may not correspond to "real-world" order. Whether this is a problem depends on whether you want to model your data as categorical or ordinal. Usually, you want to model your data as categorical, as `R` treats ordinal variable strangely.
 
-# 2. Interaction term
+# 3. Regression with dummies
 
 ```{r}
 # Load the LDC_IO dataset that you used for homework
@@ -84,7 +84,7 @@ library(foreign)
 d <- read.dta('LDC_IO_replication.dta')
 ```
 
-## Regression with 1 dummy. 
+## Regression with factors
 
 `aclpn` is a binary variable, with 1 = democracy
 
@@ -107,7 +107,7 @@ So `R` mistakenly thought that `dictator1` is a continuous variable above. We wa
 summary(lm(fdignp ~ bpc1 + factor(dictator1), data = d))
 ```
 
-The output will look a lot better with label
+The output will look a lot better with label. (Quiz: What's the average FDI for democracy?)
 ```{r}
 d$dictator1 <- factor(d$dictator1,
                       levels = c(1, 2, 3, 4, 5, 6, 7, 8),
@@ -156,6 +156,8 @@ m_interaction <- lm(fdignp ~ bpc1 + aclpn + bpc1 * aclpn, data = d)
 summary(m_interaction)
 ```
 
+**Quiz: What's the FDI for a dictatorship undergoing BoP crisis? A democracy undergoing BoP crisis?**
+
 We can visualize the interaction effect as follows. (Next lab we will cover how to plot interaction in details.)
 ```{r}
 library(effects)
@@ -163,4 +165,3 @@ plot(Effect(c("aclpn", "bpc1"), mod=m_interaction, se=TRUE),
      x.var = "bpc1",
      multiline=TRUE, ci.style = 'bands')
 ```
-
