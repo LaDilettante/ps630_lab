@@ -181,6 +181,12 @@ FDI for democracy with median gdppc
 <<>>=
 newdata <- data.frame(polity2_binary = factor("democracy"),
                       gdppc = median(d_merged$gdppc, na.rm=TRUE))
+
+# Using regression formula
+m_3b$coefficients['(Intercept)'] + m_3b$coefficients['polity2_binarydemocracy'] +
+  m_3b$coefficients['gdppc'] * median(d_merged$gdppc, na.rm=TRUE) +
+  m_3b$coefficients['polity2_binarydemocracy:gdppc'] * median(d_merged$gdppc, na.rm=TRUE)
+# Using predict
 predict(m_3b, newdata = newdata)
 @
 

@@ -363,6 +363,18 @@ FDI for democracy with median gdppc
 \begin{alltt}
 \hlstd{newdata} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{polity2_binary} \hlstd{=} \hlkwd{factor}\hlstd{(}\hlstr{"democracy"}\hlstd{),}
                       \hlkwc{gdppc} \hlstd{=} \hlkwd{median}\hlstd{(d_merged}\hlopt{$}\hlstd{gdppc,} \hlkwc{na.rm}\hlstd{=}\hlnum{TRUE}\hlstd{))}
+
+\hlcom{# Using regression formula}
+\hlstd{m_3b}\hlopt{$}\hlstd{coefficients[}\hlstr{'(Intercept)'}\hlstd{]} \hlopt{+} \hlstd{m_3b}\hlopt{$}\hlstd{coefficients[}\hlstr{'polity2_binarydemocracy'}\hlstd{]} \hlopt{+}
+  \hlstd{m_3b}\hlopt{$}\hlstd{coefficients[}\hlstr{'gdppc'}\hlstd{]} \hlopt{*} \hlkwd{median}\hlstd{(d_merged}\hlopt{$}\hlstd{gdppc,} \hlkwc{na.rm}\hlstd{=}\hlnum{TRUE}\hlstd{)} \hlopt{+}
+  \hlstd{m_3b}\hlopt{$}\hlstd{coefficients[}\hlstr{'polity2_binarydemocracy:gdppc'}\hlstd{]} \hlopt{*} \hlkwd{median}\hlstd{(d_merged}\hlopt{$}\hlstd{gdppc,} \hlkwc{na.rm}\hlstd{=}\hlnum{TRUE}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## (Intercept) 
+##  5961997155
+\end{verbatim}
+\begin{alltt}
+\hlcom{# Using predict}
 \hlkwd{predict}\hlstd{(m_3b,} \hlkwc{newdata} \hlstd{= newdata)}
 \end{alltt}
 \begin{verbatim}
