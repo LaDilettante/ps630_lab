@@ -5,8 +5,6 @@ date: "September 25, 2015"
 output: pdf_document
 ---
 
-
-
 # Today's Agenda
 
 1. Marginal effects and intercepts
@@ -43,7 +41,7 @@ Let's load another R dataset that can illustrate the interpretation of marginal 
 
 More details can be found here: 
 
-```{r}
+```{r,tidy=TRUE}
 data(airquality)
 summary(airquality)
 ```
@@ -52,13 +50,13 @@ Our question is: is there a linear relationship between the Ozone measures and t
 
 Let us use linear regression to answer this question:
 
-```{r}
+```{r,tidy=TRUE}
 lm1=lm(Ozone ~ Solar.R, data=airquality)
 ```
 
 The summary of this linear regression will return a t-value and a p-value for the intercept and all coefficients.
 
-```{r}
+```{r,tidy=TRUE}
 summary(lm1)
 ```
 
@@ -85,8 +83,8 @@ install.packages("foreign")
 
 Note that the working directory you set depends on where you have the file on your computer.
 
-```{r}
-setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/W5')
+```{r,tidy=TRUE}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
 # Sets the working directory
 library(foreign)
 # Allows you to read more data formats
@@ -118,7 +116,7 @@ The results above indicate that there generally is a low level of multicollinear
 
 Let us start with a simple model that is easy to interpet:
 
-```{r}
+```{r,tidy=TRUE}
 simple=lm(newtar~l1polity, data=LDC)
 summary(simple)
 ```
@@ -128,7 +126,7 @@ What can we conclude from these statistics? What can we say about the hypothesis
 If there's too much information in this type of summary, try another one. We need another package:
 install.packages("arm")
 
-```{r}
+```{r,tidy=TRUE}
 library(arm)
 display(simple)
 ```
@@ -147,8 +145,9 @@ The most important reasons to do so are:
 2. Theoretical reasons
 3. Reviewers that demand you to include them
 
-```{r}
+```{r,tidy=TRUE}
 main=lm(newtar ~ l1polity + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar, data = LDC)
+summary(main)
 summary(main)
 ```
 
@@ -158,13 +157,13 @@ How well does our model do compared to the simple linear regression? Do we obser
 
 Again, it would be possible to reduce the amount of information with another command:
 
-```{r}
+```{r,tidy=TRUE}
 display(main)
 ```
 
 We can access different elements of our model. Let's have a look at what those are:
 
-```{r}
+```{r,tidy=TRUE}
 names(main)
 ```
 
@@ -174,14 +173,14 @@ names(main)
 
 Let us first have a look at the distribution of errors in our model.
 
-```{r}
+```{r,tidy=TRUE}
 main.res = resid(main)
 plot(main.res, main="Values of the Error Term")
 ```
 
 Let us look at the distribution of the error term:
 
-```{r}
+```{r,tidy=TRUE}
 hist(main.res, breaks=20)
 res.density=density(main.res)
 plot(res.density, main="Density Plot of the Residual Distribution")
@@ -195,13 +194,13 @@ Let us plot some predicted values with confidence intervals for our multiple reg
 
 In order to do that we first create a dataframe that contains different values for our main predictor variable and the average values for all variables.
 
-```{r}
+```{r,tidy=TRUE}
 nd <- data.frame(l1polity=seq(-10,10,by=1), l1signed=rep(0.1511,21), l1office=rep(8.431,21), l1gdp_pc=rep(2888,21), l1lnpop=rep(15.10,21), l1ecris2=rep(0.0641,21), l1bpc1=rep(0.5909,21), l1avnewtar=rep(14.91,21))
 ```
 
 Next we use the model we estimated to predict values based on this new dataframe.
 
-```{r}
+```{r,tidy=TRUE}
 pred.p1 <- predict(main, type="response", se.fit=TRUE, newdata=nd)
 
 pred.table <- cbind(pred.p1$fit, pred.p1$se.fit)
@@ -210,7 +209,7 @@ pred.table
 
 Finally, we create the plot:
 
-```{r}
+```{r,tidy=TRUE}
 fit <- pred.p1$fit
 low <- pred.p1$fit - 2*pred.p1$se.fit
 high <- pred.p1$fit + 2*pred.p1$se.fit

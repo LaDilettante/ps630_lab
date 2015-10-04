@@ -1,5 +1,5 @@
 ---
-title: "Tutorial 11: Autocorrelation across time and space"
+title: "Tutorial 11: Simulations and autocorrelation across time and space"
 author: "Jan Vogler (jan.vogler@duke.edu)"
 date: "November 6, 2015"
 output: pdf_document
@@ -7,14 +7,85 @@ output: pdf_document
 
 # Today's Agenda
 
-X. The most important R packages for applied work
+1. Model simulations
+2. Using model simulations to make predictions
+3. Estimating interaction effects through simulations
+4. Autocorrelation across time and space
+
+**Credit to Professor Chris Johnston. The code for the simulation approach introduced here is from his class.**
 
 
 
-# X. The most important R packages for applied work
+# 1. Model simulations
 
-1. car --- associated with Fox & Weisberg's book "Companion to Applied Regression""
-2. arm --- associated with Gelman & Hill's book on "Regression and Multilevel/Hierarchical Models""
-3. Zelig --- by political science professor Gary King
-4. ggplot2 --- introduced extensively in Chang's "R Graphics Cookbook"
-5. stargazer
+We will look at data from a data set that we have not used previously, data on attitudes toward the United States Supreme Court.
+
+```{r}
+setwd("C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w11/")
+courtdata <- read.table("courtdata.txt", header=TRUE)
+summary(courtdata)
+```
+
+What is the meaning of the variables in the data set?
+
+## Independent Variables
+
+college = dummy for college education
+
+ideo = 5-point ideological self-identification, ranging from "very liberal" to "very conservative"
+
+soph = 10-item political knowledge scale
+
+black, hispanic = dummies for respective categories
+
+income = 15-point household income category scale
+
+ruling = dummy indicating respondent correctly identified the Affordable Care Act ruling
+
+male = dummy indicating male gender
+
+## Dependent Variable
+
+We are interested in attitudes of US citizens toward the Supreme Court. For this purpose we look at the variable "sclaw" ("Supreme Court Law"). The variable was based on the following statement:
+
+"The Supreme Court should be allowed to throw out any law it deems unconstitutional"
+
+The variable ranges from "strongly agree" to "strongly disagree".
+
+Let us estimate a linear model.
+
+```{r}
+model1 <- lm(sclaw ~ ruling + ideo + soph + age + male + black + hisp + college + income, data=courtdata)
+summary(model1)
+```
+
+When we estimate a linear model, all our coefficients are assumed to be normally distributed random variables with a mean and a variance that depends on the data. We can make use of this fact by simulating different versions of the model.
+
+For the simulations we need the package "arm". Please make sure to install it via the following command: install.packages("arm")
+
+```{r}
+library(arm)
+model1.sims <- sim(model1, n.sims=1000)
+```
+
+
+
+# 2. Using model simulations to make predictions
+
+```{r}
+
+```
+
+
+
+# 3. Estimating interaction effects through simulations
+
+```{r}
+```
+
+
+
+# 4. Autocorrelation across time and space
+
+```{r}
+```

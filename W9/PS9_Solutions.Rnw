@@ -1,0 +1,145 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{color}
+\onehalfspacing
+
+
+
+\begin{document}
+
+\title{Pol Sci 630: Problem Set 9 - Data Management, Omitted Variable Bias, and Endogeneity - Solutions}
+
+\author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
+
+\date{Grading Due Date: Friday, October 30th, 12.15 PM (Beginning of Lab)}
+ 
+\maketitle
+
+
+
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was.}
+
+\bigskip
+
+\textbf{Use the following scheme to assign points: For problems that were solved correctly in their entirety, assign the full point value of 4. For correctly solved bonus problems, add that value to the total score for a problem but do not go above 4 points per problem. If there are mistakes in any problem, subtract points according to the extent of the mistake. If you subtract points, explain why.}
+
+\bigskip
+
+\textbf{In order to make your text bold and red, you need to insert the following line at the beginning of the document:}
+
+\begin{verbatim} \usepackage{color} \end{verbatim}
+
+\textbf{and the following lines above the solution of the specific task:}
+
+\begin{verbatim} \textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points} \end{verbatim}
+
+
+
+\pagebreak
+
+\section*{R Programming}
+
+\subsection*{Problem 1}
+
+<<results='show',tidy=TRUE>>=
+### a
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+library(foreign)
+LDC = read.dta("LDC_IO_replication.dta")
+
+LDC$regime_class=NA
+LDC$regime_class[LDC$polityiv_update2 > 5]="Democracy"
+unique(LDC$regime_class)
+
+LDC$regime_class[LDC$polityiv_update2 >= -5 & LDC$polityiv_update2 <= 5] = "Anocracy"
+unique(LDC$regime_class)
+
+LDC$regime_class[LDC$polityiv_update2 < -5] = "Autocracy"
+unique(LDC$regime_class)
+
+
+### b
+
+LDC$l1polity_squared=(LDC$l1polity)^2
+
+lm_fdi2=lm(fdignp ~ l1polity + l1polity_squared + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
+summary(lm_fdi2)
+
+nd <- data.frame(l1polity=seq(-10,10,by=1), l1polity_squared=seq(-10,10,by=1)^2, l1signed=rep(0.1511,21), l1office=rep(8.431,21), l1gdp_pc=rep(2888,21), l1lnpop=rep(15.10,21), l1ecris2=rep(0.0641,21), l1bpc1=rep(0.5909,21), l1avnewtar=rep(14.91,21), ctylabel=rep("Angola",21))
+
+pred.p1 <- predict(lm_fdi2, type="response", se.fit=TRUE, newdata=nd)
+pred.table <- cbind(pred.p1$fit, pred.p1$se.fit)
+
+fit <- pred.p1$fit
+low <- pred.p1$fit - 2*pred.p1$se.fit
+high <- pred.p1$fit + 2*pred.p1$se.fit
+cis <- cbind(fit, low, high)
+
+plot(pred.p1$fit, type="l", ylim=c(20,50), main="Polity IV Score and FDI (% GDP) (Angola)", 
+     xlab="Polity IV Score", ylab="FDI (% of GDP)", axes=FALSE)
+axis(1, at=seq(1,21), labels=seq(-10,10,1))
+axis(2, at=seq(20,50), labels=seq(20,50))
+matlines(cis[,c(2,3)], lty=2, col="black")
+@
+
+
+
+\subsection*{Problem 2}
+
+<<results='show',tidy=TRUE>>=
+### a
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w9/')
+library(readstata13)
+na_data=read.dta13("na_data.dta")
+summary(na_data)
+
+### b
+na_data$gdpgrowth=NA
+for (i in 2:length(na_data$q_gdp)){
+  if (na_data$countrycode[i] == na_data$countrycode[i-1]){
+      na_data$gdpgrowth[i] = (na_data$q_gdp[i]/na_data$q_gdp[i-1]-1)*100
+    }
+}
+
+summary(na_data$gdpgrowth)
+
+### c
+na_data$date=na_data$year
+
+LDC$countrycode=NA
+LDC$countrycode[LDC$ctylabel == "Turkey"] = "TUR"
+LDC$countrycode[LDC$ctylabel == "SouthAfrica"] = "ZAF"
+LDC$countrycode[LDC$ctylabel == "Mexico"] = "MEX"
+
+merged_data=merge(LDC, na_data, by=c("countrycode","date"))
+
+newmodel=lm(newtar ~ l1polity + gdpgrowth + factor(countrycode)-1, data=merged_data)
+summary(newmodel)
+@
+
+
+
+\subsection*{Problem 3}
+
+\paragraph*{a)} This task does not have a general answer as the answer depends on the student's own research question. As grader, please make sure that the person who has submitted the homework has answered all questions of the problem set. This includes a brief explanation of the student's theory, information about all types of variables (dependent, independent, and control), and datasets.
+
+\paragraph*{b)} This task does not have a general answer as the answer depends on the student's own research question. As grader, please make sure that the person who has submitted the homework has answered all questions of the problem set. 
+
+
+
+\section*{Statistical Theory: Omitted Variable Bias and Endogeneity}
+
+\subsection*{Problem 4}
+
+\subparagraph{a)}
+
+\subparagraph{b)}
+
+
+
+\end{document}

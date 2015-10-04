@@ -1,0 +1,104 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{hyperref}
+\onehalfspacing
+
+
+
+\begin{document}
+
+\title{Pol Sci 630: Problem Set 9 - Data Management, Omitted Variable Bias, and Endogeneity}
+
+\author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
+
+\date{Due Date: Tuesday, October 27th, 2015, 10 AM (Beginning of Class)}
+ 
+\maketitle 
+
+
+
+It is absolutely essential that you show all your work, including intermediary steps, and comment on your R code to earn full credit. Showing all steps and commenting on code them will also be required in future problem sets.
+
+Please use a *single* PDF file created through knitr to submit your answers. knitr allows you to combine R code and \LaTeX \ code in one document, meaning that you can include both the answers to R programming and math problems. Also submit the source code that generates the PDF file (i.e. either .Rnw or .Rmd files)
+
+Make sure that the PDF files you submit do not include any references to your identity. The grading will happen anonymously. You can submit your answer at the following website: \url{http://ps630-f15.herokuapp.com/}
+
+
+
+\section*{R Programming}
+
+\subsection*{Problem 1 (4 points)}
+
+\paragraph{Do the following in R:}
+
+\subparagraph{a)} Load the \textit{LDC\_IO\_replication} dataset that was introduced in the tutorial. Create a new variable that differentiates between democracies, anocracies, and autocracies. According to the Polity IV classification, a country is a democracy with an overall score of 6 or higher, an autocracy with an overall score of -6 or lower, and anocracy for all remaining scores.
+
+\subparagraph{b)} Building upon problem set 5, problem number 2, please estimate a regression that estimates a curvilinear relationship between net changes in FDI as percentage of GDP and the Polity IV Score (lagged by 1 year). Include country fixed effects and display the results of your regression. Then, show the relationship between the Polity IV Score (lagged by 1 year) and FDI as percentage of GDP graphically (for Algeria).
+
+
+
+\subsection*{Problem 2 (4 points)}
+
+\paragraph{Do the following in R:}
+
+\subparagraph{a)} Find and download the most recent version of the \textit{National Accounts Data by the Penn World Tables} and its PDF documentation. Copy it into the same folder in which you work on the problem set. After you have loaded the dataset into R, display the summary statistics.
+
+Note: If you have the dataset in the same folder as your .Rnw file, you do not need to set a working directory to read the file. Note that you are not supposed to set a working directory as this might reveal your identity to the grader.
+
+\subparagraph{b)} Create a new variable named \textit{gdpgrowth}. The variable is meant to capture the real increase in economic output (gross domestic product, GDP) in a country compared to the last year in percentage points (not proportions!).
+
+Note 1: The real increase in economic output is based on constant prices not current prices. If current prices are used, then inflation could obscure the true increase in economic productivity. Make sure that you use the correct variable.
+
+Note 2: A proportion of 0.5 is 50 percent. The variable is meant to be coded in percentage points, not proportions.
+
+\subparagraph{c)} We are interested in three countries from the \textit{LDC\_IO\_replication} data set specifically. Namely: Turkey, South Africa, and Mexico. For these three countries only, merge the \textit{LDC\_IO\_replication} dataset with the \textit{National Accounts Data by the Penn World Tables} dataset. Then estimate a linear regression model with tariff level as dependent variable and the Polity IV Score (lagged by 1 year) and your new GDP growth variable. Use country-fixed effects and display the summary of the linear regression.
+
+
+
+\section*{Final Research Paper Data Questions}
+
+\subsection*{Problem 3 (4 points)}
+
+\paragraph{Please answer the following questions.}
+
+\textbf{Note: Please don't include R code in this answer as the file would not compile for other people.} 
+
+\subparagraph{a)} Please state which variables you intend to use as variables in your final paper. Explain briefly (2-4 sentences) how these two variables are linked to each other theoretically from your perspective.
+
+\begin{enumerate}
+	\item What is your dependent variable?
+	\item What is your independent variable?
+	\item Which dataset(s) contain these variables and how are they coded there? Is there any need to transform or recode the variables?
+	\item How many units and which time period do the data available to you cover?
+\end{enumerate}
+
+Note: It is perfectly fine if you build upon and extend the answer that you gave in \textit{Problem Set 7: Short Research Outline}.
+
+\subparagraph{b)} Identify at least two (and up to four) important control variables that are not included in the same dataset as your dependent and/or independent variable. Explain briefly (1-2 sentences) why each of these control variables is important for your analysis. For each of the control variables, please answer the following questions:
+
+\begin{enumerate}
+	\item Which dataset contains the variable?
+	\item How are the variables coded in the dataset? Can they be used for linear regression or do they have to be transformed?
+	\item Are the data available for the same units and the same time period as your dependent and independent variables?
+	\item Are units and time coded in the same way? If not, how are they coded differently? How difficult will it be to merge the data sets?
+\end{enumerate}|
+
+
+
+\section*{Statistical Theory: Omitted Variable Bias and Endogeneity}
+
+\subsection*{Problem 4 (4 points)}
+
+\paragraph{Do the following problems. Show every step.}
+
+\subparagraph{a)}
+
+\subparagraph{b)}
+
+
+
+\end{document}
