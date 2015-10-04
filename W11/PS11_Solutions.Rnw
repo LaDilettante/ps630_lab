@@ -1,0 +1,92 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{color}
+\onehalfspacing
+
+
+
+\begin{document}
+
+\title{Pol Sci 630: Problem Set 11 - Simulations and autocorrelation across time and space - Solutions}
+
+\author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
+
+\date{Grading Due Date: Friday, November 13th, 12.15 PM (Beginning of Lab)}
+ 
+\maketitle
+
+
+
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was.}
+
+\bigskip
+
+\textbf{Use the following scheme to assign points: For problems that were solved correctly in their entirety, assign the full point value of 4. For correctly solved bonus problems, add that value to the total score for a problem but do not go above 4 points per problem. If there are mistakes in any problem, subtract points according to the extent of the mistake. If you subtract points, explain why.}
+
+\bigskip
+
+\textbf{In order to make your text bold and red, you need to insert the following line at the beginning of the document:}
+
+\begin{verbatim} \usepackage{color} \end{verbatim}
+
+\textbf{and the following lines above the solution of the specific task:}
+
+\begin{verbatim} \textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points} \end{verbatim}
+
+
+
+\pagebreak
+
+\section*{R Programming}
+
+\subsection*{Problem 1}
+
+<<results='show',tidy=TRUE>>=
+### a
+@
+
+\subparagraph{b)}
+
+
+
+\subsection*{Problem 2}
+
+\paragraph{a)}
+
+<<results='show',tidy=TRUE>>=
+### b
+@
+
+
+<<results='show',tidy=TRUE>>=
+### c
+@
+
+
+
+\subsection*{Problem 3}
+
+\paragraph*{a)}
+
+\paragraph*{b)}
+
+\paragraph*{c)}
+
+
+
+\section*{Statistical Theory: Autocorrelation across time and space}
+
+\subsection*{Problem 4}
+
+\subparagraph{a)}
+
+\subparagraph{b)}
+
+
+
+\end{document}

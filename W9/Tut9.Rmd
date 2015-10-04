@@ -1,5 +1,5 @@
 ---
-title: "Tutorial 9: Omitted Variable Bias and Endogeneity"
+title: "Tutorial 9: Data Management"
 author: "Jan Vogler (jan.vogler@duke.edu)"
 date: "October 23, 2015"
 output: pdf_document
@@ -7,5 +7,236 @@ output: pdf_document
 
 # Today's Agenda
 
-1. Data management I (data transformation)
-2. Data management II (creating new variables from existing ones)
+1. Data management I: reading data, keeping/deleting variables
+2. Data management II: data transformation
+3. Data management III: creating new variables
+4. Some more useful R commands for data management
+5. The most important R packages for applied work
+
+
+
+# 1. Data management I: reading data, keeping/deleting variables
+
+Don't forget that in most cases you will need to 
+
+R can save its own datafiles. Those will have the format ".Rdata". In order to load such a dataset, you can simply use the load command.
+
+```{r,tidy=TRUE,error=TRUE,results=FALSE}
+load(filename.Rdata)
+```
+
+R can also natively read some other file formats, including .csv and .txt files.
+
+```{r,tidy=TRUE,error=TRUE,results=FALSE}
+### .csv files
+csvdata = read.csv("filename.csv", stringsAsFactors=FALSE)
+# stringsAsFactors=FALSE is important because otherwise R will load character variables as factors, treating them as numerical under the surfae, which can lead to complications later on
+
+### .txt files
+textdata = read.table("filename.txt")
+```
+
+Additionally, there are many other data formats. Some of them require the foreign package.
+
+```{r,tidy=TRUE,error=TRUE,results=FALSE}
+library(foreign)
+spssdata = read.spss("filename", to.data.frame=TRUE)
+
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+library(foreign)
+LDC = read.dta("LDC_IO_replication.dta")
+```
+
+For data files that were saved by the most recent version of STATA (STATA 13), you will need another package called "readstata13". Please use the following command to install it: install.packages("readstata13")
+
+```{r,error=TRUE,results=FALSE}
+read.dta13("filename.dta")
+```
+
+It is most likely that you will need to use more than one dataset for your empirical analysis. You can merge two datasets by using the merge command.
+
+```{r,tidy=TRUE,error=TRUE,results=FALSE}
+merge(dataset1,dataset2,by=c("Country","Year"))
+```
+
+To delete data, we simply use the following command:
+
+```{r}
+LDC$ecris2=NULL
+```
+
+We can also only keep some data that we really need:
+
+```{r}
+LDC=LDC[,c("ctylabel","date","polityiv_update2","gdp_pc_95d","newtar","l1polity","l1polity","l1signed","l1office","l1gdp_pc","l1lnpop","l1ecris2","l1bpc1","l1avnewtar")]
+```
+
+The following command allows us to only look at cases on which we have all observations of specific variables.
+
+```{r}
+complete = with(LDC, complete.cases(polityiv_update2,gdp_pc_95d))
+# The "with" command allows you to evaluate a file for certain expressions, such as complete.cases
+LDC=LDC[complete,]
+# Then we subset the file and only take the complete cases
+```
+
+Before doing any analysis, you should inspect your variables closely. Make sure that you are aware of the properties of your most important variables.
+
+```{r}
+summary(LDC$polityiv_update2)
+summary(LDC$gdp_pc_95d)
+summary(LDC$newtar)
+```
+
+
+
+# 2. Data management II: data transformation
+
+We can transform variables in a number of ways. One of the most common ways to transform data is to square it to estimate curvilinear relationships. Let us construct a squared version of the Polity IV Score.
+
+```{r}
+LDC$polityiv_squared=(LDC$polityiv_update2)^2
+LDC$l1polity_squared=(LDC$l1polity)^2
+```
+
+Let us see whether there is a curvilinear relationship between the Polity IV Score and tariff levels.
+
+```{r,results=FALSE}
+main=lm(newtar ~ l1polity + l1polity_squared + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
+summary(main)
+```
+
+Interestingly, there appears to be a curvilinear relationship between the two variables! How would we interpret the results of the linear regression? How would we plot this curvilinear relationship?
+
+```{r,tidy=TRUE}
+nd <- data.frame(l1polity=seq(-10,10,by=1), l1polity_squared=seq(-10,10,by=1)^2, l1signed=rep(0.1511,21), l1office=rep(8.431,21), l1gdp_pc=rep(2888,21), l1lnpop=rep(15.10,21), l1ecris2=rep(0.0641,21), l1bpc1=rep(0.5909,21), l1avnewtar=rep(14.91,21), ctylabel=rep("Algeria",21))
+
+pred.p1 <- predict(main, type="response", se.fit=TRUE, newdata=nd)
+pred.table <- cbind(pred.p1$fit, pred.p1$se.fit)
+
+fit <- pred.p1$fit
+low <- pred.p1$fit - 2*pred.p1$se.fit
+high <- pred.p1$fit + 2*pred.p1$se.fit
+cis <- cbind(fit, low, high)
+
+plot(pred.p1$fit, type="l", ylim=c(40,80), main="Polity IV Score and Tariff Level (Algeria)", 
+     xlab="Polity IV Score", ylab="Tariff Level", axes=FALSE)
+axis(1, at=seq(1,21), labels=seq(-10,10,1))
+axis(2, at=seq(40,80), labels=seq(40,80))
+matlines(cis[,c(2,3)], lty=2, col="black")
+```
+
+This relationship looks slightly different than the relationship estimated by Milner and Kubota.
+
+Moreover, another frequently used way to transform data is to take the natural logarithm. In many cases, researchers do this because the distribution of the data is skewed to the right. The goal is to reduce the skewness.
+
+```{r}
+hist(LDC$gdp_pc_95d,breaks=21)
+dens = density(LDC$gdp_pc_95d, na.rm=TRUE)
+plot(dens,col="blue")
+
+LDC$log_gdp_pc=log(LDC$gdp_pc_95d)
+
+hist(LDC$log_gdp_pc,breaks=21)
+dens = density(LDC$log_gdp_pc, na.rm=TRUE)
+plot(dens,col="blue")
+
+### We have reduced the skewness and enforced a distribution that is closer to a unimodal distribution
+```
+
+
+
+# 3. Data management III: creating new variables
+
+Often we can create new variables from existing ones. Let us create three categories for a country's wealth. (1) Low income countries, (2) middle income countries, and (3) high income countries.
+
+```{r,error=TRUE}
+LDC$incomelevel=NA
+LDC$incomelevel[LDC$gdp_pc_95d<=10000]="Low-income country"
+unique(LDC$incomelevel)
+
+LDC$incomelevel[LDC$gdp_pc_95d > 10000 & LDC$gdp_pc_95d <= 20000] = "Middle-income country"
+unique(LDC$incomelevel)
+
+LDC$incomelevel[LDC$gdp_pc_95d > 20000] = "High-income country"
+unique(LDC$incomelevel)
+
+hist(LDC$incomelevel)
+### Does not work because it is not numeric!
+```
+
+If we want a histogram of our data, our argument needs to be numeric. We can do a simple data transformation to turn the variable into a numeric variable.
+
+```{r,error=TRUE}
+LDC$incomelevel[LDC$incomelevel=="Low-income country"]=0
+LDC$incomelevel[LDC$incomelevel=="Middle-income country"]=1
+LDC$incomelevel[LDC$incomelevel=="High-income country"]=2
+
+hist(LDC$incomelevel)
+### Why does this not work? We just assigned numeric values.
+```
+
+We just assigned numeric values to our variable but R still treats this a character variable. What is the reason for this?
+
+In order to change the coding of the variable to numeric, we can use the following command:
+
+```{r}
+LDC$incomelevel=as.numeric(LDC$incomelevel)
+hist(LDC$incomelevel)
+```
+
+As we can see, the vast majority of our sample are low-income countries.
+
+Let's say you want to create a variable that shows you if the Polity IV Score changed in any given year, with 0 indicating no change and 1 indicating a change. How would we do that?
+
+```{r}
+LDC$politychange=NA
+for (i in 2:length(LDC$polityiv_update2)){
+  if (LDC$ctylabel[i] == LDC$ctylabel[i-1]){
+    if (LDC$polityiv_update2[i] != LDC$polityiv_update2[i-1]){
+      LDC$politychange[i]=1
+    } else {
+      LDC$politychange[i]=0
+    }
+  }
+}
+```
+
+
+
+# 4. Data management IV: useful commands
+
+```{r}
+unique(LDC$ctylabel)
+# Displays all of the empirically observed values
+
+head(LDC$fdignp)
+# Returns the first five values
+
+names(LDC)
+# Returns the variable names of a data frame
+
+class(LDC$ctylabel)
+# Show the classification of a variable
+
+char_newtar=as.character(LDC$newtar)
+# Changes a variable to a character variable
+
+val_newtar=as.numeric(LDC$char_newtar)
+# Changes a variable to a numeric variable
+
+quantile(LDC$newtar,p=c(0.1,0.9), na.rm=T)
+# Displays the 10th and 90th percentile of a variable
+```
+
+
+
+# 5. The most useful R packages for applied work
+
+The following are some of the most useful packages for applied work. I recommend to get the related text books and download the documentations of these packages. These packages have many useful commands that can help you to deal with data management and data analysis.
+
+1. car --- associated with Fox & Weisberg's book "Companion to Applied Regression""
+2. arm --- associated with Gelman & Hill's book on "Regression and Multilevel/Hierarchical Models""
+3. Zelig --- by political science professor Gary King
+4. ggplot2 --- introduced extensively in Chang's "R Graphics Cookbook"
+5. stargazer
