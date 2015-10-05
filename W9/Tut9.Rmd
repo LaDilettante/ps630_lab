@@ -88,6 +88,33 @@ summary(LDC$gdp_pc_95d)
 summary(LDC$newtar)
 ```
 
+What happens if we want to merge data with different numbers of observations?
+
+```{r}
+a=c("Household A", "Household B")
+b=c(2,2)
+data1=data.frame(a,b)
+colnames(data1)=c("Name","Number of people")
+
+data1
+
+c=c("Household A", "Household A", "Household B", "Household B")
+d=c("Individual 1", "Individual 2", "Individual 3", "Individual 4")
+
+data2=data.frame(c,d)
+colnames(data2)=c("Name","Person")
+
+data2
+```
+
+As we can see, the data has different numbers of observations on the household level. What happens if we merge these two dataframes?
+
+```{r}
+merge(data1,data2,by=("Name"))
+```
+
+As we can see, the data will expand.
+
 
 
 # 2. Data management II: data transformation
