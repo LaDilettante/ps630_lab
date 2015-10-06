@@ -78,6 +78,10 @@ complete = with(LDC, complete.cases(polityiv_update2,gdp_pc_95d))
 # The "with" command allows you to evaluate a file for certain expressions, such as complete.cases
 LDC=LDC[complete,]
 # Then we subset the file and only take the complete cases
+
+# This is often a better solution than na.omit because na.omit will remove all rows with missing values, which can result in the loss of too many values
+
+LDComit=na.omit(LDC) #383 observations remaining
 ```
 
 Before doing any analysis, you should inspect your variables closely. Make sure that you are aware of the properties of your most important variables.
@@ -127,7 +131,7 @@ What would you do if you have multiple datafiles that all have a similar name. H
 
 **Credit to Brett Gall for this chunk of the code.**
 
-```{r}
+```{r,error=TRUE}
 ind.files <- dir(pattern = "ind\\d+\\.sav")  # Grab file names
 ind.data <- lapply(ind.files, read.spss)  # Create list with each file's data
 names(ind.data) <- gsub("\\.sav","",ind.files)  # Name list elements by survey wave
@@ -147,8 +151,8 @@ LDC$l1polity_squared=(LDC$l1polity)^2
 Let us see whether there is a curvilinear relationship between the Polity IV Score and tariff levels.
 
 ```{r,results=FALSE}
-main=lm(newtar ~ l1polity + l1polity_squared + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
-summary(main)
+main_int=lm(newtar ~ l1polity + l1polity_squared + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
+# summary(main_int)
 ```
 
 Interestingly, there appears to be a curvilinear relationship between the two variables! How would we interpret the results of the linear regression? How would we plot this curvilinear relationship?
@@ -156,7 +160,7 @@ Interestingly, there appears to be a curvilinear relationship between the two va
 ```{r,tidy=TRUE}
 nd <- data.frame(l1polity=seq(-10,10,by=1), l1polity_squared=seq(-10,10,by=1)^2, l1signed=rep(0.1511,21), l1office=rep(8.431,21), l1gdp_pc=rep(2888,21), l1lnpop=rep(15.10,21), l1ecris2=rep(0.0641,21), l1bpc1=rep(0.5909,21), l1avnewtar=rep(14.91,21), ctylabel=rep("Algeria",21))
 
-pred.p1 <- predict(main, type="response", se.fit=TRUE, newdata=nd)
+pred.p1 <- predict(main_int, type="response", se.fit=TRUE, newdata=nd)
 pred.table <- cbind(pred.p1$fit, pred.p1$se.fit)
 
 fit <- pred.p1$fit
@@ -187,14 +191,6 @@ dens = density(LDC$log_gdp_pc, na.rm=TRUE)
 plot(dens,col="blue")
 
 ### We have reduced the skewness and enforced a distribution that is closer to a unimodal distribution
-```
-
-If you hve missing data in your data frame, you can remove rows that contain missing data. Be careful though as you might remove data you want to use for some parts of your analysis.
-
-```{r}
-LDC=na.omit(LDC)
-
-LDC$ecris2[is.na(LDC$ecris2)] <- "No information"
 ```
 
 
@@ -266,7 +262,7 @@ The "car" package has a recode command that you might find useful for your own w
 
 ```{r}
 library(car)
-LDC$ecris2 = recode(LDC$ecris2,1=2)
+# LDC$ecris2 = recode(LDC$ecris2,"1='2'")
 ```
 
 
