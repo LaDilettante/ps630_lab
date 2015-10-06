@@ -10,12 +10,12 @@ output: pdf_document
 1. Data management I: reading data, keeping/deleting variables
 2. Data management II: data transformation
 3. Data management III: creating new variables
-4. Some more useful R commands for data management
+4. Data management IV: useful commands
 5. The most important R packages for applied work
 
 
 
-# 1. Data management I: reading data, keeping/deleting variables
+# 1. Data management I: reading/subsetting data, keeping/deleting variables
 
 Don't forget that in most cases you will need to 
 
@@ -115,9 +115,27 @@ merge(data1,data2,by=("Name"))
 
 As we can see, the data will expand.
 
+Let's assume we are only interested in a subset of the data. For example, we are only interested in the country Angola. How can we subset the data that we have?
+
+```{r}
+LDC2 = subset(LDC, ctylabel=="Angola")
+summary(LDC2)
+### We are only left with all observations for Angola.
+```
+
+What would you do if you have multiple datafiles that all have a similar name. How can you load this data very efficiently?
+
+**Credit to Brett Gall for this chunk of the code.**
+
+```{r}
+ind.files <- dir(pattern = "ind\\d+\\.sav")  # Grab file names
+ind.data <- lapply(ind.files, read.spss)  # Create list with each file's data
+names(ind.data) <- gsub("\\.sav","",ind.files)  # Name list elements by survey wave
+```
 
 
-# 2. Data management II: data transformation
+
+# 2. Data management II: data transformation and recoding
 
 We can transform variables in a number of ways. One of the most common ways to transform data is to square it to estimate curvilinear relationships. Let us construct a squared version of the Polity IV Score.
 
@@ -171,6 +189,14 @@ plot(dens,col="blue")
 ### We have reduced the skewness and enforced a distribution that is closer to a unimodal distribution
 ```
 
+If you hve missing data in your data frame, you can remove rows that contain missing data. Be careful though as you might remove data you want to use for some parts of your analysis.
+
+```{r}
+LDC=na.omit(LDC)
+
+LDC$ecris2[is.na(LDC$ecris2)] <- "No information"
+```
+
 
 
 # 3. Data management III: creating new variables
@@ -214,6 +240,13 @@ hist(LDC$incomelevel)
 
 As we can see, the vast majority of our sample are low-income countries.
 
+Now let us try to create a new variable that depends on two other variables. We want to have a major economic crises when we have both an economic crisis and a balance-of-payment crisis. How can we do that in R?
+
+```{r}
+LDC$major_crisis=NA
+LDC$major_crisis[LDC$ecris2 == 1 & LDC$bpcris == 1] <- 1
+```
+
 Let's say you want to create a variable that shows you if the Polity IV Score changed in any given year, with 0 indicating no change and 1 indicating a change. How would we do that?
 
 ```{r}
@@ -229,9 +262,41 @@ for (i in 2:length(LDC$polityiv_update2)){
 }
 ```
 
+The "car" package has a recode command that you might find useful for your own work. Let us recode every economic crisis from a value of "1" to a value of "2". Quiz question: in a linear model, which effect would that have on the coefficient of the variable? (Note: the variable is binary)
+
+```{r}
+library(car)
+LDC$ecris2 = recode(LDC$ecris2,1=2)
+```
+
 
 
 # 4. Data management IV: useful commands
+
+One of the most useful functions in R is the apply function. This function allows you to apply a function to all rows (=1) or all columns of a dataframe (=2). Let's see how this could be useful for recoding data.
+
+```{r}
+vector1=c("A","B","B","B")
+vector2=c("B","A","C","A")
+matrix=rbind(vector1,vector2)
+```
+
+Next we create a function that has three inputs: a vector x, an old variable value, and a new value.
+
+```{r}
+recode=function(x,old="A",new="fun"){
+  x[x==old]=new
+}
+```
+
+Now let's apply this function to all columns.
+
+```{r}
+apply(matrix, 2, recode)
+matrix
+```
+
+Here are some more useful commands.
 
 ```{r}
 unique(LDC$ctylabel)
@@ -264,6 +329,6 @@ The following are some of the most useful packages for applied work. I recommend
 
 1. car --- associated with Fox & Weisberg's book "Companion to Applied Regression""
 2. arm --- associated with Gelman & Hill's book on "Regression and Multilevel/Hierarchical Models""
-3. Zelig --- by political science professor Gary King
+3. Zelig --- by political science professor Gary King, see: http://zeligproject.org/
 4. ggplot2 --- introduced extensively in Chang's "R Graphics Cookbook"
 5. stargazer
