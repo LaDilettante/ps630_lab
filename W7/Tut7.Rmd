@@ -81,6 +81,18 @@ summary(intmodel)
 
 How would we interpret the interaction of GDP per capita and FDI? Is it problematic that one of the terms is not significant?
 
+Also, what happens if we use the two formulas below?
+
+```{R,tidy=TRUE}
+intmodel2=lm(polityiv_update2~l1gdp_pc*l1fdi, data=LDC)
+summary(intmodel2)
+
+intmodel3=lm(polityiv_update2~l1gdp_pc:l1fdi, data=LDC)
+summary(intmodel3)
+```
+
+Which model would be the better choice?
+
 
 
 ## In-class exercise: interaction terms with two interval-level variables
