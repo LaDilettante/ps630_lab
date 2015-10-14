@@ -12,11 +12,11 @@
 
 \begin{document}
 
-\title{Pol Sci 630: Problem Set 11 - Diagnostic Techniques and Imputation of Missing Data - Solutions}
+\title{Pol Sci 630: Problem Set 13 - Simulations and Regression Discontinuity - Solutions}
 
 \author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
-\date{Grading Due Date: Friday, November 13th, 12.15 PM (Beginning of Lab)}
+\date{Grading Due Date: Friday, November 27th, 12.00 PM}
  
 \maketitle
 
@@ -47,28 +47,45 @@
 \subsection*{Problem 1}
 
 <<results='show',tidy=TRUE>>=
+### a
 @
+
+\subparagraph{b)}
 
 
 
 \subsection*{Problem 2}
 
+\paragraph{a)}
+
 <<results='show',tidy=TRUE>>=
+### b
+@
+
+
+<<results='show',tidy=TRUE>>=
+### c
 @
 
 
 
 \subsection*{Problem 3}
 
-<<results='show',tidy=TRUE>>=
-@
+\paragraph*{a)}
+
+\paragraph*{b)}
+
+\paragraph*{c)}
 
 
+
+\section*{Statistical Theory: Autocorrelation across time and space}
 
 \subsection*{Problem 4}
 
-<<results='show',tidy=TRUE>>=
-@
+\subparagraph{a)}
+
+\subparagraph{b)}
 
 
 

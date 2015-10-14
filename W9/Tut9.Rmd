@@ -1,5 +1,5 @@
 ---
-title: "Tutorial 9: Data Management"
+title: "Tutorial 9: Data Management and Two-Stages Least Squares (2SLS)"
 author: "Jan Vogler (jan.vogler@duke.edu)"
 date: "October 23, 2015"
 output: pdf_document
@@ -11,7 +11,7 @@ output: pdf_document
 2. Data management II: data transformation
 3. Data management III: creating new variables
 4. Data management IV: useful commands
-5. The most important R packages for applied work
+5. Two-Stages Least Squares (2SLS)
 
 
 
@@ -21,13 +21,13 @@ Don't forget that in most cases you will need to
 
 R can save its own datafiles. Those will have the format ".Rdata". In order to load such a dataset, you can simply use the load command.
 
-```{r,tidy=TRUE,error=TRUE,results=FALSE}
+```{r,tidy=TRUE,error=TRUE,results="hide"}
 load(filename.Rdata)
 ```
 
 R can also natively read some other file formats, including .csv and .txt files.
 
-```{r,tidy=TRUE,error=TRUE,results=FALSE}
+```{r,tidy=TRUE,error=TRUE,results="hide"}
 ### .csv files
 csvdata = read.csv("filename.csv", stringsAsFactors=FALSE)
 # stringsAsFactors=FALSE is important because otherwise R will load character variables as factors, treating them as numerical under the surfae, which can lead to complications later on
@@ -38,7 +38,7 @@ textdata = read.table("filename.txt")
 
 Additionally, there are many other data formats. Some of them require the foreign package.
 
-```{r,tidy=TRUE,error=TRUE,results=FALSE}
+```{r,tidy=TRUE,error=TRUE,results="hide"}
 library(foreign)
 spssdata = read.spss("filename", to.data.frame=TRUE)
 
@@ -49,13 +49,13 @@ LDC = read.dta("LDC_IO_replication.dta")
 
 For data files that were saved by the most recent version of STATA (STATA 13), you will need another package called "readstata13". Please use the following command to install it: install.packages("readstata13")
 
-```{r,error=TRUE,results=FALSE}
+```{r,error=TRUE,results="hide"}
 read.dta13("filename.dta")
 ```
 
 It is most likely that you will need to use more than one dataset for your empirical analysis. You can merge two datasets by using the merge command.
 
-```{r,tidy=TRUE,error=TRUE,results=FALSE}
+```{r,tidy=TRUE,error=TRUE,results="hide"}
 merge(dataset1,dataset2,by=c("Country","Year"))
 ```
 
@@ -131,7 +131,9 @@ What would you do if you have multiple datafiles that all have a similar name. H
 
 **Credit to Brett Gall for this chunk of the code.**
 
-```{r,error=TRUE}
+Let's assume we have many different individuals and their files have similar names. How can we load those files without writing 1000 separate commands for loading the data?
+
+```{r,tidy=TRUE,error=TRUE,results="hide"}
 ind.files <- dir(pattern = "ind\\d+\\.sav")  # Grab file names
 ind.data <- lapply(ind.files, read.spss)  # Create list with each file's data
 names(ind.data) <- gsub("\\.sav","",ind.files)  # Name list elements by survey wave
@@ -150,7 +152,7 @@ LDC$l1polity_squared=(LDC$l1polity)^2
 
 Let us see whether there is a curvilinear relationship between the Polity IV Score and tariff levels.
 
-```{r,results=FALSE}
+```{r,results="hide"}
 main_int=lm(newtar ~ l1polity + l1polity_squared + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
 # summary(main_int)
 ```
@@ -319,12 +321,5 @@ quantile(LDC$newtar,p=c(0.1,0.9), na.rm=T)
 
 
 
-# 5. The most useful R packages for applied work
+# 5. Two-Stages Least Squares (2SLS)
 
-The following are some of the most useful packages for applied work. I recommend to get the related text books and download the documentations of these packages. These packages have many useful commands that can help you to deal with data management and data analysis.
-
-1. car --- associated with Fox & Weisberg's book "Companion to Applied Regression""
-2. arm --- associated with Gelman & Hill's book on "Regression and Multilevel/Hierarchical Models""
-3. Zelig --- by political science professor Gary King, see: http://zeligproject.org/
-4. ggplot2 --- introduced extensively in Chang's "R Graphics Cookbook"
-5. stargazer
