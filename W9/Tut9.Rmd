@@ -1,5 +1,5 @@
 ---
-title: "Tutorial 9: Data Management and Two-Stages Least Squares (2SLS)"
+title: "Tutorial 9: Data Management and Two-Stage Least Squares (2SLS)"
 author: "Jan Vogler (jan.vogler@duke.edu)"
 date: "October 23, 2015"
 output: pdf_document
@@ -7,17 +7,15 @@ output: pdf_document
 
 # Today's Agenda
 
-1. Data management I: reading data, keeping/deleting variables
+1. Data management I: reading/subsetting data, keeping/deleting variables
 2. Data management II: data transformation
 3. Data management III: creating new variables
 4. Data management IV: useful commands
-5. Two-Stages Least Squares (2SLS)
+5. Two-stage least squares (2SLS) regression
 
 
 
 # 1. Data management I: reading/subsetting data, keeping/deleting variables
-
-Don't forget that in most cases you will need to 
 
 R can save its own datafiles. Those will have the format ".Rdata". In order to load such a dataset, you can simply use the load command.
 
@@ -25,7 +23,7 @@ R can save its own datafiles. Those will have the format ".Rdata". In order to l
 load(filename.Rdata)
 ```
 
-R can also natively read some other file formats, including .csv and .txt files.
+R can also read some other file formats, including .csv and .txt files.
 
 ```{r,tidy=TRUE,error=TRUE,results="hide"}
 ### .csv files
@@ -33,42 +31,47 @@ csvdata = read.csv("filename.csv", stringsAsFactors=FALSE)
 # stringsAsFactors=FALSE is important because otherwise R will load character variables as factors, treating them as numerical under the surfae, which can lead to complications later on
 
 ### .txt files
-textdata = read.table("filename.txt")
+textdata = read.table("filename.txt", header=TRUE)
+
+# header=TRUE indicates that the first row contains the names of the variables (see later for example)
 ```
 
-Additionally, there are many other data formats. Some of them require the foreign package.
+Additionally, there are many other data formats (SPSS (sav) and STATA (dta) files). Some of them require the foreign package.
 
 ```{r,tidy=TRUE,error=TRUE,results="hide"}
 library(foreign)
-spssdata = read.spss("filename", to.data.frame=TRUE)
+spssdata = read.spss("filename.sav", to.data.frame=TRUE)
 
-setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
 library(foreign)
-LDC = read.dta("LDC_IO_replication.dta")
+statadata = read.dta("filename.dta")
 ```
 
-For data files that were saved by the most recent version of STATA (STATA 13), you will need another package called "readstata13". Please use the following command to install it: install.packages("readstata13")
+For data files that were saved by the most recent version of STATA (13), you will need another package called "readstata13". Please use the following command to install it:
+
+install.packages("readstata13")
 
 ```{r,error=TRUE,results="hide"}
+library(readstata13)
 read.dta13("filename.dta")
 ```
 
-It is most likely that you will need to use more than one dataset for your empirical analysis. You can merge two datasets by using the merge command.
+Let us now read our LDC dataset.
 
-```{r,tidy=TRUE,error=TRUE,results="hide"}
-merge(dataset1,dataset2,by=c("Country","Year"))
+```{r}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+LDC=read.dta("LDC_IO_replication.dta")
 ```
 
-To delete data, we simply use the following command:
+To delete a variable in a data frame, we simply use the following command:
 
 ```{r,tidy=TRUE}
 LDC$ecris2=NULL
 ```
 
-We can also only keep some data that we really need:
+We can also only keep the data that we actually need for our analysis:
 
 ```{r,tidy=TRUE}
-LDC=LDC[,c("ctylabel","date","polityiv_update2","gdp_pc_95d","newtar","l1polity","l1polity","l1signed","l1office","l1gdp_pc","l1lnpop","l1ecris2","l1bpc1","l1avnewtar")]
+LDC=LDC[,c("ctylabel","date","polityiv_update2","gdp_pc_95d","newtar","l1polity","l1polity","l1signed","l1office","l1gdp_pc","l1lnpop","l1ecris2","l1bpc1","l1avnewtar","l1fdi")]
 ```
 
 The following command allows us to only look at cases on which we have all observations of specific variables.
@@ -78,10 +81,12 @@ complete = with(LDC, complete.cases(polityiv_update2,gdp_pc_95d))
 # The "with" command allows you to evaluate a file for certain expressions, such as complete.cases
 LDC=LDC[complete,]
 # Then we subset the file and only take the complete cases
+```
 
-# This is often a better solution than na.omit because na.omit will remove all rows with missing values, which can result in the loss of too many values
+This is often a better solution than na.omit because na.omit will remove all rows with missing values, which can result in the loss of too many values
 
-LDComit=na.omit(LDC) #383 observations remaining
+```{r,tidy=TRUE}
+LDComit=na.omit(LDC) # only 383 observations remaining
 ```
 
 Before doing any analysis, you should inspect your variables closely. Make sure that you are aware of the properties of your most important variables.
@@ -92,7 +97,7 @@ summary(LDC$gdp_pc_95d)
 summary(LDC$newtar)
 ```
 
-What happens if we want to merge data with different numbers of observations?
+You have learned how to merge data in one of the previous tutorials. But what happens if we want to merge data with different numbers of observations?
 
 ```{r,tidy=TRUE}
 a=c("Household A", "Household B")
@@ -111,7 +116,7 @@ colnames(data2)=c("Name","Person")
 data2
 ```
 
-As we can see, the data has different numbers of observations on the household level. What happens if we merge these two dataframes?
+As we can see, the data has different numbers of observations on the household level.
 
 ```{r,tidy=TRUE}
 merge(data1,data2,by=("Name"))
@@ -131,12 +136,19 @@ What would you do if you have multiple datafiles that all have a similar name. H
 
 **Credit to Brett Gall for this chunk of the code.**
 
-Let's assume we have many different individuals and their files have similar names. How can we load those files without writing 1000 separate commands for loading the data?
+Let's assume we have 1000 different individuals and their files have similar names. How can we load those files without writing 1000 separate commands for loading the data?
 
 ```{r,tidy=TRUE,error=TRUE,results="hide"}
-ind.files <- dir(pattern = "ind\\d+\\.sav")  # Grab file names
-ind.data <- lapply(ind.files, read.spss)  # Create list with each file's data
-names(ind.data) <- gsub("\\.sav","",ind.files)  # Name list elements by survey wave
+ind.files <- dir(pattern = "ind\\d+\\.sav")
+# This command allows us to get the names of the datafiles
+# Note that \\d+\\ is a so-called "regular expression"
+
+ind.data <- lapply(ind.files, read.spss)
+# This loads the data via the "lapply" command
+# Here we apply the command "read.spss" to each element of our list
+
+names(ind.data) <- gsub("\\.sav","",ind.files)
+# Rename list elements, remove ".sav"
 ```
 
 
@@ -194,6 +206,47 @@ plot(dens,col="blue")
 
 ### We have reduced the skewness and enforced a distribution that is closer to a unimodal distribution
 ```
+
+What do we do if the data is not in the format in which we want it to be?
+
+Let us look at a dataset that deals with lotteries in different states.
+
+```{r,tidy=TRUE}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w9/')
+prize=read.csv("Lottery Prize Amounts Awarded.csv", stringsAsFactors=FALSE)
+tickets=read.csv("Lottery Ticket Sales.csv", stringsAsFactors=FALSE)
+
+# Let's look at the datasets
+
+# Let's get rid of missing values
+
+prize=prize[93:103,]
+tickets=tickets[93:103,]
+```
+
+We want to have the data in a format in which we have both the tickets sold and the prizes awarded for each year and state. How do we get there? The "reshape" package is very useful in this respect.
+
+install.packages("reshape")
+
+```{r,tidy=TRUE}
+library(reshape)
+prize <- melt(prize, id=c("Year"))
+prize$Prize=prize$value
+prize$value=NULL
+
+tickets <- melt(tickets, id=c("Year"))
+tickets$TSales=tickets$value
+tickets$value=NULL
+```
+
+Now let's merge the two dataframes.
+
+```{r,tidy=TRUE}
+full=merge(prize,tickets,by=c("Year","variable"))
+View(full)
+```
+
+More information on the reshape package can be found here: http://had.co.nz/reshape/
 
 
 
@@ -260,51 +313,24 @@ for (i in 2:length(LDC$polityiv_update2)){
 }
 ```
 
-The "car" package has a recode command that you might find useful for your own work. Let us recode every economic crisis from a value of "1" to a value of "2". Quiz question: in a linear model, which effect would that have on the coefficient of the variable? (Note: the variable is binary)
-
-```{r,tidy=TRUE}
-library(car)
-# LDC$ecris2 = recode(LDC$ecris2,"1='2'")
-```
-
 
 
 # 4. Data management IV: useful commands
 
-One of the most useful functions in R is the apply function. This function allows you to apply a function to all rows (=1) or all columns of a dataframe (=2). Let's see how this could be useful for recoding data.
-
-```{r,tidy=TRUE}
-vector1=c("A","B","B","B")
-vector2=c("B","A","C","A")
-matrix=rbind(vector1,vector2)
-```
-
-Next we create a function that has three inputs: a vector x, an old variable value, and a new value.
-
-```{r,tidy=TRUE}
-recode=function(x,old="A",new="fun"){
-  x[x==old]=new
-}
-```
-
-Now let's apply this function to all columns.
-
-```{r,tidy=TRUE}
-apply(matrix, 2, recode)
-matrix
-```
-
-Here are some more useful commands.
+Here are some more useful commands for data management:
 
 ```{r,tidy=TRUE}
 unique(LDC$ctylabel)
-# Displays all of the empirically observed values
+# Displays all of the empirically observed unique values
+# Is this useful for continuous variables?
 
-head(LDC$fdignp)
-# Returns the first five values
+head(LDC$polityiv_update2)
+# Returns the first five values of a vector
+# Also, tail() returns the last five values
 
 names(LDC)
 # Returns the variable names of a data frame
+# colnames() does the same
 
 class(LDC$ctylabel)
 # Show the classification of a variable
@@ -321,5 +347,46 @@ quantile(LDC$newtar,p=c(0.1,0.9), na.rm=T)
 
 
 
-# 5. Two-Stages Least Squares (2SLS)
+# 5. Two-Stage Least Squares (2SLS) Regression
 
+Two-stage least squares regression is an important tool when we believe that there is a high level of endogeneity in our model. Endogeneity refers to a situation in which there is a mutual influence of our dependent and independent variables (feedback loop).
+
+In one of our last sessions, we looked at the influence of economic development on the level of democracy. But what if there is (on average) better economic growth in democratic political systems? This would result in a feedback loop as described above.
+
+Let us use the LDC dataset to illustrate 2SLS regression.
+
+```{r,tidy=TRUE}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+library(foreign)
+LDC = read.dta("LDC_IO_replication.dta")
+model1=lm(polityiv_update2 ~ l1gdp_pc, data=LDC)
+summary(model1)
+```
+
+In this regression we might have the problem of endogeneity.
+
+When we use 2SLS regression, we identify an instrument that we believe to not be correlated with our dependent variable of interest, but to have an influence on our independent variable. With this method, we can isolate the effect that our independent variable has through our instruments.
+
+We will use a package called "Zelig" to estimate a 2SLS regression.
+
+Y = Democracy Level (dependent variable)
+X = GDP per capita (explanatory variable, instrumental variable)
+I = FDI inflows (instrument variable)
+
+Note that these claims contradict the theoretical claims made in tutorial 7. So please just treat this as a demonstration of how to set up such a regression.
+
+install.packages("Zelig")
+
+```{r,tidy=TRUE,results="hide",include=FALSE}
+library(Zelig)
+```
+
+```{r,tidy=TRUE}
+formula_1 <- list ("mu1" = polityiv_update2 ~ l1gdp_pc,
+                   "mu2" = l1gdp_pc ~ l1fdi,
+                   "inst" = ~ l1fdi)
+z.out <- zelig(formula = formula_1, model = "twosls", data = LDC)
+summary(z.out)
+```
+
+How would we interpret these results? How are they different from the results obtained by OLS?

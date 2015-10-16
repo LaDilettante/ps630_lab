@@ -38,8 +38,22 @@ install.packages("Amelia")
 
 The following are some of the most useful packages for applied work. I recommend to get the related text books and download the documentations of these packages. These packages have many useful commands that can help you to deal with data management and data analysis.
 
-1. car --- associated with Fox & Weisberg's book "Companion to Applied Regression"
-2. arm --- associated with Gelman & Hill's book on "Regression and Multilevel/Hierarchical Models"
+1. car --- Companion to Applied Regression
+Associated with Fox & Weisberg's book "Companion to Applied Regression"
+Most useful for regression diagnostics as demonstrated in this tutorial.
+
+2. arm --- Analysis of Regression and Multilevel Models
+Associated with Gelman & Hill's book on "Regression and Multilevel/Hierarchical Models"
+Most useful for simulations of regressions and plotting. (More in tutorial 13)
+
 3. Zelig --- by political science professor Gary King, see: http://zeligproject.org/
+Has many different regression tools included
+
 4. ggplot2 --- introduced extensively in Chang's "R Graphics Cookbook"
-5. stargazer
+Allows to produce nicer graphics for visual presentation
+
+5. stargazer --- by Marek Hlavac
+Allows to easily generate LaTeX code of regression tables
+
+6. reshape -- by Hadley Wickham, see: http://had.co.nz/reshape/
+Allows to reformat data
