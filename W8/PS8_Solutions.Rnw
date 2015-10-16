@@ -1,0 +1,171 @@
+\documentclass{article}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{Pol Sci 630:  Problem Set 8 Solutions: Dummy Variables and Interactions (Part 2)}
+
+\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+
+\date{Due Date: Friday, Oct 23, 2015, 12 AM (Beginning of Lab)}
+
+\maketitle
+
+\section{Interaction (8 points)}
+
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 8/8 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
+
+\subsection*{a)}
+
+Download FDI, tariff, and GDP data from WDI for all countries, year 2010 (\verb`indicator = c("BX.KLT.DINV.CD.WD", "TM.TAX.MRCH.SM.AR.ZS", "NY.GDP.MKTP.CD")`). Clean the data as usual. Run the following regression, showing a stargazer result table.
+
+\begin{align}
+\log(FDI) &= \beta_0 + \beta_1 tariff + \beta_2 \log(gdp) + \beta_3 tariff \times \log(gdp)
+\end{align}
+
+\textbf{Solution}
+
+<<cache = TRUE>>=
+library(WDI)
+library(dplyr)
+
+d_wdi_raw <- WDI(indicator = c("BX.KLT.DINV.CD.WD", "TM.TAX.MRCH.SM.AR.ZS",
+                               "NY.GDP.MKTP.CD"),
+         start = 2010, end = 2010, extra = TRUE)
+
+# Cleaning data with dplyr (rename variables, remove aggregate, log transform)
+# Hope its nice syntax motivates you to learn this package
+d_wdi <- d_wdi_raw %>%
+  rename(fdi = BX.KLT.DINV.CD.WD,
+         tariff = TM.TAX.MRCH.SM.AR.ZS,
+         gdp = NY.GDP.MKTP.CD) %>%
+  filter(region != "Aggregates") %>%
+  mutate(loggdp = log(gdp), logfdi = log(fdi))
+
+m1 <- lm(logfdi ~ tariff + loggdp + tariff:loggdp, data = d_wdi)
+@
+
+<<results='asis'>>=
+library(stargazer)
+stargazer(m1)
+@
+
+\subsection*{b)}
+
+Mathematically, what is the marginal effect of tariff on logfdi (i.e. taking partial derivative)? Plugging in the number, what's the marginal effect of tariff on logfdi, holding loggdp at its median value? Note: Use \verb`\Sexpr()` to extract coefficients from the model, do not hand write your calculation.
+
+\textbf{Solution}
+
+\begin{align}
+\frac{\partial}{\partial tariff} logfdi &= \beta_1 + \beta_3 loggdp
+\end{align}
+
+The median value of loggdp is \Sexpr{median(d_wdi$loggdp, na.rm = TRUE)}
+
+The marginal effect of tariff, holding loggdp at its median value, is \Sexpr{m1$coefficients['tariff'] + m1$coefficients['tariff:loggdp'] * median(d_wdi$loggdp, na.rm = TRUE)}
+
+\subsection*{c)}
+
+Using \verb`ggplot2`, plot the marginal effect of tariff on logfdi (y-axis) against different values of loggdp (x-axis). (Hint: Create a data frame, in which one variable is the values of loggdp, the other variable is the corresponding marginal effect given that value of loggdp. This data frame is the data that makes up your plot. The plot is just a line.)
+
+\textbf{Solution}
+
+<<>>=
+library(ggplot2)
+# pd is my shorthand for plot data
+loggdp <- sort(d_wdi$loggdp)
+marginaleffect <- m1$coefficients['tariff'] + loggdp * m1$coefficients['tariff:loggdp']
+pd <- data.frame(loggdp = loggdp,
+                 marginaleffect = marginaleffect)
+
+ggplot(data = pd) +
+  geom_line(aes(x = loggdp, y = marginaleffect)) +
+  labs(y = "Marginal effect of tariff on logfdi", x = "log GDP")
+@
+
+\subsection*{d)}
+
+With log fdi on the y-axis, tariff on the x-axis, plot the effect of tariff on log fdi when log gdp is at the 25\%, 50\%, and 75\% percentile.
+
+(Hint: The plot should have 3 lines, each according to a value of log gdp. This is the plot you saw in last lab)
+
+\textbf{Solution}
+
+<<fig.height = 5, message = FALSE>>=
+library(dplyr)
+library(ggplot2)
+
+loggdp_quantiles <- quantile(d_wdi$loggdp, probs = c(0.25, 0.5, 0.75), na.rm=TRUE)
+
+
+newdata <- data.frame(tariff = rep(d_wdi$tariff, times = 3),
+                 loggdp = rep(loggdp_quantiles, each = nrow(d_wdi)))
+pred <- predict(m1, newdata = newdata, se.fit = TRUE)
+
+pd <- newdata %>%
+  mutate(logfdi = pred$fit,
+         ymin = logfdi - 1.96 * pred$se.fit,
+         ymax = logfdi + 1.96 * pred$se.fit)
+ggplot(data = pd) +
+  geom_line(aes(x = tariff, y = logfdi, color = factor(loggdp))) +
+  geom_ribbon(aes(x = tariff, ymin = ymin, ymax = ymax,
+                  color = factor(loggdp)), alpha = 0.3) +
+  labs(title = "The effect of tariff on log fdi for different values of log FDI") +
+  scale_color_discrete(name = 'log GDP',
+                       labels = c('25 percentile', '50 percentile', '75 percentile'))
+@
+
+\section{Plotting the world with ggplot2 (4 points)}
+
+Plot the world map with \verb`ggplot2`.
+
+If you got stuck, read this \href{http://stackoverflow.com/questions/9805895/mapping-the-world-on-ggplot2}{SO answer} and explain each line of code.
+
+If you encounter the \verb`Error: isTRUE(gpclibPermitStatus()) is not TRUE` error, follow the top answer \href{http://stackoverflow.com/questions/30790036/error-istruegpclibpermitstatus-is-not-true}{here}
+
+\textbf{Solution}
+
+<<message=FALSE, fig.height = 5, fig.width=7>>=
+library(ggplot2)
+library(cshapes)
+gpclibPermit()
+
+# Load the shape file of the world data
+world <- cshp(date=as.Date("2008-1-1"))
+
+# Transform the shape file into a data frame
+world.points <- fortify(world, region='COWCODE')
+
+# Plot the data in the data frame, with mapping
+# longitude -> x-axis, latitude -> y-axis
+# and grouping so that the points that define a country stays together in a group
+p <- ggplot(world.points, aes(long, lat, group=group)) + geom_polygon() +
+  labs(title = "World map")
+p
+@
+
+\section{ANOVA (4 points)}
+
+Load the diamond dataset in R (\verb`data(diamonds)). With \verb`price` as the dependent variable, run 1) one-way ANOVA on \verb`cut`; 2) two-way ANOVA on \verb`cut` and \verb`clarity` and their interaction.
+
+Interpret the table (i.e. which factor is important in determining the diamond's price?)
+
+\textbf{Solution}
+
+<<>>=
+data("diamonds")
+summary(aov(price ~ cut, data = diamonds))
+@
+
+\verb`Cut` is a significant factor, judging from the large F-stat and small p-value
+
+<<>>=
+summary(aov(price ~ cut + clarity + cut:clarity, data = diamonds))
+@
+
+\verb`cut`, \verb`clarity`, and their interaction are all important factors in determining the price of diamond.
+
+\end{document}
