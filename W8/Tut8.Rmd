@@ -9,6 +9,8 @@ output: pdf_document
 
 `ggplot2`
 
+Tips & Tricks: Rstudio Project, Duke Data and Visualization Services
+
 # Introduction 
 
 ```{r}
@@ -99,7 +101,7 @@ ggplot(Oxboys, aes(age, height, group = Subject)) +
   labs(title = "Height and Age of Oxford boys")
 ```
 
-The code is (notice the **group** aesthetics). What would be consequence of not specifying this aesthetics?
+The code that produces the line plot is below (notice the **group** aesthetics). What would be consequence of not specifying this aesthetics?
 
 ```
 ggplot(Oxboys, aes(age, height, group = Subject)) + 
@@ -149,9 +151,9 @@ ggplot(data = mpg, aes(displ, hwy, color = factor(cyl))) +
   geom_smooth(data= subset(mpg, cyl != 5), method="lm")
 ```
 
-# Building a plot layers by layers
+# Building a plot layer by layer
 
-As you may have noticed, the last plot has two geoms. In fact, we can add as many geoms as we want. This is thought of as building the plot layers by layers.
+As you may have noticed, the last plot has two geoms. In fact, we can add as many geoms as we want. This is thought of as building the plot layer by layer.
 
 ```{r}
 # First I add geom_point as the first layer
@@ -171,7 +173,7 @@ A rather extreme example of layering:
 
 # Overriding default aesthetics mapping
 
-Now that we know how to build the plot layers by layers, sometimes the situation demands that we have different aesthetics mapping for each layer.
+Now that we know how to build the plot layer by layer, sometimes the situation demands that we have different aesthetics mapping for each layer.
 
 For example, consider the Oxford boy dataset. This is panel dataset, and I want to build 2 layers: a boxplot layer for each occasion (i.e. variation across boys at each time point), and a line layer for each boy (i.e. variation over time of each boy).
 

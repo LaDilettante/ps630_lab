@@ -1,0 +1,88 @@
+\documentclass{article}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{Pol Sci 630:  Problem Set 8: Dummy Variables and Interactions (Part 2)}
+
+\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+
+\date{Due Date: Tue, Oct 20, 2015, 10 AM (Beginning of Lab)}
+
+\maketitle
+
+\section{Interaction (8 points)}
+
+\subsection*{a)}
+
+Download FDI, tariff, and GDP data from WDI for all countries, year 2010 (\verb`indicator = c("BX.KLT.DINV.CD.WD", "TM.TAX.MRCH.SM.AR.ZS", "NY.GDP.MKTP.CD")`). Clean the data as usual. Run the following regression, showing a stargazer result table.
+
+\begin{align}
+\log(FDI) &= \beta_0 + \beta_1 tariff + \beta_2 \log(gdp) + \beta_3 tariff \times \log(gdp)
+\end{align}
+
+\subsection*{b)}
+
+Mathematically, what is the marginal effect of tariff on logfdi (i.e. taking partial derivative with regards to tariff)? (Hint: This would be a function of loggdp)
+
+Plugging in the number, what's the marginal effect of tariff on logfdi, holding loggdp at its median value? Note: Use \verb`\Sexpr()` to extract coefficients from the model, do not hand write your calculation.
+
+\subsection*{c)}
+
+Using \verb`ggplot2`, plot the marginal effect of tariff on logfdi (y-axis) against different values of loggdp (x-axis). (Hint: Create a data frame, in which one variable is the values of loggdp, the other variable is the corresponding marginal effect given that value of loggdp. This data frame is the data that makes up your plot. The plot is just a line.)
+
+\subsection*{d)}
+
+With log fdi on the y-axis, tariff on the x-axis, plot the effect of tariff on log fdi when log gdp is at the 25\%, 50\%, and 75\% percentile. Brownie point if you do this in ggplot2.
+
+(Hint: The plot should have 3 lines, each according to a value of log gdp. This is the plot you saw in last lab, with confidence interval included)
+
+\subsection*{e) Interpretation}
+
+Interpret the result (i.e. statistical significance and effect size) using information from both the table and the two plots.
+
+\section{ggplot2 (4 points)}
+
+Plot this. Note: DO NOT look at the .Rnw code that generates the plot.
+
+If you did try but couldn't figure out, you can look at the code for hints, but then you have to add comments to explain what the code does.
+
+<<message=FALSE, echo = FALSE, fig.width=7, fig.height = 5>>=
+library(ggplot2)
+library(WDI)
+library(dplyr)
+
+pd <- WDI(indicator = "NY.GDP.PCAP.CD", extra = TRUE,
+          start = 2000, end = 2010) %>%
+  filter(region == "North America") %>%
+  rename(gdppc = NY.GDP.PCAP.CD)
+
+ggplot(data = pd, aes(x = factor(year), y = gdppc)) +
+  geom_boxplot() +
+  geom_line(aes(group = country, color = country)) +
+  labs(x = "year", y = "GDP per capita (NY.GDP.PCAP.CD)",
+       title = "GDP per capita for North American countries")
+@
+
+\section{ANOVA (4 points)}
+
+\subsection*{a)}
+
+Load the diamond dataset in R (\verb`data(diamonds)). With \verb`price` as the dependent variable, run 1) one-way ANOVA on \verb`cut`; 2) two-way ANOVA on \verb`cut` and \verb`clarity` and their interaction.
+
+Interpret the table (i.e. which factor is important in determining the diamond's price?)
+
+\subsection*{b)}
+
+What is the expected price for a diamond that has:
+\begin{itemize}
+\item Ideal cut, VS1 clarity
+\item Very Good cut, VVS1 clarity
+\end{itemize}
+
+Note: You'll have to do dummy regression like last homework, not ANOVA. Also you need to remove the order from the factors \verb`cut` and \verb`clarity`. See \href{http://stackoverflow.com/questions/17592524/how-to-remove-ordering-of-the-levels-from-factor-variable-in-r}{this SO answer}. Remember to use \verb`\Sexpr{}`, don't write down answers by hand (see how I use \verb`\Sexpr{}` from last solution if confused.)
+
+\end{document}

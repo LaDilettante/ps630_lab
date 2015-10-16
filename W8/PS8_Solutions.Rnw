@@ -46,6 +46,7 @@ d_wdi <- d_wdi_raw %>%
   mutate(loggdp = log(gdp), logfdi = log(fdi))
 
 m1 <- lm(logfdi ~ tariff + loggdp + tariff:loggdp, data = d_wdi)
+# Altenartively, lm(logfdi ~ tariff * loggdp)
 @
 
 <<results='asis'>>=
@@ -55,7 +56,9 @@ stargazer(m1)
 
 \subsection*{b)}
 
-Mathematically, what is the marginal effect of tariff on logfdi (i.e. taking partial derivative)? Plugging in the number, what's the marginal effect of tariff on logfdi, holding loggdp at its median value? Note: Use \verb`\Sexpr()` to extract coefficients from the model, do not hand write your calculation.
+Mathematically, what is the marginal effect of tariff on logfdi (i.e. taking partial derivative with regards to tariff)? (Hint: This would be a function of loggdp)
+
+Plugging in the number, what's the marginal effect of tariff on logfdi, holding loggdp at its median value? Note: Use \verb`\Sexpr()` to extract coefficients from the model, do not hand write your calculation.
 
 \textbf{Solution}
 
@@ -88,9 +91,9 @@ ggplot(data = pd) +
 
 \subsection*{d)}
 
-With log fdi on the y-axis, tariff on the x-axis, plot the effect of tariff on log fdi when log gdp is at the 25\%, 50\%, and 75\% percentile.
+With log fdi on the y-axis, tariff on the x-axis, plot the effect of tariff on log fdi when log gdp is at the 25\%, 50\%, and 75\% percentile. Brownie point if you do this in ggplot2.
 
-(Hint: The plot should have 3 lines, each according to a value of log gdp. This is the plot you saw in last lab)
+(Hint: The plot should have 3 lines, each according to a value of log gdp. This is the plot you saw in last lab, with confidence interval included)
 
 \textbf{Solution}
 
@@ -118,36 +121,42 @@ ggplot(data = pd) +
                        labels = c('25 percentile', '50 percentile', '75 percentile'))
 @
 
-\section{Plotting the world with ggplot2 (4 points)}
+\subsection*{e) Interpretation}
 
-Plot the world map with \verb`ggplot2`.
-
-If you got stuck, read this \href{http://stackoverflow.com/questions/9805895/mapping-the-world-on-ggplot2}{SO answer} and explain each line of code.
-
-If you encounter the \verb`Error: isTRUE(gpclibPermitStatus()) is not TRUE` error, follow the top answer \href{http://stackoverflow.com/questions/30790036/error-istruegpclibpermitstatus-is-not-true}{here}
+Interpret the result (i.e. statistical significance and effect size) using information from both the table and the two plots.
 
 \textbf{Solution}
 
-<<message=FALSE, fig.height = 5, fig.width=7>>=
+There does not appear to be any statistically significant interactive effect, as shown both in the table and the fact that the three lines in the second plot are almost parallel.
+
+Looking at the table, loggdp appears to have a statistically significant positive effect on logfdi when tariffs are small.
+
+Looking at the first plot, the marginal effect of tariff on logfdi is statistically insignificant when loggdp=0, and it appears that it remains modest across changes in loggdp.
+
+\section{ggplot2 (4 points)}
+
+Plot this. Note: DO NOT look at the .Rnw code that generates the plot.
+
+If you did try but couldn't figure out, you can look at the code for hints, but then you have to add comments to explain what the code does.
+
+<<message=FALSE, echo = FALSE, fig.width=7, fig.height = 5>>=
 library(ggplot2)
-library(cshapes)
-gpclibPermit()
+library(WDI)
+pd <- WDI(indicator = "NY.GDP.PCAP.CD", extra = TRUE,
+          start = 2000, end = 2010) %>%
+  filter(region == "North America") %>%
+  rename(gdppc = NY.GDP.PCAP.CD)
 
-# Load the shape file of the world data
-world <- cshp(date=as.Date("2008-1-1"))
-
-# Transform the shape file into a data frame
-world.points <- fortify(world, region='COWCODE')
-
-# Plot the data in the data frame, with mapping
-# longitude -> x-axis, latitude -> y-axis
-# and grouping so that the points that define a country stays together in a group
-p <- ggplot(world.points, aes(long, lat, group=group)) + geom_polygon() +
-  labs(title = "World map")
-p
+ggplot(data = pd, aes(x = factor(year), y = gdppc)) +
+  geom_boxplot() +
+  geom_line(aes(group = country, color = country)) +
+  labs(x = "year", y = "GDP per capita (NY.GDP.PCAP.CD)",
+       title = "GDP per capita for North American countries")
 @
 
 \section{ANOVA (4 points)}
+
+\subsection*{a)}
 
 Load the diamond dataset in R (\verb`data(diamonds)). With \verb`price` as the dependent variable, run 1) one-way ANOVA on \verb`cut`; 2) two-way ANOVA on \verb`cut` and \verb`clarity` and their interaction.
 
@@ -166,6 +175,38 @@ summary(aov(price ~ cut, data = diamonds))
 summary(aov(price ~ cut + clarity + cut:clarity, data = diamonds))
 @
 
-\verb`cut`, \verb`clarity`, and their interaction are all important factors in determining the price of diamond.
+Cut, clarity, and their interaction are all statistically significant factors
+
+\subsection*{b)}
+
+What is the expected price for a diamond that has:
+\begin{itemize}
+\item Ideal cut, VS1 clarity
+\item Very Good cut, VVS1 clarity
+\end{itemize}
+
+Note: You'll have to do dummy regression like last homework, not ANOVA. Also you need to remove the order from the factors \verb`cut` and \verb`clarity`. See \href{http://stackoverflow.com/questions/17592524/how-to-remove-ordering-of-the-levels-from-factor-variable-in-r}{this SO answer}. Remember to use \verb`\Sexpr{}`, don't write down answers by hand (see how I use \verb`\Sexpr{}` from last solution if confused.)
+
+\textbf{Solution}
+
+<<>>=
+# Change variables from ordered factor to unordered factor
+diamonds <- diamonds %>%
+  mutate(cut = factor(cut, ordered = FALSE),
+         clarity = factor(clarity, ordered = FALSE))
+
+# Store the model
+m3 <- lm(price ~ cut + clarity + cut:clarity, data = diamonds)
+
+# Store the model coefficients
+coef <- m3$coefficients
+@
+
+
+Expected price for a diamond that has:
+\begin{itemize}
+\item Ideal cut, VS1 clarity: \Sexpr{coef['(Intercept)'] + coef['cutIdeal'] + coef['clarityVS1'] + coef['cutIdeal:clarityVS1']}
+\item Very Good cut, VVS1 clarity: \Sexpr{coef['(Intercept)'] + coef['cutVery Good'] + coef['clarityVVS1'] + coef['cutVery Good:clarityVVS1']}
+\end{itemize}
 
 \end{document}

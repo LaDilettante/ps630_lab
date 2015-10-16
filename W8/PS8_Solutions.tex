@@ -100,6 +100,7 @@ Download FDI, tariff, and GDP data from WDI for all countries, year 2010 (\verb`
 
 {\ttfamily\noindent\color{warningcolor}{\#\# Warning in mutate\_impl(.data, dots): NaNs produced}}\begin{alltt}
 \hlstd{m1} \hlkwb{<-} \hlkwd{lm}\hlstd{(logfdi} \hlopt{~} \hlstd{tariff} \hlopt{+} \hlstd{loggdp} \hlopt{+} \hlstd{tariff}\hlopt{:}\hlstd{loggdp,} \hlkwc{data} \hlstd{= d_wdi)}
+\hlcom{# Altenartively, lm(logfdi ~ tariff * loggdp)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
@@ -115,7 +116,7 @@ Download FDI, tariff, and GDP data from WDI for all countries, year 2010 (\verb`
 \end{alltt}
 \end{kframe}
 % Table created by stargazer v.5.1 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Fri, Oct 16, 2015 - 12:07:40 AM
+% Date and time: Fri, Oct 16, 2015 - 07:36:59 PM
 \begin{table}[!htbp] \centering 
   \caption{} 
   \label{} 
@@ -153,7 +154,9 @@ F Statistic & 110.431$^{***}$ (df = 3; 104) \\
 
 \subsection*{b)}
 
-Mathematically, what is the marginal effect of tariff on logfdi (i.e. taking partial derivative)? Plugging in the number, what's the marginal effect of tariff on logfdi, holding loggdp at its median value? Note: Use \verb`\Sexpr()` to extract coefficients from the model, do not hand write your calculation.
+Mathematically, what is the marginal effect of tariff on logfdi (i.e. taking partial derivative with regards to tariff)? (Hint: This would be a function of loggdp)
+
+Plugging in the number, what's the marginal effect of tariff on logfdi, holding loggdp at its median value? Note: Use \verb`\Sexpr()` to extract coefficients from the model, do not hand write your calculation.
 
 \textbf{Solution}
 
@@ -192,9 +195,9 @@ Using \verb`ggplot2`, plot the marginal effect of tariff on logfdi (y-axis) agai
 
 \subsection*{d)}
 
-With log fdi on the y-axis, tariff on the x-axis, plot the effect of tariff on log fdi when log gdp is at the 25\%, 50\%, and 75\% percentile.
+With log fdi on the y-axis, tariff on the x-axis, plot the effect of tariff on log fdi when log gdp is at the 25\%, 50\%, and 75\% percentile. Brownie point if you do this in ggplot2.
 
-(Hint: The plot should have 3 lines, each according to a value of log gdp. This is the plot you saw in last lab)
+(Hint: The plot should have 3 lines, each according to a value of log gdp. This is the plot you saw in last lab, with confidence interval included)
 
 \textbf{Solution}
 
@@ -230,48 +233,33 @@ With log fdi on the y-axis, tariff on the x-axis, plot the effect of tariff on l
 
 \end{knitrout}
 
-\section{Plotting the world with ggplot2 (4 points)}
+\subsection*{e) Interpretation}
 
-Plot the world map with \verb`ggplot2`.
-
-If you got stuck, read this \href{http://stackoverflow.com/questions/9805895/mapping-the-world-on-ggplot2}{SO answer} and explain each line of code.
-
-If you encounter the \verb`Error: isTRUE(gpclibPermitStatus()) is not TRUE` error, follow the top answer \href{http://stackoverflow.com/questions/30790036/error-istruegpclibpermitstatus-is-not-true}{here}
+Interpret the result (i.e. statistical significance and effect size) using information from both the table and the two plots.
 
 \textbf{Solution}
 
+There does not appear to be any statistically significant interactive effect, as shown both in the table and the fact that the three lines in the second plot are almost parallel.
+
+Looking at the table, loggdp appears to have a statistically significant positive effect on logfdi when tariffs are small.
+
+Looking at the first plot, the marginal effect of tariff on logfdi is statistically insignificant when loggdp=0, and it appears that it remains modest across changes in loggdp.
+
+\section{ggplot2 (4 points)}
+
+Plot this. Note: DO NOT look at the .Rnw code that generates the plot.
+
+If you did try but couldn't figure out, you can look at the code for hints, but then you have to add comments to explain what the code does.
+
 \begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{library}\hlstd{(ggplot2)}
-\hlkwd{library}\hlstd{(cshapes)}
-\hlkwd{gpclibPermit}\hlstd{()}
-\end{alltt}
-
-
-{\ttfamily\noindent\color{warningcolor}{\#\# Warning in gpclibPermit(): support for gpclib will be withdrawn from maptools at the next major release}}\begin{verbatim}
-## [1] TRUE
-\end{verbatim}
-\begin{alltt}
-\hlcom{# Load the shape file of the world data}
-\hlstd{world} \hlkwb{<-} \hlkwd{cshp}\hlstd{(}\hlkwc{date}\hlstd{=}\hlkwd{as.Date}\hlstd{(}\hlstr{"2008-1-1"}\hlstd{))}
-
-\hlcom{# Transform the shape file into a data frame}
-\hlstd{world.points} \hlkwb{<-} \hlkwd{fortify}\hlstd{(world,} \hlkwc{region}\hlstd{=}\hlstr{'COWCODE'}\hlstd{)}
-
-\hlcom{# Plot the data in the data frame, with mapping}
-\hlcom{# longitude -> x-axis, latitude -> y-axis}
-\hlcom{# and grouping so that the points that define a country stays together in a group}
-\hlstd{p} \hlkwb{<-} \hlkwd{ggplot}\hlstd{(world.points,} \hlkwd{aes}\hlstd{(long, lat,} \hlkwc{group}\hlstd{=group))} \hlopt{+} \hlkwd{geom_polygon}\hlstd{()} \hlopt{+}
-  \hlkwd{labs}\hlstd{(}\hlkwc{title} \hlstd{=} \hlstr{"World map"}\hlstd{)}
-\hlstd{p}
-\end{alltt}
-\end{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 \includegraphics[width=\maxwidth]{figure/unnamed-chunk-5-1} 
 
 \end{knitrout}
 
 \section{ANOVA (4 points)}
+
+\subsection*{a)}
 
 Load the diamond dataset in R (\verb`data(diamonds)). With \verb`price` as the dependent variable, run 1) one-way ANOVA on \verb`cut`; 2) two-way ANOVA on \verb`cut` and \verb`clarity` and their interaction.
 
@@ -314,6 +302,42 @@ Interpret the table (i.e. which factor is important in determining the diamond's
 \end{kframe}
 \end{knitrout}
 
-\verb`cut`, \verb`clarity`, and their interaction are all important factors in determining the price of diamond.
+Cut, clarity, and their interaction are all statistically significant factors
+
+\subsection*{b)}
+
+What is the expected price for a diamond that has:
+\begin{itemize}
+\item Ideal cut, VS1 clarity
+\item Very Good cut, VVS1 clarity
+\end{itemize}
+
+Note: You'll have to do dummy regression like last homework, not ANOVA. Also you need to remove the order from the factors \verb`cut` and \verb`clarity`. See \href{http://stackoverflow.com/questions/17592524/how-to-remove-ordering-of-the-levels-from-factor-variable-in-r}{this SO answer}. Remember to use \verb`\Sexpr{}`, don't write down answers by hand (see how I use \verb`\Sexpr{}` from last solution if confused.)
+
+\textbf{Solution}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Change variables from ordered factor to unordered factor}
+\hlstd{diamonds} \hlkwb{<-} \hlstd{diamonds} \hlopt{%>%}
+  \hlkwd{mutate}\hlstd{(}\hlkwc{cut} \hlstd{=} \hlkwd{factor}\hlstd{(cut,} \hlkwc{ordered} \hlstd{=} \hlnum{FALSE}\hlstd{),}
+         \hlkwc{clarity} \hlstd{=} \hlkwd{factor}\hlstd{(clarity,} \hlkwc{ordered} \hlstd{=} \hlnum{FALSE}\hlstd{))}
+
+\hlcom{# Store the model}
+\hlstd{m3} \hlkwb{<-} \hlkwd{lm}\hlstd{(price} \hlopt{~} \hlstd{cut} \hlopt{+} \hlstd{clarity} \hlopt{+} \hlstd{cut}\hlopt{:}\hlstd{clarity,} \hlkwc{data} \hlstd{= diamonds)}
+
+\hlcom{# Store the model coefficients}
+\hlstd{coef} \hlkwb{<-} \hlstd{m3}\hlopt{$}\hlstd{coefficients}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+Expected price for a diamond that has:
+\begin{itemize}
+\item Ideal cut, VS1 clarity: 3489.7444971
+\item Very Good cut, VVS1 clarity: 2459.4410646
+\end{itemize}
 
 \end{document}
