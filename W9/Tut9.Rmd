@@ -1,5 +1,5 @@
 ---
-title: "Tutorial 9: Data Management and Two-Stage Least Squares (2SLS)"
+title: "Tutorial 9: Data Management and Two-Stage Least Squares (2SLS) Regression"
 author: "Jan Vogler (jan.vogler@duke.edu)"
 date: "October 23, 2015"
 output: pdf_document
@@ -20,7 +20,8 @@ output: pdf_document
 R can save its own datafiles. Those will have the format ".Rdata". In order to load such a dataset, you can simply use the load command.
 
 ```{r,tidy=TRUE,error=TRUE,results="hide"}
-load(filename.Rdata)
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w9/')
+load("filename.Rdata")
 ```
 
 R can also read some other file formats, including .csv and .txt files.
@@ -124,6 +125,12 @@ merge(data1,data2,by=("Name"))
 
 As we can see, the data will expand.
 
+Merge has an option that can be helpful. If you have two data frames "x" (here: data1) and "y" (here: data2), you can decide to keep all parts of either data frame or both. This is useful because the merge command normally deletes observations that are not 
+
+```{r,tidy=TRUE, error=TRUE}
+merge(data1, data2, all=TRUE, all.x=TRUE, all.y=TRUE)
+```
+
 Let's assume we are only interested in a subset of the data. For example, we are only interested in the country Angola. How can we subset the data that we have?
 
 ```{r,tidy=TRUE}
@@ -139,16 +146,22 @@ What would you do if you have multiple datafiles that all have a similar name. H
 Let's assume we have 1000 different individuals and their files have similar names. How can we load those files without writing 1000 separate commands for loading the data?
 
 ```{r,tidy=TRUE,error=TRUE,results="hide"}
-ind.files <- dir(pattern = "ind\\d+\\.sav")
+ind.files = dir(pattern = "ind\\d+.sav")
 # This command allows us to get the names of the datafiles
-# Note that \\d+\\ is a so-called "regular expression"
+# Note that \\d+ is a so-called "regular expression"
+# \\ initiates the regular expression
+# "d" stands for a digit
+# + stands for one or more (digit)
+# Google "regular expressions" to learn how to construct more regular expressions
 
-ind.data <- lapply(ind.files, read.spss)
+ind.data = lapply(ind.files, read.spss)
 # This loads the data via the "lapply" command
 # Here we apply the command "read.spss" to each element of our list
 
-names(ind.data) <- gsub("\\.sav","",ind.files)
-# Rename list elements, remove ".sav"
+names(ind.data) = gsub("\\.sav","",ind.files)
+# Rename list elements, remove ".sav" and replace it with "" (empty)
+
+names(ind.data)
 ```
 
 
