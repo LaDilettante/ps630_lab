@@ -177,7 +177,7 @@ LDC$l1polity_squared=(LDC$l1polity)^2
 
 Let us see whether there is a curvilinear relationship between the Polity IV Score and tariff levels.
 
-```{r,results="hide"}
+```{r,tidy=TRUE,results="hide"}
 main_int=lm(newtar ~ l1polity + l1polity_squared + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
 # summary(main_int)
 ```
@@ -195,10 +195,10 @@ low <- pred.p1$fit - 2*pred.p1$se.fit
 high <- pred.p1$fit + 2*pred.p1$se.fit
 cis <- cbind(fit, low, high)
 
-plot(pred.p1$fit, type="l", ylim=c(40,80), main="Polity IV Score and Tariff Level (Algeria)", 
+plot(pred.p1$fit, type="l", ylim=c(35,80), main="Polity IV Score and Tariff Level (Algeria)", 
      xlab="Polity IV Score", ylab="Tariff Level", axes=FALSE)
 axis(1, at=seq(1,21), labels=seq(-10,10,1))
-axis(2, at=seq(40,80), labels=seq(40,80))
+axis(2, at=seq(35,80), labels=seq(35,80))
 matlines(cis[,c(2,3)], lty=2, col="black")
 ```
 

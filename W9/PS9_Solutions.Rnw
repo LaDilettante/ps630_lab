@@ -12,11 +12,11 @@
 
 \begin{document}
 
-\title{Pol Sci 630: Problem Set 9 - Data Management, Omitted Variable Bias, and Endogeneity - Solutions}
+\title{Pol Sci 630: Problem Set 9 - Data Management and Omitted Variable Bias - Solutions}
 
 \author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
-\date{Grading Due Date: Friday, October 30th, 12.15 PM (Beginning of Lab)}
+\date{Grading Due Date: Friday, October 30th, 12.00 PM (Beginning of Lab)}
  
 \maketitle
 
@@ -93,7 +93,7 @@ matlines(cis[,c(2,3)], lty=2, col="black")
 
 <<results='show',tidy=TRUE>>=
 ### a
-setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w9/')
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
 library(readstata13)
 na_data=read.dta13("na_data.dta")
 summary(na_data)
@@ -126,13 +126,30 @@ summary(newmodel)
 
 \subsection*{Problem 3}
 
-\paragraph*{a)} This task does not have a general answer as the answer depends on the student's own research question. As grader, please make sure that the person who has submitted the homework has answered all questions of the problem set. This includes a brief explanation of the student's theory, information about all types of variables (dependent, independent, and control), and datasets.
+\paragraph*{a)} As grader, please make sure that the person who has submitted the homework has answered all questions of this problem. This includes a brief explanation (2-3 sentences) of the student's theory and a reference to both the dependent and key independent variable.
 
-\paragraph*{b)} This task does not have a general answer as the answer depends on the student's own research question. As grader, please make sure that the person who has submitted the homework has answered all questions of the problem set. 
+Make sure that the students has done the following things:
+
+\begin{enumerate}
+	\item The student has explained which datasets contain the variables and provided an overview of how the variables are coded there.
+	\item If and only if there were variables that were nominal or ordinal scale or coded as characters, the student has recognized that these variables have to be transformed to be used for a linear regression. Nominal variables have to be introduced as factors (dummies). Ordinal variables have to be either used as factors (dummies) or have to be assigned numerical values. Similarly, variables that are coded as characters have to be either introduced as factors (dummies) or recoded as numerical variables.
+	\item The students has discussed the numbers of units and the time periods covered by the datasets.
+\end{enumerate}
+
+\paragraph*{b)} As grader, please make sure that the person who has submitted the homework has answered all questions of this problem. This includes a brief theoretical explanation for the importance of at least two control variables that the student suggests to use for the final paper. For all control variables there should be a brief reference to either literature that has used the variable, the concept of omitted variable bias, or both.
+
+Make sure that the students has done the following things:
+
+\begin{enumerate}
+	\item The student has explained which datasets contain the variables and provided an overview of how the variables are coded there.
+	\item If and only if there were variables that were nominal or ordinal scale or coded as characters, the student has recognized that these variables have to be transformed to be used for a linear regression. Nominal variables have to be introduced as factors (dummies). Ordinal variables have to be either used as factors (dummies) or have to be assigned numerical values. Similarly, variables that are coded as characters have to be either introduced as factors (dummies) or recoded as numerical variables.
+	\item The students has addressed potential differences in the time periods and units covered. For example, data for the control variables may be available only for OECD countries while the data for the dependent variable may only be available for developing countries. Another example would be that data for the control variables may be available on a quarterly basis while data for the dependent variable may be available on an annual basis.
+	\item The students has addressed differences in the coding of time periods and units. For example, the names of countries are coded as full names in one dataset while another dataset uses 3-letter isocodes to refer to countries. Another example would be that time in one dataset could be coded in the format YYYY-MM (Y = year, M = month) while it could be coded in the format YY-MM in another dataset.
+\end{enumerate}
 
 
 
-\section*{Statistical Theory: Omitted Variable Bias and Endogeneity}
+\section*{Statistical Theory: Omitted Variable Bias}
 
 \subsection*{Problem 4}
 
