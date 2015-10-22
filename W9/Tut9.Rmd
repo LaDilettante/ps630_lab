@@ -37,7 +37,7 @@ textdata = read.table("filename.txt", header=TRUE)
 # header=TRUE indicates that the first row contains the names of the variables (see later for example)
 ```
 
-Additionally, there are many other data formats (SPSS (sav) and STATA (dta) files). Some of them require the foreign package.
+Additionally, there are many other data formats (SPSS .sav and Stata .dta files). Some of them require the foreign package.
 
 ```{r,tidy=TRUE,error=TRUE,results="hide"}
 library(foreign)
@@ -47,18 +47,18 @@ library(foreign)
 statadata = read.dta("filename.dta")
 ```
 
-For data files that were saved by the most recent version of STATA (13), you will need another package called "readstata13". Please use the following command to install it:
+For data files that were saved by the most recent version of Stata (13), you will need another package called "readstata13". Please use the following command to install it:
 
 install.packages("readstata13")
 
-```{r,error=TRUE,results="hide"}
+```{r,tidy=TRUE,error=TRUE,results="hide"}
 library(readstata13)
 read.dta13("filename.dta")
 ```
 
 Let us now read our LDC dataset.
 
-```{r}
+```{r,tidy=TRUE}
 setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
 LDC=read.dta("LDC_IO_replication.dta")
 ```
@@ -127,9 +127,11 @@ As we can see, the data will expand.
 
 Merge has an option that can be helpful. If you have two data frames "x" (here: data1) and "y" (here: data2), you can decide to keep all parts of either data frame or both. This is useful because the merge command normally deletes observations that are not 
 
-```{r,tidy=TRUE, error=TRUE}
-merge(data1, data2, all=TRUE, all.x=TRUE, all.y=TRUE)
+```{r,tidy=TRUE,error=TRUE}
+merge(x=data1, y=data2, all=TRUE, all.x=TRUE, all.y=TRUE)
 ```
+
+When merging we can think of our data frames as the "master" and "merging" data frame. Often our master data frame contains the crucial variables of our analysis. We then combine it with additional "merging" data frames. If we consider the variables in our master data frame to be most important for the analysis, it often makes sense to keep all entries of this data frame (by using all.x=TRUE). In many cases, one has to be careful when merging data frames because it might be the case that several observations in the merging data frame match an entry in the master data frame, even though the researcher does not want to match one with multiple observations.
 
 Let's assume we are only interested in a subset of the data. For example, we are only interested in the country Angola. How can we subset the data that we have?
 
@@ -145,7 +147,7 @@ What would you do if you have multiple datafiles that all have a similar name. H
 
 Let's assume we have 1000 different individuals and their files have similar names. How can we load those files without writing 1000 separate commands for loading the data?
 
-```{r,tidy=TRUE,error=TRUE,results="hide"}
+```{r,tidy=TRUE}
 ind.files = dir(pattern = "ind\\d+.sav")
 # This command allows us to get the names of the datafiles
 # Note that \\d+ is a so-called "regular expression"
@@ -267,7 +269,7 @@ More information on the reshape package can be found here: http://had.co.nz/resh
 
 Often we can create new variables from existing ones. Let us create three categories for a country's wealth. (1) Low income countries, (2) middle income countries, and (3) high income countries.
 
-```{r,error=TRUE}
+```{r,tidy=TRUE,error=TRUE}
 LDC$incomelevel=NA
 LDC$incomelevel[LDC$gdp_pc_95d<=10000]="Low-income country"
 unique(LDC$incomelevel)
@@ -284,7 +286,7 @@ hist(LDC$incomelevel)
 
 If we want a histogram of our data, our argument needs to be numeric. We can do a simple data transformation to turn the variable into a numeric variable.
 
-```{r,error=TRUE}
+```{r,tidy=TRUE,error=TRUE}
 LDC$incomelevel[LDC$incomelevel=="Low-income country"]=0
 LDC$incomelevel[LDC$incomelevel=="Middle-income country"]=1
 LDC$incomelevel[LDC$incomelevel=="High-income country"]=2
@@ -383,23 +385,39 @@ When we use 2SLS regression, we identify an instrument that we believe to not be
 We will use a package called "Zelig" to estimate a 2SLS regression.
 
 Y = Democracy Level (dependent variable)
-X = GDP per capita (explanatory variable, instrumental variable)
+
+X = GDP per capita (explanatory variable)
+
 I = FDI inflows (instrument variable)
 
 Note that these claims contradict the theoretical claims made in tutorial 7. So please just treat this as a demonstration of how to set up such a regression.
 
 install.packages("Zelig")
 
+library(Zelig)
+
 ```{r,tidy=TRUE,results="hide",include=FALSE}
 library(Zelig)
 ```
 
 ```{r,tidy=TRUE}
-formula_1 <- list ("mu1" = polityiv_update2 ~ l1gdp_pc,
+formula_inst <- list ("mu1" = polityiv_update2 ~ l1gdp_pc,
                    "mu2" = l1gdp_pc ~ l1fdi,
                    "inst" = ~ l1fdi)
-z.out <- zelig(formula = formula_1, model = "twosls", data = LDC)
-summary(z.out)
+model2 = zelig(formula = formula_inst, model = "twosls", data = LDC)
+summary(model2)
 ```
 
 How would we interpret these results? How are they different from the results obtained by OLS?
+
+An alternative approach is using the ivreg function in R. For this we need the AER package.
+
+install.packages("AER")
+
+```{r,tidy=TRUE}
+library(AER)
+model3 = ivreg(polityiv_update2 ~ l1gdp_pc | l1fdi, data=LDC)
+summary(model3)
+```
+
+The instrument here is on the right (l1fdi).
