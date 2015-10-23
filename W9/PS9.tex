@@ -35,11 +35,13 @@ Make sure that the PDF files you submit do not include any references to your id
 
 \paragraph{Do the following in R:}
 
-\subparagraph{a)} Load the \textit{LDC\_IO\_replication} dataset that was introduced in the tutorial. Create a new character variable that differentiates between democracies, anocracies, and autocracies.
+\subparagraph{a)} Load the \textit{LDC\_IO\_replication} dataset that was introduced in the tutorial. Create a new ordinal-level, character variable that differentiates between democracies, anocracies, and autocracies.
 
 Note: According to the Polity IV classification, a country is a democracy when it has an overall Polity IV score of 6 or higher, an autocracy with an overall score of -6 or lower, and anocracy for all remaining scores.
 
 \subparagraph{b)} Building upon problem set 5, problem number 2, please estimate a regression with a curvilinear relationship between net changes in FDI as percentage of GDP as dependent variable and the Polity IV Score (lagged by 1 year) as independent variable. Include country fixed effects and show the summary of your regression.
+
+Note: Make sure that you add +10 to the Polity IV Score to estimate the curvilinear relationship correctly.
 
 Then, show the relationship between the Polity IV Score (lagged by 1 year) and FDI as percentage of GDP graphically for Algeria.
 
@@ -100,7 +102,7 @@ Note: It is perfectly fine if you build upon and extend the answer that you gave
 
 \subparagraph{a)} Write down the formula of your empirical model for your final paper, including your key independent variable and up to four control variables that you identified in the previous section.
 
-\subparagraph{b)} Assuming that there is omitted variable bias for \textbf{one} of the control variables, please explain (for this variable only) using mathematical notation: (1) which influence the control variable potentially has on your dependent variable and key independent variable. (2) Which consequence the omission of this variable would therefore have, i.e. upwards or downwards bias on the marginal effect of your key independent variable.
+\subparagraph{b)} Assuming that there is omitted variable bias for \textbf{one} of the control variables, please explain (for this variable only) using mathematical notation: (1) which influence the control variable potentially has on your dependent variable and key independent variable. (2) Which consequence the omission of this variable would therefore have, i.e. upwards or downwards bias on the estimated coefficient of your key independent variable.
 
 Note 1: For this problem, it does not matter whether or not the control variable has this influence in reality. The purpose of this assignment is to illustrate the effect of omitted variable bias using mathematical notation.
 

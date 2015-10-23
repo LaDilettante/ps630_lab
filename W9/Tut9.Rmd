@@ -175,8 +175,10 @@ We can transform variables in a number of ways. One of the most common ways to t
 In order to make the square meaningful, we first have to add +10 to all Polity Scores (otherwise negative squares would get the same positive values as the positive square).
 
 ```{r,tidy=TRUE}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+LDC=read.dta("LDC_IO_replication.dta")
 LDC$polityiv_update2=LDC$polityiv_update2+10
-LDC$l1polity_squared=LDC$l1polity_squared+10
+LDC$l1polity=LDC$l1polity+10
 LDC$polityiv_squared=(LDC$polityiv_update2)^2
 LDC$l1polity_squared=(LDC$l1polity)^2
 ```
@@ -201,10 +203,10 @@ low <- pred.p1$fit - 2*pred.p1$se.fit
 high <- pred.p1$fit + 2*pred.p1$se.fit
 cis <- cbind(fit, low, high)
 
-plot(pred.p1$fit, type="l", ylim=c(35,80), main="Polity IV Score and Tariff Level (Algeria)", 
+plot(pred.p1$fit, type="l", ylim=c(0,80), main="Polity IV Score and Tariff Level (Algeria)", 
      xlab="Polity IV Score", ylab="Tariff Level", axes=FALSE)
 axis(1, at=seq(1,21), labels=seq(-10,10,1))
-axis(2, at=seq(35,80), labels=seq(35,80))
+axis(2, at=seq(0,80), labels=seq(0,80))
 matlines(cis[,c(2,3)], lty=2, col="black")
 ```
 
@@ -320,6 +322,8 @@ LDC$major_crisis[LDC$ecris2 == 1 & LDC$bpcris == 1] <- 1
 Let's say you want to create a variable that shows you if the Polity IV Score changed in any given year, with 0 indicating no change and 1 indicating a change. How would we do that?
 
 ```{r,tidy=TRUE}
+complete = with(LDC, complete.cases(polityiv_update2))
+LDC=LDC[complete,]
 LDC$politychange=NA
 for (i in 2:length(LDC$polityiv_update2)){
   if (LDC$ctylabel[i] == LDC$ctylabel[i-1]){
