@@ -172,7 +172,11 @@ names(ind.data)
 
 We can transform variables in a number of ways. One of the most common ways to transform data is to square it to estimate curvilinear relationships. Let us construct a squared version of the Polity IV Score.
 
+In order to make the square meaningful, we first have to add +10 to all Polity Scores (otherwise negative squares would get the same positive values as the positive square).
+
 ```{r,tidy=TRUE}
+LDC$polityiv_update2=LDC$polityiv_update2+10
+LDC$l1polity_squared=LDC$l1polity_squared+10
 LDC$polityiv_squared=(LDC$polityiv_update2)^2
 LDC$l1polity_squared=(LDC$l1polity)^2
 ```
@@ -187,7 +191,7 @@ main_int=lm(newtar ~ l1polity + l1polity_squared + l1signed + l1office + l1gdp_p
 Interestingly, there appears to be a curvilinear relationship between the two variables! How would we interpret the results of the linear regression? How would we plot this curvilinear relationship?
 
 ```{r,tidy=TRUE}
-nd <- data.frame(l1polity=seq(-10,10,by=1), l1polity_squared=seq(-10,10,by=1)^2, l1signed=rep(0.1511,21), l1office=rep(8.431,21), l1gdp_pc=rep(2888,21), l1lnpop=rep(15.10,21), l1ecris2=rep(0.0641,21), l1bpc1=rep(0.5909,21), l1avnewtar=rep(14.91,21), ctylabel=rep("Algeria",21))
+nd <- data.frame(l1polity=seq(0,20,by=1), l1polity_squared=seq(0,20,by=1)^2, l1signed=rep(0.1511,21), l1office=rep(8.431,21), l1gdp_pc=rep(2888,21), l1lnpop=rep(15.10,21), l1ecris2=rep(0.0641,21), l1bpc1=rep(0.5909,21), l1avnewtar=rep(14.91,21), ctylabel=rep("Algeria",21))
 
 pred.p1 <- predict(main_int, type="response", se.fit=TRUE, newdata=nd)
 pred.table <- cbind(pred.p1$fit, pred.p1$se.fit)
