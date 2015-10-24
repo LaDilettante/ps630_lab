@@ -39,6 +39,10 @@ textdata = read.table("filename.txt", header=TRUE)
 
 Additionally, there are many other data formats (SPSS .sav and Stata .dta files). Some of them require the foreign package.
 
+Use the following command to install it:
+
+install.packages("foreign")
+
 ```{r,tidy=TRUE,error=TRUE,results="hide"}
 library(foreign)
 spssdata = read.spss("filename.sav", to.data.frame=TRUE)
@@ -87,7 +91,8 @@ LDC=LDC[complete,]
 This is often a better solution than na.omit because na.omit will remove all rows with missing values, which can result in the loss of too many values
 
 ```{r,tidy=TRUE}
-LDComit=na.omit(LDC) # only 383 observations remaining
+LDComit=na.omit(LDC)
+# only 383 observations remaining if we use this method
 ```
 
 Before doing any analysis, you should inspect your variables closely. Make sure that you are aware of the properties of your most important variables.
@@ -138,7 +143,8 @@ Let's assume we are only interested in a subset of the data. For example, we are
 ```{r,tidy=TRUE}
 LDC2 = subset(LDC, ctylabel=="Angola")
 summary(LDC2)
-### We are only left with all observations for Angola.
+# We are left with observations for Angola only.
+# We can also apply this to numerical variables and set conditions for subsetting.
 ```
 
 What would you do if you have multiple datafiles that all have a similar name. How can you load this data very efficiently?
@@ -148,6 +154,7 @@ What would you do if you have multiple datafiles that all have a similar name. H
 Let's assume we have 1000 different individuals and their files have similar names. How can we load those files without writing 1000 separate commands for loading the data?
 
 ```{r,tidy=TRUE}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w9/')
 ind.files = dir(pattern = "ind\\d+.sav")
 # This command allows us to get the names of the datafiles
 # Note that \\d+ is a so-called "regular expression"
@@ -159,8 +166,9 @@ ind.files = dir(pattern = "ind\\d+.sav")
 ind.data = lapply(ind.files, read.spss)
 # This loads the data via the "lapply" command
 # Here we apply the command "read.spss" to each element of our list
+# read.spss requires the foreign package
 
-names(ind.data) = gsub("\\.sav","",ind.files)
+names(ind.data) = gsub(".sav","",ind.files)
 # Rename list elements, remove ".sav" and replace it with "" (empty)
 
 names(ind.data)
@@ -203,14 +211,14 @@ low <- pred.p1$fit - 2*pred.p1$se.fit
 high <- pred.p1$fit + 2*pred.p1$se.fit
 cis <- cbind(fit, low, high)
 
-plot(pred.p1$fit, type="l", ylim=c(0,80), main="Polity IV Score and Tariff Level (Algeria)", 
+plot(pred.p1$fit, type="l", ylim=c(35,80), main="Polity IV Score and Tariff Level (Algeria)", 
      xlab="Polity IV Score", ylab="Tariff Level", axes=FALSE)
 axis(1, at=seq(1,21), labels=seq(-10,10,1))
-axis(2, at=seq(0,80), labels=seq(0,80))
+axis(2, at=seq(35,80), labels=seq(35,80))
 matlines(cis[,c(2,3)], lty=2, col="black")
 ```
 
-This relationship looks slightly different than the relationship estimated by Milner and Kubota.
+This relationship looks slightly different than the relationship estimated by Milner and Kubota. How is it different?
 
 Moreover, another frequently used way to transform data is to take the natural logarithm. In many cases, researchers do this because the distribution of the data is skewed to the right. The goal is to reduce the skewness.
 
@@ -316,6 +324,8 @@ Now let us try to create a new variable that depends on two other variables. We 
 
 ```{r,tidy=TRUE}
 LDC$major_crisis=NA
+LDC$major_crisis[LDC$ecris2 == 1 & LDC$bpcris == 0] <- 0
+LDC$major_crisis[LDC$ecris2 == 0 & LDC$bpcris == 1] <- 0
 LDC$major_crisis[LDC$ecris2 == 1 & LDC$bpcris == 1] <- 1
 ```
 
@@ -323,6 +333,7 @@ Let's say you want to create a variable that shows you if the Polity IV Score ch
 
 ```{r,tidy=TRUE}
 complete = with(LDC, complete.cases(polityiv_update2))
+# Necessary because otherwise we will get NAs
 LDC=LDC[complete,]
 LDC$politychange=NA
 for (i in 2:length(LDC$polityiv_update2)){

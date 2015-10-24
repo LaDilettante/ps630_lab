@@ -65,12 +65,13 @@ unique(LDC$regime_class)
 
 ### b
 
+LDC$l1polity=LDC$l1polity+10
 LDC$l1polity_squared=(LDC$l1polity)^2
 
 lm_fdi2=lm(fdignp ~ l1polity + l1polity_squared + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
 summary(lm_fdi2)
 
-nd <- data.frame(l1polity=seq(-10,10,by=1), l1polity_squared=seq(-10,10,by=1)^2, l1signed=rep(0.1511,21), l1office=rep(8.431,21), l1gdp_pc=rep(2888,21), l1lnpop=rep(15.10,21), l1ecris2=rep(0.0641,21), l1bpc1=rep(0.5909,21), l1avnewtar=rep(14.91,21), ctylabel=rep("Angola",21))
+nd <- data.frame(l1polity=seq(0,20,by=1), l1polity_squared=seq(0,20,by=1)^2, l1signed=rep(0.1511,21), l1office=rep(8.431,21), l1gdp_pc=rep(2888,21), l1lnpop=rep(15.10,21), l1ecris2=rep(0.0641,21), l1bpc1=rep(0.5909,21), l1avnewtar=rep(14.91,21), ctylabel=rep("Angola",21))
 
 pred.p1 <- predict(lm_fdi2, type="response", se.fit=TRUE, newdata=nd)
 pred.table <- cbind(pred.p1$fit, pred.p1$se.fit)

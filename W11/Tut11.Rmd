@@ -16,13 +16,96 @@ output: pdf_document
 
 # 1. Diagnostic techniques
 
+Diagnostic techniques are a way to assess the robustness and accuracy of our regression. Let us look at our regression from tutorial 5 to assess it in different dimensions.
+
+```{r}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+library(foreign)
+LDC=read.dta("LDC_IO_replication.dta")
+main=lm(newtar ~ l1polity + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
+summary(main)
+```
+
+Bonferonni p-value for most extreme observations.
+
+Car package.
+
+install.packages("car")
+
+```{r}
+library(car)
+outlierTest(main)
+```
+
+QQ Plot
+
+```{r, error=TRUE}
+qqPlot(main)
+```
+
+Leverage Plots
+
+```{r}
+leveragePlots(main) 
+```
+
+Non-constance error variance test
+
+```{r}
+ncvTest(main)
+```
 
 
-# 2. Functional form specifications
+
+# 2. Robustness of regressions
+
+Robust linear regression is a tool that discounts the influence of outliers. If you have outliers in your data, then they will not have as strong an influence in robust linear regression as in regular linear regression.
+
+```{r, error=TRUE}
+library(MASS)
+robust1=rlm(newtar ~ l1polity + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
+summary(robust)
+```
+
+Bootstrapping is an important robustness check. It relies on a very simple trick.
+
+We need a new package.
+
+install.packages("boot")
+
+```{r}
+library(boot)
+
+# you have to write a function that gets out the statistic(s) of interest
+boot.function<-function(formula, data, indices){
+	d<-data[indices,] # allows boot to select a sample
+	fit <-lm(formula, data=d)
+	return(coef(fit))
+}
+
+#bootstrapping with 1000 reps
+results<-boot(data=LDC, statistic=boot.function, R=1000, formula=main)
+
+# check it out
+results
+plot(results, index=1)
+plot(results, index=2)
+
+# 95% intervals
+boot.ci(results, conf=0.95, type="norm", index=1) #intercept
+boot.ci(results, type="norm", index=2) #l1polity
+```
 
 
 
-# 3. Imputation of missing data
+# 3. Functional form specifications
+
+```{r}
+```
+
+
+
+# 4. Imputation of missing data
 
 We often deal with missing data for some observations. Imputation allows us to make statistical inferences about the missing data values. Our guesses are based on the data that we have. For the imputation of missing data, we will use a package by Gary King called "Amelia".
 
@@ -32,9 +115,11 @@ install.packages("Amelia")
 library(Amelia)
 ```
 
+We will demonstrate the imputation of missing data using our LDC dataset.
 
 
-# 4. The most useful R packages for applied work
+
+# 5. The most useful R packages for applied work
 
 The following are some of the most useful packages for applied work. I recommend to get the related text books and download the documentations of these packages. These packages have many useful commands that can help you to deal with data management and data analysis.
 
