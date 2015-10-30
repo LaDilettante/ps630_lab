@@ -1,0 +1,200 @@
+\documentclass{article}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{Pol Sci 630:  Problem Set 10 Solutions: 2SLS, Matching, Outlier, Heckman}
+
+\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+
+\date{Due Date: Friday, Nov 6, 2015, 12 AM (Beginning of Lab)}
+
+\maketitle
+
+\section{2SLS}
+
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 8/8 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
+
+\subsection{Load dataset CigarettesSW from package AER}
+
+<<message = FALSE>>=
+library(AER)
+data("CigarettesSW")
+@
+
+\subsection{Plot the following}
+
+What can we say about the relationship between tax, price, and packs? Note: This is a good way to show the relationship between 3 variables with a 2D plot.
+
+<<fig.width=6, fig.height=5, echo = FALSE>>=
+library(ggplot2)
+ggplot(data = CigarettesSW) +
+  geom_point(aes(x = tax, y = price, size = packs, color = year))
+@
+
+\textbf{Solution}
+
+Tax and price are positively correlated. This gives a hint that tax can be a good instrument for price.
+
+Tax and price are negatively correlated with the number of cigarette packs consumed per capita.
+
+\subsection{Divide variable income by 1000 (for interpretability)}
+
+<<>>=
+CigarettesSW$income <- CigarettesSW$income / 1000
+@
+
+
+\subsection{Run 2SLS}
+
+Run 2SLS with \verb`ivreg`. Outcome: packs. Exogenous var: income. Endogenous var: price, whose instrument is tax. Interpret the coefficient of \verb`income` and \verb`price`.
+
+\textbf{Solution}
+
+<<results='asis', message=FALSE>>=
+library(stargazer)
+m11 <- ivreg(packs ~ income + price | income + tax, data = CigarettesSW)
+stargazer(m11)
+@
+
+1000 dollar increase in income leads to \Sexpr{coef(m11)['income']} change in number of packs per capita, but the effect is not significant.
+
+1 dollar increase in price leads to \Sexpr{coef(m11)['price']} change in number of packs per capita, holding other constants. The coefficient is statistically significant.
+
+\subsection{2SLS diagnostics: use F-test to check for weak instrument}
+
+\textbf{Solution}
+
+<<>>=
+summary(m11, diagnostics = TRUE)
+@
+
+The weak instrument test (i.e. F-test) rejects the null hypothesis that the instrument is not correlated with the endogenous variable (p-value = \Sexpr{summary(m11, diagnostics = TRUE)$diagnostics['Weak instruments', 'p-value']}). So our instruments are not weak.
+
+\subsection{2SLS by hand}
+
+Run the 2SLS by hand, i.e. not using \verb`ivreg`, but run 2 stages of \verb`lm`. Do you get the same estimate from \verb`ivreg`?
+
+\textbf{Solution}
+
+<<results='asis'>>=
+m_stage1 <- lm(price ~ tax, data = CigarettesSW)
+CigarettesSW$price_hat <- predict(m_stage1)
+
+m_stage2 <- lm(packs ~ income + price_hat, data = CigarettesSW)
+stargazer(m_stage2)
+@
+
+The coefficients are quite similar (by hand: \Sexpr{coef(m_stage2)['price_hat']}, by ivreg: \Sexpr{coef(m11)['price']})
+
+\section{Matching}
+
+\subsection{Load dataset lalonde from MatchIt, show covariate imbalance}
+
+Plot the following. Hint: Look up \verb|position="dodge"| for ggplot2
+
+<<fig.height=4.5, fig.width=4.5>>=
+library(MatchIt)
+data("lalonde")
+ggplot(data = lalonde) +
+  geom_histogram(aes(x = black, fill = factor(treat)),
+                 position = "dodge")
+@
+
+\subsection{See the effect of omitting an important variable}
+
+Regress re78 against 1) treat, age, educ; 2) treat, age, educ, black. Do the treatment effect differ a lot? Why?
+
+\textbf{Solution}
+
+<<>>=
+lm(re78 ~ treat + age + educ, data = lalonde)
+lm(re78 ~ treat + age + educ + black, data = lalonde)
+@
+
+If we do not control for \verb`black`, we would wrongly conclude that the treatment effect is negative. This is because we have a lot of blacks in the treatment group, and blacks tend to have poorer outcomes.
+
+\subsection{Running CEM: Matching and check balance}
+
+Match the treatment and the control group based on age, educ, and black. Check the balance
+
+\textbf{Solution}
+
+<<>>=
+m.out <- matchit(treat ~ age + educ + black, data = lalonde,
+                 method = "cem")
+summary(m.out) # to check balance
+@
+
+We get exact balance after running CEM.
+
+\subsection{Running CEM: Analysis after matching}
+
+Run a weighted regression of re78 against 1) treat, age, educ, 2) treat, age, educ, and black. Do the treatment effect differ? Compare this result with part 2.
+
+\textbf{Solution}
+
+<<>>=
+# Get the matched data
+lalonde_matched <- match.data(m.out)
+
+# Run weighted regression to get the causal treatment effect
+lm(re78 ~ treat + age + educ,
+   data = lalonde_matched, weights = lalonde_matched$weights)
+
+lm(re78 ~ treat + age + educ + black,
+   data = lalonde_matched, weights = lalonde_matched$weights)
+@
+
+The treatment effect doen't differ by a lot across the two regressions. It's because in the matched data, we have equal number of blacks in the control and the treatment group.
+
+\section{Heckman}
+
+\subsection{Load Mroz87 data from package sampleSelection}
+
+<<message=FALSE>>=
+library(sampleSelection)
+data(Mroz87)
+@
+
+\subsection{Run a Heckman model}
+
+The selection variable is lfp. Run a heckman model with huswage, kid5, educ, city explaning the selection, and educ and city explaning the outcome variable log(wage). Interpret the result for the outcome model
+
+\textbf{Solution}
+
+<<>>=
+a <- heckit(lfp ~ huswage + kids5 + educ + city, log(wage) ~ educ + city, data=Mroz87)
+summary(a)
+@
+
+1 more year of education leads to \Sexpr{coef(a, part='outcome')['educ']} change in log wage (the effect is also significant). Being in a city leads to \Sexpr{coef(a, part='outcome')['city']} change in the log wage but the effect is not significant.
+
+\subsection{Outlier}
+
+Load the anscombe dataset (the famous Anscombe quartet). Run a regression of y3 against x3, and find the outlier using any tools that we have discussed (DFbeta, cook distance, etc.)
+
+Brownie point: Fit a linear model for y1 agains x1, y2 against x2, etc. What spooky thing did you notice?
+
+\textbf{Solution}
+
+<<>>=
+data("anscombe")
+
+# DFBetas
+m3 <- lm(y3 ~ x3, data = anscombe)
+influence.measures(m3)
+@
+
+The third observation has a very large DFbetas, thus likely an outlier.
+
+<<>>=
+plot(m3, which = 5)
+@
+
+The Cook's D plot confirms that the third observation is an outlier, as it goes out of bound of the red lines denoting Cook's D $= 1$
+
+\end{document}

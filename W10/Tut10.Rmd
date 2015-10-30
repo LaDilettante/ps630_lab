@@ -1,0 +1,169 @@
+---
+title: 'Tutorial 10: Diagnostics, IV, Matching, Heckman'
+author: Anh Le
+date: "October 28, 2015"
+output: pdf_document
+---
+
+2. Diagnostics (DFbeta, partial regression plot, plot lm)
+1. 2SLS (by package and by hand)
+4. Heckman
+3. Matching
+
+# Outlier Diagnostics (graphical)
+
+The following plots distinguish the concepts of `leverage` and `residual` (aka `discrepancy` as in the class slides). It also explains the last plot in `plot.lm()` that you haven't learned yet (i.e. the `Residuals vs Leverage` plot, aka Cook's Distance plot)
+
+![This demonstration of leverage vs residual (aka discrepancy)](http://i.stack.imgur.com/mY3we.png)
+
+![](http://i.stack.imgur.com/RXcgI.png)
+
+Credit: http://stats.stackexchange.com/questions/58141/interpreting-plot-lm
+
+# Outlier Diagnostics (DFBeta & Partial Regression Plot)
+
+## DFBeta
+
+Let's create a mock dataset with the 6th observation being the outlier
+
+```{r}
+x <- seq(1, 8)
+y <- 2 * x + rnorm(8) # y is a linear function of x with added noise
+y[6] <- 2 * x[6] + 20 + rnorm(1) # create the outlier
+plot(x, y)
+```
+
+Here's how we detect the outlier:
+```{r}
+m <- lm(y ~ x)
+influence.measures(m)
+
+# dfbetas is scaled. It's = dfbeta / SE(beta), same as in class slide
+dfbetas(m)
+```
+
+## Partial correlation plot
+
+```{r}
+library(car) # install if necessary
+
+# Data set on the prestige of an occupation
+reg1 <- lm(prestige ~ education + income + type, data = Prestige)
+avPlots(reg1, id.n=2, id.cex=0.7)
+# id.n – id most influential observation
+# id.cex – font size for id.
+```
+
+# 2SLS
+
+Y is outcome, X is endogenous, O is the omitted variable (importantly, X and O are correlated). And Z is the instrument for X.
+
+Example: Y is `grade`, X is `attendance`, O is `time spent studying`. X and O are often correlated -- hard-working students attend class more and also spend more time studying. Z is instrument for `attendance` (What could Z be?)
+
+```{r, message = FALSE}
+library(AER) # for ivreg
+library(mvtnorm) # to generate multivariate normal
+
+data <- rmvnorm(100, mean = c(0, 0, 0, 0), 
+                sigma = matrix(c(1, 0.5, 0.5, 0.5, 
+                                 0.5, 1, 0.5, 0, 
+                                 0.5, 0.5, 1, 0, 
+                                 0.5, 0, 0, 1), ncol = 4))
+X <- data[, 1]
+Z1 <- data[, 2]
+Z2 <- data[, 3]
+O <- data[, 4]
+
+# Notice the correlation structure of the data
+cor(data)
+
+# Generate Y
+Y <- 2 * X + 3 * O + rnorm(100)
+
+# Run normal regression
+summary(lm(Y ~ X))
+
+# Run IV regression
+# recall that true value of beta X is 2
+summary(ivreg(Y ~ X | Z1 + Z2),
+        diagnostics = TRUE)
+
+# Weak instrument: F-test. Null hypothesis = instruments are not correlated with X
+# Wu-Hausman: check the endogeneity of X. Null hypothesis = X is not endogenous
+# Sargan test: over-identification test, only runnable when there are more instruments than endogenous variable. Null hypothesis: instruments are exogenous
+```
+
+```{r}
+# Run IV regression by hand
+m_1ststage <- lm(X ~ Z1 + Z2)
+xhat <- predict(m_1ststage)
+m_2ndstage <- lm(Y ~ xhat)
+summary(m_2ndstage)
+```
+
+Notice that running IV using package and by hand give the same coefficient estimate, but different standard error. It's because if we run the second stage like above, we don't take into account the uncertainty in estimating $\hat x$ (Notice how we just plug in $\hat x$, paying no attention to the standard error in the first stage.)
+
+So, in real research, just use a package.
+
+# Heckman
+
+\begin{align}
+y^{o} &= y \times s \\
+y &= x + \epsilon_1 \\
+s &= 1 \text{ if } (x^s + \epsilon_2) > 0 \\
+&= 0 \text{ if } (x^s + \epsilon_2) < 0
+\end{align}
+
+```{r, message = FALSE}
+library(sampleSelection)
+
+set.seed(0)
+library(mvtnorm)
+
+# Generate 2 epsilons so that they are correlated
+eps <- rmvnorm(500, c(0, 0), matrix(c(1, -0.7, -0.7, 1), 2, 2))
+
+x <- runif(500) # explanatory var for the outcome
+y <- x + eps[, 1] # latent outcome variable
+
+xs <- runif(500) # explanatory var for the selection
+s <- (xs + eps[, 2]) > 0 # selection variable
+
+yo <- y * (s > 0) # observable outcome, which has a bunch of 0 due to truncation
+
+# Note that xs and x are independent, satisfying the exclusion restriction
+```
+
+Regular regression
+
+```{r}
+summary(lm(yo ~ x))
+```
+
+Here's how you run a Heckman model
+
+```{r}
+summary(heckit(s ~ xs + x, yo ~ x))
+```
+
+# Matching
+
+We can use the library `MatchIt`, which can run a lot of matching method.
+
+```{r, message = FALSE}
+library(MatchIt)
+
+data(lalonde)
+m.out <- matchit(treat ~ educ + black + hispan, data = lalonde, 
+                 method = "cem")
+summary(m.out) # to check balance
+
+# Get the matched data
+lalonde_matched <- match.data(m.out)
+names(lalonde_matched) # there's a weight variable in here
+
+# Run weighted regression to get the causal treatment effect
+lm(re78 ~ treat + age + educ + black + hispan,
+   data = lalonde_matched, weights = lalonde_matched$weights)
+```
+

@@ -1,0 +1,84 @@
+\documentclass{article}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{Pol Sci 630:  Problem Set 10: 2SLS, Matching, Outlier, Heckman}
+
+\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+
+\date{Due Date: Tue, Nov 3, 2015, 12 AM (Beginning of Lab)}
+
+\maketitle
+
+\section{2SLS}
+
+\subsection{Load dataset CigarettesSW from package AER}
+
+\subsection{Plot the following}
+
+What can we say about the relationship between tax, price, and packs? Note: This is a good way to show the relationship between 3 variables with a 2D plot.
+
+<<fig.width=6, fig.height=5, echo = FALSE>>=
+library(ggplot2)
+data(CigarettesSW, package = 'AER')
+ggplot(data = CigarettesSW) +
+  geom_point(aes(x = tax, y = price, size = packs, color = year))
+@
+
+\subsection{Divide variable income by 1000 (for interpretability)}
+
+\subsection{Run 2SLS}
+
+Run 2SLS with \verb`ivreg`. Outcome: packs. Exogenous var: income. Endogenous var: price, whose instrument is tax. Interpret the coefficient of \verb`income` and \verb`price`.
+
+\subsection{2SLS diagnostics: use F-test to check for weak instrument}
+
+\subsection{2SLS by hand}
+
+Run the 2SLS by hand, i.e. not using \verb`ivreg`, but run 2 stages of \verb`lm`. Do you get the same estimate from \verb`ivreg`?
+
+\section{Matching}
+
+\subsection{Load dataset lalonde from MatchIt, show covariate imbalance}
+
+Plot the following. Hint: Look up \verb|position="dodge"| for ggplot2
+
+<<fig.height=4, echo=FALSE, message=FALSE>>=
+library(MatchIt)
+data("lalonde")
+ggplot(data = lalonde) +
+  geom_histogram(aes(x = black, fill = factor(treat)),
+                 position = "dodge")
+@
+
+\subsection{See the effect of omitting an important variable}
+
+Regress re78 against 1) treat, age, educ; 2) treat, age, educ, black. Do the treatment effect differ a lot? Why?
+
+\subsection{Running CEM: Matching and check balance}
+
+Match the treatment and the control group based on age, educ, and black. Check the balance
+
+\subsection{Running CEM: Analysis after matching}
+
+Run a weighted regression of re78 against 1) treat, age, educ, 2) treat, age, educ, and black. Do the treatment effect differ? Compare this result with part 2.
+
+\section{Heckman}
+
+\subsection{Load Mroz87 data from package sampleSelection}
+
+\subsection{Run a Heckman model}
+
+The selection variable is lfp. Run a heckman model with huswage, kid5, educ, city explaning the selection, and educ and city explaning the outcome variable log(wage). Interpret the result for the outcome model
+
+\subsection{Outlier}
+
+Load the anscombe dataset (the famous Anscombe quartet). Run a regression of y3 against x3, and find the outlier using any tools that we have discussed (DFbeta, cook distance, etc.)
+
+Brownie point: Fit a linear model for y1 agains x1, y2 against x2, etc. What spooky thing did you notice?
+
+\end{document}
