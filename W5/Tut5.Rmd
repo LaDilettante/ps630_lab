@@ -148,7 +148,6 @@ The most important reasons to do so are:
 ```{r,tidy=TRUE}
 main=lm(newtar ~ l1polity + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar, data = LDC)
 summary(main)
-summary(main)
 ```
 
 In the multiple linear regression, how would our expectation for the average tariff level change if our Polity Score increased from -10 to 10 and we had an economic crisis?

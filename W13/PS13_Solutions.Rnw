@@ -12,7 +12,7 @@
 
 \begin{document}
 
-\title{Pol Sci 630: Problem Set 13 - Simulations and Regression Discontinuity - Solutions}
+\title{Pol Sci 630: Problem Set 13 - Autocorrelation, Fixed Effects, and Causal Inference Techniques - Solutions}
 
 \author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 

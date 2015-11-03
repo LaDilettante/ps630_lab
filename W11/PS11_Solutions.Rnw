@@ -12,11 +12,11 @@
 
 \begin{document}
 
-\title{Pol Sci 630: Problem Set 11 - Diagnostic Techniques and Imputation of Missing Data - Solutions}
+\title{Pol Sci 630: Problem Set 11 - Imputation of Missing Data, Regression Diagnostics, and Simulations - Solutions}
 
 \author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
-\date{Grading Due Date: Friday, November 13th, 12.15 PM (Beginning of Lab)}
+\date{Grading Due Date: Friday, November 13th, 12.00 PM (Beginning of Lab)}
  
 \maketitle
 
@@ -47,20 +47,82 @@
 \subsection*{Problem 1}
 
 <<results='show',tidy=TRUE>>=
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+library(foreign)
+LDC=read.dta("LDC_IO_replication.dta")
+
+LDCs=subset(LDC, ctylabel==c("Brazil","Jamaica","Kuwait","HongKong","KyrgyzRepublic"))
+keep = c("ctylabel","date","newtar","fdignp","gdp_pc_95d","polityiv_update2")
+LDCs=LDCs[,keep]
+
+lm1=lm(fdignp ~ newtar + gdp_pc_95d + polityiv_update2, data=LDCs)
+summary(lm1)
 @
+
+<<include=FALSE>>=
+library(Amelia)
+library(Zelig)
+@
+
+<<results='hide',tidy=TRUE>>=
+a.out <- amelia(LDCs, m = 5, ts = "date", cs = "ctylabel")
+@
+
+<<results='show',tidy=TRUE>>=
+lm2 <- zelig(fdignp ~ newtar + gdp_pc_95d + polityiv_update2, data = a.out$imputations, model = "ls")
+summary(lm2)
+@
+
+The results that every student will get can differ significantly. However, it is most likely that the second regression will yield different results than the first one.
+
+Are these results from the first or the second regression more accurate (i.e. closer to the truth)? This is impossible to tell. Although multiple imputation potentially is a powerful tool in the sense that it allows us to make inferences about missing data points,these guesses have some uncertainty attached and we can never be fully certain about their accuracy.
+
+Before we ran any regression we had a fairly small number of observations and many missing values for several of our variables. Does this mean that the imputation of data has improved our results? Considering that the imputation itself is also a process of statistical inference that relies on our data and considering that imputation is more precise the more data we have to impute missing values, the results of our imputation here are questionable in their accuracy.
+
+It could be the case that the results from the second regression are more accurate than from the first one. The reverse could also be true. In short, we cannot say with certainty which of the two is better.
+
+For grader: If you grade another students homework, then assign full points only if the student arrives at the conclusion that we cannot be certain which results are closer to the truth.
 
 
 
 \subsection*{Problem 2}
 
 <<results='show',tidy=TRUE>>=
+lm3=lm(fdignp ~ l1polity + l1gdp_pc + l1lnpop, data=LDC)
+summary(lm3)
+
+library(car)
+
+crPlots(lm3)
 @
+
+The component plus residual plots do not indicate any non-linear relationships for any of the variables utilized. There is a small amount of outliers for each of the three variables. However, those outliers do change the general linear trend.
+
+<<results='show',tidy=TRUE>>=
+library(lmtest)
+resettest(lm3, power = 2:3, type = c("regressor"), data = LDC)
+@
+
+The Ramsey RESET test does not yield a significant result, indicating that our model has been specified correctly. With a p-value of 0.1625 we cannot reject the null hypothesis at any common level of statistical significance. Therefore, we can conclude that we have correctly estimated the relationship.
 
 
 
 \subsection*{Problem 3}
 
 <<results='show',tidy=TRUE>>=
+LDC=LDC[with(LDC, complete.cases(newtar, l1polity, l1signed, l1office, l1gdp_pc, l1lnpop, l1ecris2, l1bpc1)),]
+
+lm4=lm(newtar ~ l1polity + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1, data = LDC)
+summary(lm4)
+
+library(arm)
+model.sims=sim(lm4, n.sims=1000)
+
+curve(coef(lm4)[1] + coef(lm4)[2]*x + coef(lm4)[3]*mean(LDC$l1signed, na.rm=T) + coef(lm4)[4]*mean(LDC$l1office, na.rm=T) + coef(lm4)[5]*mean(LDC$l1gdp_pc, na.rm=T) + coef(lm4)[6]*mean(LDC$l1lnpop, na.rm=T) + coef(lm4)[7]*mean(LDC$l1ecris2, na.rm=T) + coef(lm4)[8]*mean(LDC$l1bpc1, na.rm=T), from=-10, to=10, ylim=c(-5,45), xlab="Polity IV Score (t-1)", ylab="Tariff Level", main="Tariff Level as Function of the Polity IV Score (t-1)", lwd=2)
+for (i in 1:1000){
+	curve(coef(model.sims)[i,1] + coef(model.sims)[i,2]*x + coef(lm4)[3]*mean(LDC$l1signed, na.rm=T) + coef(lm4)[4]*mean(LDC$l1office, na.rm=T) + coef(lm4)[5]*mean(LDC$l1gdp_pc, na.rm=T) + coef(lm4)[6]*mean(LDC$l1lnpop, na.rm=T) + coef(lm4)[7]*mean(LDC$l1ecris2, na.rm=T) + coef(lm4)[8]*mean(LDC$l1bpc1, na.rm=T), add=TRUE, col="gray80")
+}
+curve(coef(lm4)[1] + coef(lm4)[2]*x + coef(lm4)[3]*mean(LDC$l1signed, na.rm=T) + coef(lm4)[4]*mean(LDC$l1office, na.rm=T) + coef(lm4)[5]*mean(LDC$l1gdp_pc, na.rm=T) + coef(lm4)[6]*mean(LDC$l1lnpop, na.rm=T) + coef(lm4)[7]*mean(LDC$l1ecris2, na.rm=T) + coef(lm4)[8]*mean(LDC$l1bpc1, na.rm=T), col="black", lwd=2, add=TRUE)
 @
 
 
@@ -68,8 +130,65 @@
 \subsection*{Problem 4}
 
 <<results='show',tidy=TRUE>>=
+quantile(LDC$l1polity, probs=c(0.25,0.75), na.rm=T)
+quantile(LDC$l1gdp_pc, probs=c(0.25,0.75), na.rm=T)
+quantile(LDC$l1fdi, probs=c(0.25,0.75), na.rm=T)
+
+# Polity IV Score
+
+d.l1polity <- array(NA, c(1000,length(LDC$newtar)))
+m.l1polity <- array(NA, 1000)
+
+for (i in 1:1000){
+	d.l1polity[i, ] <- (coef(model.sims)[i,1] + coef(model.sims)[i,2]*8 + coef(model.sims)[i,3]*LDC$l1signed +
+		coef(model.sims)[i,4]*LDC$l1office + coef(model.sims)[i,5]*LDC$l1gdp_pc + coef(model.sims)[i,6]*LDC$l1lnpop + coef(model.sims)[i,7]*LDC$l1ecris2 + coef(model.sims)[i,8]*LDC$l1bpc1) -
+	    (coef(model.sims)[i,1] + coef(model.sims)[i,2]*-7 + coef(model.sims)[i,3]*LDC$l1signed +
+		coef(model.sims)[i,4]*LDC$l1office + coef(model.sims)[i,5]*LDC$l1gdp_pc + coef(model.sims)[i,6]*LDC$l1lnpop
+		+ coef(model.sims)[i,7]*LDC$l1ecris2 + coef(model.sims)[i,8]*LDC$l1bpc1)
+	m.l1polity[i] <- mean(d.l1polity[i, ])
+}
+
+mean(m.l1polity)
+sd(m.l1polity)
+quantile(m.l1polity, probs=c(.025,.16,.84,.975))
+
+
+
+# GDP per Capita
+
+d.l1gdp_pc <- array(NA, c(1000,length(LDC$newtar)))
+m.l1gdp_pc <- array(NA, 1000)
+
+for (i in 1:1000){
+	d.l1gdp_pc[i, ] <- (coef(model.sims)[i,1] + coef(model.sims)[i,2]*LDC$l1polity +
+	                   coef(model.sims)[i,3]*LDC$l1signed + coef(model.sims)[i,4]*LDC$l1office +
+	                     coef(model.sims)[i,5]*3225.3915 + coef(model.sims)[i,6]*LDC$l1lnpop +
+	                     coef(model.sims)[i,7]*LDC$l1ecris2 + coef(model.sims)[i,8]*LDC$l1bpc1) -
+	    (coef(model.sims)[i,1] + coef(model.sims)[i,2]*LDC$l1polity + coef(model.sims)[i,3]*LDC$l1signed +
+		coef(model.sims)[i,4]*LDC$l1office + coef(model.sims)[i,5]*458.8198 + coef(model.sims)[i,6]*LDC$l1lnpop
+		+ coef(model.sims)[i,7]*LDC$l1ecris2 + coef(model.sims)[i,8]*LDC$l1bpc1)
+	m.l1gdp_pc[i] <- mean(d.l1gdp_pc[i, ])
+}
+
+mean(m.l1gdp_pc)
+sd(m.l1gdp_pc)
+quantile(m.l1gdp_pc, probs=c(.025,.16,.84,.975))
+
+
+
+# Plot
+
+plot(1:2, c(mean(m.l1polity),mean(m.l1gdp_pc)), type="p", ylim=c(-10,0), xlim=c(0,2), xlab="", 
+	main="Polity IV Score, GDP per Capita, and Tariff Levels",
+	ylab="Average predictive comparison (2 SD change)", asp=1.5, axes=FALSE)
+axis(1, at=c(1,2), labels=c("Polity","GDP"))
+axis(2, at=seq(-10,0,by=1))
+abline(h=0, lty=2)
+segments(1, quantile(m.l1polity, probs=c(.025)), 1, quantile(m.l1polity, probs=c(.975)))
+segments(2, quantile(m.l1gdp_pc, probs=c(.025)), 2, quantile(m.l1gdp_pc, probs=c(.975)))
 @
 
+Interpretation: although the Polity IV Score appears to have the larger average substantive effect (when looking at changes from the 25th to the 75th percentile value), there is also greater uncertainty about its impact. The mean effect of GDP per capita changes (for the same percentile values) is smaller but uncertainty about the effect is smaller as well. Considering both the means and the confidence intervals, we cannot make any definitive statements about which variable has the greater substantive impact, but the Polity-IV score could have a marginally larger one. (It is fine to say that there is no difference if you are grading someone's homework and the person ahs said that.)
 
 
 \end{document}
