@@ -81,14 +81,14 @@ Run the 2SLS by hand, i.e. not using \verb`ivreg`, but run 2 stages of \verb`lm`
 \textbf{Solution}
 
 <<results='asis'>>=
-m_stage1 <- lm(price ~ tax, data = CigarettesSW)
+m_stage1 <- lm(price ~ tax + income, data = CigarettesSW)
 CigarettesSW$price_hat <- predict(m_stage1)
 
 m_stage2 <- lm(packs ~ income + price_hat, data = CigarettesSW)
 stargazer(m_stage2)
 @
 
-The coefficients are quite similar (by hand: \Sexpr{coef(m_stage2)['price_hat']}, by ivreg: \Sexpr{coef(m11)['price']})
+The coefficients are exactly the same (by hand: \Sexpr{coef(m_stage2)['price_hat']}, by ivreg: \Sexpr{coef(m11)['price']})
 
 \section{Matching}
 

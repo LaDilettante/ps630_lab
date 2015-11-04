@@ -119,7 +119,7 @@ Run 2SLS with \verb`ivreg`. Outcome: packs. Exogenous var: income. Endogenous va
 \end{alltt}
 \end{kframe}
 % Table created by stargazer v.5.1 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Fri, Oct 30, 2015 - 06:07:59 PM
+% Date and time: Wed, Nov 04, 2015 - 04:29:52 PM
 \begin{table}[!htbp] \centering 
   \caption{} 
   \label{} 
@@ -204,7 +204,7 @@ Run the 2SLS by hand, i.e. not using \verb`ivreg`, but run 2 stages of \verb`lm`
 
 \begin{kframe}
 \begin{alltt}
-\hlstd{m_stage1} \hlkwb{<-} \hlkwd{lm}\hlstd{(price} \hlopt{~} \hlstd{tax,} \hlkwc{data} \hlstd{= CigarettesSW)}
+\hlstd{m_stage1} \hlkwb{<-} \hlkwd{lm}\hlstd{(price} \hlopt{~} \hlstd{tax} \hlopt{+} \hlstd{income,} \hlkwc{data} \hlstd{= CigarettesSW)}
 \hlstd{CigarettesSW}\hlopt{$}\hlstd{price_hat} \hlkwb{<-} \hlkwd{predict}\hlstd{(m_stage1)}
 
 \hlstd{m_stage2} \hlkwb{<-} \hlkwd{lm}\hlstd{(packs} \hlopt{~} \hlstd{income} \hlopt{+} \hlstd{price_hat,} \hlkwc{data} \hlstd{= CigarettesSW)}
@@ -212,7 +212,7 @@ Run the 2SLS by hand, i.e. not using \verb`ivreg`, but run 2 stages of \verb`lm`
 \end{alltt}
 \end{kframe}
 % Table created by stargazer v.5.1 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Fri, Oct 30, 2015 - 06:07:59 PM
+% Date and time: Wed, Nov 04, 2015 - 04:29:52 PM
 \begin{table}[!htbp] \centering 
   \caption{} 
   \label{} 
@@ -223,14 +223,14 @@ Run the 2SLS by hand, i.e. not using \verb`ivreg`, but run 2 stages of \verb`lm`
 \cline{2-2} 
 \\[-1.8ex] & packs \\ 
 \hline \\[-1.8ex] 
- income & $-$0.00003 \\ 
+ income & $-$0.00002 \\ 
   & (0.00002) \\ 
   & \\ 
- price\_hat & $-$0.392$^{***}$ \\ 
+ price\_hat & $-$0.398$^{***}$ \\ 
   & (0.055) \\ 
   & \\ 
- Constant & 168.220$^{***}$ \\ 
-  & (7.698) \\ 
+ Constant & 168.488$^{***}$ \\ 
+  & (7.733) \\ 
   & \\ 
 \hline \\[-1.8ex] 
 Observations & 96 \\ 
@@ -245,7 +245,7 @@ F Statistic & 34.693$^{***}$ (df = 2; 93) \\
 \end{table} 
 
 
-The coefficients are quite similar (by hand: \ensuremath{-0.3921355}, by ivreg: \ensuremath{-0.3978933})
+The coefficients are exactly the same (by hand: \ensuremath{-0.3978933}, by ivreg: \ensuremath{-0.3978933})
 
 \section{Matching}
 

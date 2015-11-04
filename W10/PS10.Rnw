@@ -43,7 +43,7 @@ Run the 2SLS by hand, i.e. not using \verb`ivreg`, but run 2 stages of \verb`lm`
 
 \section{Matching}
 
-\subsection{Load dataset lalonde from MatchIt, show covariate imbalance}
+\subsection{Load dataset lalonde from MatchIt, show covariate imbalance by plotting}
 
 Plot the following. Hint: Look up \verb|position="dodge"| for ggplot2
 
