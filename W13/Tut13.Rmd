@@ -21,10 +21,12 @@ Create lags with DataCombine.
 
 install.packages("DataCombine")
 
-```{r,tidy=TRUE}
+```{r,tidy=TRUE,error=TRUE}
 library(DataCombine)
 
-toLag = c("Swing","Swing2","ind_pct","ind_pct2","EducCh1","EducCh2","HealthCh","Educ1_Pct_GSP","Educ2_Pct_GSP","Health_Pct_GSP_CP","Health_Pct_Pop","GovIdeo","Ranney","Inst_Pct","Pop_5to17","Pop_5to17_Pct","Pop_5to17Ch","Pop_65Ch","Pop_65up_Pct")
+which()
+
+toLag = c()
 
 for (lagVar in toLag){
 combi1=slide(combi1, Var=lagVar, TimeVar="year", GroupVar="stcode", NewVar=paste0("lag1_",lagVar), slideBy = -1, keepInvalid = FALSE, reminder = TRUE)
