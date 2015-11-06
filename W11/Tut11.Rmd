@@ -170,6 +170,7 @@ How would we interpret this output?
 We will look at new data that we have not used previously: data on attitudes toward the United States Supreme Court. This is a topic that students of political behavior and identities might be interested in.
 
 ```{r,tidy=TRUE}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w11/')
 courtdata <- read.table("courtdata.txt", header=TRUE)
 # summary(courtdata)
 ```
@@ -186,7 +187,7 @@ What is the meaning of the variables in the data set?
 
 **soph** = 10-item political knowledge scale (0 = low, 10 = high)
 
-**black**, hispanic = dummies for respective categories (1 = hispanic)
+**black & hispanic** = dummies for respective categories (1 = black, 1 = hispanic)
 
 **income** = 15-point household income category scale (1 = low, 15 = high)
 
