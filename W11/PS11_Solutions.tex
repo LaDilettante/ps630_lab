@@ -173,11 +173,11 @@
 ## lm(formula = formula, weights = weights, model = F, data = data)
 ## 
 ## Coefficients:
-##                          Value   Std. Error      t-stat    p-value
-## (Intercept)       3.5203902208 4.7059696721  0.74806904 0.47504995
-## newtar           -0.0075019534 0.1125586005 -0.06664931 0.94918755
-## gdp_pc_95d       -0.0006721517 0.0002844373 -2.36309223 0.03906858
-## polityiv_update2  0.0752215123 0.2158050106  0.34856240 0.72986800
+##                          Value  Std. Error      t-stat   p-value
+## (Intercept)       2.5061875175 3.119203852  0.80347026 0.4345457
+## newtar           -0.1103502122 0.258558615 -0.42678993 0.6900061
+## gdp_pc_95d        0.0009103463 0.003106773  0.29301990 0.7840107
+## polityiv_update2  0.0047873562 0.194316761  0.02463687 0.9808083
 ## 
 ## For combined results from datasets i to j, use summary(x, subset = i:j).
 ## For separate results, use print(summary(x), subset = i:j).
@@ -312,6 +312,7 @@ The Ramsey RESET test does not yield a significant result, indicating that our m
 
 
 {\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: Matrix\\\#\# Loading required package: lme4\\\#\# \\\#\# arm (Version 1.8-6, built: 2015-7-7)\\\#\# \\\#\# Working directory is C:/Users/Jan/OneDrive/Documents/GitHub/ps630\_lab/W11\\\#\# \\\#\# \\\#\# Attaching package: 'arm'\\\#\# \\\#\# The following object is masked from 'package:car':\\\#\# \\\#\#\ \ \ \  logit\\\#\# \\\#\# The following object is masked from 'package:Zelig':\\\#\# \\\#\#\ \ \ \  sim\\\#\# \\\#\# The following object is masked from 'package:boot':\\\#\# \\\#\#\ \ \ \  logit}}\begin{alltt}
+\hlkwd{set.seed}\hlstd{(}\hlnum{2015}\hlstd{)}
 \hlstd{model.sims} \hlkwb{=} \hlkwd{sim}\hlstd{(lm4,} \hlkwc{n.sims} \hlstd{=} \hlnum{1000}\hlstd{)}
 
 \hlkwd{curve}\hlstd{(}\hlkwd{coef}\hlstd{(lm4)[}\hlnum{1}\hlstd{]} \hlopt{+} \hlkwd{coef}\hlstd{(lm4)[}\hlnum{2}\hlstd{]} \hlopt{*} \hlstd{x} \hlopt{+} \hlkwd{coef}\hlstd{(lm4)[}\hlnum{3}\hlstd{]} \hlopt{*} \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1signed,} \hlkwc{na.rm} \hlstd{= T)} \hlopt{+}
@@ -386,20 +387,20 @@ The Ramsey RESET test does not yield a significant result, indicating that our m
 \hlkwd{mean}\hlstd{(m.l1polity)}
 \end{alltt}
 \begin{verbatim}
-## [1] -4.791693
+## [1] -4.791132
 \end{verbatim}
 \begin{alltt}
 \hlkwd{sd}\hlstd{(m.l1polity)}
 \end{alltt}
 \begin{verbatim}
-## [1] 1.290734
+## [1] 1.337032
 \end{verbatim}
 \begin{alltt}
 \hlkwd{quantile}\hlstd{(m.l1polity,} \hlkwc{probs} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0.025}\hlstd{,} \hlnum{0.16}\hlstd{,} \hlnum{0.84}\hlstd{,} \hlnum{0.975}\hlstd{))}
 \end{alltt}
 \begin{verbatim}
 ##      2.5%       16%       84%     97.5% 
-## -7.258284 -6.125891 -3.528487 -2.284357
+## -7.380059 -6.074565 -3.481395 -2.195121
 \end{verbatim}
 \begin{alltt}
 \hlcom{# GDP per Capita}
@@ -422,29 +423,30 @@ The Ramsey RESET test does not yield a significant result, indicating that our m
 \hlkwd{mean}\hlstd{(m.l1gdp_pc)}
 \end{alltt}
 \begin{verbatim}
-## [1] -3.429583
+## [1] -3.427087
 \end{verbatim}
 \begin{alltt}
 \hlkwd{sd}\hlstd{(m.l1gdp_pc)}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.4394847
+## [1] 0.4298
 \end{verbatim}
 \begin{alltt}
 \hlkwd{quantile}\hlstd{(m.l1gdp_pc,} \hlkwc{probs} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0.025}\hlstd{,} \hlnum{0.16}\hlstd{,} \hlnum{0.84}\hlstd{,} \hlnum{0.975}\hlstd{))}
 \end{alltt}
 \begin{verbatim}
 ##      2.5%       16%       84%     97.5% 
-## -4.301278 -3.866871 -3.003582 -2.596016
+## -4.282437 -3.828239 -3.015397 -2.558968
 \end{verbatim}
 \begin{alltt}
 \hlcom{# Plot}
 
-\hlkwd{plot}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwd{c}\hlstd{(}\hlkwd{mean}\hlstd{(m.l1polity),} \hlkwd{mean}\hlstd{(m.l1gdp_pc)),} \hlkwc{type} \hlstd{=} \hlstr{"p"}\hlstd{,} \hlkwc{ylim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlopt{-}\hlnum{10}\hlstd{,} \hlnum{0}\hlstd{),}
+\hlkwd{plot}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwd{c}\hlstd{(}\hlkwd{mean}\hlstd{(m.l1polity),} \hlkwd{mean}\hlstd{(m.l1gdp_pc)),} \hlkwc{type} \hlstd{=} \hlstr{"p"}\hlstd{,} \hlkwc{ylim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlopt{-}\hlnum{8}\hlstd{,} \hlnum{0}\hlstd{),}
     \hlkwc{xlim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{2}\hlstd{),} \hlkwc{xlab} \hlstd{=} \hlstr{""}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Polity IV Score, GDP per Capita, and Tariff Levels"}\hlstd{,}
-    \hlkwc{ylab} \hlstd{=} \hlstr{"Average predictive comparison (2 SD change)"}\hlstd{,} \hlkwc{asp} \hlstd{=} \hlnum{1.5}\hlstd{,} \hlkwc{axes} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+    \hlkwc{ylab} \hlstd{=} \hlstr{"Average predictive comparison (25th to 75th perc.)"}\hlstd{,} \hlkwc{asp} \hlstd{=} \hlnum{1.5}\hlstd{,}
+    \hlkwc{axes} \hlstd{=} \hlnum{FALSE}\hlstd{)}
 \hlkwd{axis}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{at} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{),} \hlkwc{labels} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"Polity"}\hlstd{,} \hlstr{"GDP"}\hlstd{))}
-\hlkwd{axis}\hlstd{(}\hlnum{2}\hlstd{,} \hlkwc{at} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlopt{-}\hlnum{10}\hlstd{,} \hlnum{0}\hlstd{,} \hlkwc{by} \hlstd{=} \hlnum{1}\hlstd{))}
+\hlkwd{axis}\hlstd{(}\hlnum{2}\hlstd{,} \hlkwc{at} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlopt{-}\hlnum{8}\hlstd{,} \hlnum{0}\hlstd{,} \hlkwc{by} \hlstd{=} \hlnum{1}\hlstd{))}
 \hlkwd{abline}\hlstd{(}\hlkwc{h} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{lty} \hlstd{=} \hlnum{2}\hlstd{)}
 \hlkwd{segments}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwd{quantile}\hlstd{(m.l1polity,} \hlkwc{probs} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0.025}\hlstd{)),} \hlnum{1}\hlstd{,} \hlkwd{quantile}\hlstd{(m.l1polity,}
     \hlkwc{probs} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0.975}\hlstd{)))}

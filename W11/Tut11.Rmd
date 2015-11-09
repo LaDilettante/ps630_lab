@@ -156,7 +156,15 @@ install.packages("lmtest")
 
 ```{r,tidy=TRUE}
 library(lmtest)
-resettest(lm_newtar, power = 2:3, data = LDC)
+
+# For the second power
+resettest(lm_newtar, power = 2, type="regressor", data = LDC)
+
+# For the third power
+resettest(lm_newtar, power = 3, type="regressor", data = LDC)
+
+# For both
+resettest(lm_newtar, power = 2:3, type="regressor", data = LDC)
 ```
 
 How would we interpret this output?
@@ -326,7 +334,7 @@ Let us plot these two in comparison.
 ```{r,tidy=TRUE}
 plot(1:2, c(mean(m.ideo),mean(m.soph)), type="p", ylim=c(-1.5,0.5), xlab="", 
 	main="Ideology, Knowledge, and Attitudes Toward the Supreme Court",
-	ylab="Average predictive comparison (2 SD change)", asp=1.5, axes=FALSE)
+	ylab="Average predictive comparison (min. to max.)", asp=1.5, axes=FALSE)
 axis(1, at=c(1,2), labels=c("Ideo.","Know."))
 axis(2, at=c(-1.5,-1,-.5,0,.5))
 abline(h=0, lty=2)

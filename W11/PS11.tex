@@ -88,7 +88,7 @@ For the regression above, create a component plus residual plot and interpret it
 
 \bigskip
 
-Then, for the same regression,  conduct a \textit{Ramsey RESET Test for Functional Form Misspecification} and interpret the results.
+Then, for the same regression,  conduct a \textit{Ramsey RESET Test for Functional Form Misspecification} with respect to the 2nd and 3rd power of your independent variables and interpret the results.
 
 
 
@@ -106,7 +106,13 @@ Then, for the same regression,  conduct a \textit{Ramsey RESET Test for Function
 
 \bigskip
 
-Create 1000 simulations of this model. Then, use the model simulations to graphically show the linear effect of the Polity score (lagged by 1 year) on tariff levels under all estimated coefficient values. For all of these graphical representations, hold the other variables of the regression at their mean value.
+Create 1000 simulations of this model. Before you create the 1000 simulations, please use the following command:
+
+\begin{verbatim}
+set.seed(2015)
+\end{verbatim}
+
+Then, use the model simulations to graphically show the linear effect of the Polity score (lagged by 1 year) on tariff levels under all estimated coefficient values. For all of these graphical representations, hold the other variables of the regression at their mean value.
 
 \bigskip
 

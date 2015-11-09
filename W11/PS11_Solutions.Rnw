@@ -116,6 +116,7 @@ lm4=lm(newtar ~ l1polity + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 +
 summary(lm4)
 
 library(arm)
+set.seed(2015)
 model.sims=sim(lm4, n.sims=1000)
 
 curve(coef(lm4)[1] + coef(lm4)[2]*x + coef(lm4)[3]*mean(LDC$l1signed, na.rm=T) + coef(lm4)[4]*mean(LDC$l1office, na.rm=T) + coef(lm4)[5]*mean(LDC$l1gdp_pc, na.rm=T) + coef(lm4)[6]*mean(LDC$l1lnpop, na.rm=T) + coef(lm4)[7]*mean(LDC$l1ecris2, na.rm=T) + coef(lm4)[8]*mean(LDC$l1bpc1, na.rm=T), from=-10, to=10, ylim=c(-5,45), xlab="Polity IV Score (t-1)", ylab="Tariff Level", main="Tariff Level as Function of the Polity IV Score (t-1)", lwd=2)
@@ -178,11 +179,11 @@ quantile(m.l1gdp_pc, probs=c(.025,.16,.84,.975))
 
 # Plot
 
-plot(1:2, c(mean(m.l1polity),mean(m.l1gdp_pc)), type="p", ylim=c(-10,0), xlim=c(0,2), xlab="", 
+plot(1:2, c(mean(m.l1polity),mean(m.l1gdp_pc)), type="p", ylim=c(-8,0), xlim=c(0,2), xlab="", 
 	main="Polity IV Score, GDP per Capita, and Tariff Levels",
-	ylab="Average predictive comparison (2 SD change)", asp=1.5, axes=FALSE)
+	ylab="Average predictive comparison (25th to 75th perc.)", asp=1.5, axes=FALSE)
 axis(1, at=c(1,2), labels=c("Polity","GDP"))
-axis(2, at=seq(-10,0,by=1))
+axis(2, at=seq(-8,0,by=1))
 abline(h=0, lty=2)
 segments(1, quantile(m.l1polity, probs=c(.025)), 1, quantile(m.l1polity, probs=c(.975)))
 segments(2, quantile(m.l1gdp_pc, probs=c(.025)), 2, quantile(m.l1gdp_pc, probs=c(.975)))
