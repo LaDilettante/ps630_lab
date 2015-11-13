@@ -51,7 +51,7 @@ setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
 library(foreign)
 LDC=read.dta("LDC_IO_replication.dta")
 
-LDCs=subset(LDC, ctylabel==c("Brazil","Jamaica","Kuwait","HongKong","KyrgyzRepublic"))
+LDCs=subset(LDC, ctylabel=="Brazil" |  ctylabel=="Jamaica" |  ctylabel=="Kuwait" |  ctylabel=="HongKong" |  ctylabel=="KyrgyzRepublic")
 keep = c("ctylabel","date","newtar","fdignp","gdp_pc_95d","polityiv_update2")
 LDCs=LDCs[,keep]
 
@@ -77,9 +77,9 @@ The results that every student will get can differ significantly. However, it is
 
 Are these results from the first or the second regression more accurate (i.e. closer to the truth)? This is impossible to tell. Although multiple imputation potentially is a powerful tool in the sense that it allows us to make inferences about missing data points,these guesses have some uncertainty attached and we can never be fully certain about their accuracy.
 
-Before we ran any regression we had a fairly small number of observations and many missing values for several of our variables. Does this mean that the imputation of data has improved our results? Considering that the imputation itself is also a process of statistical inference that relies on our data and considering that imputation is more precise the more data we have to impute missing values, the results of our imputation here are questionable in their accuracy.
+Before we ran any regression we had a fairly small number of observations and many missing values for several of our variables. Does this mean that the imputation of data has improved our results? Considering that the imputation itself is also a process of statistical inference that relies on our data and considering that imputation is more precise the more data we have, the results of our imputation here are questionable in their accuracy.
 
-It could be the case that the results from the second regression are more accurate than from the first one. The reverse could also be true. In short, we cannot say with certainty which of the two is better.
+It could be the case that the results from the second regression are more accurate than from the first one. The reverse could also be true. In short, we cannot say with certainty which of the two is better. Given that observations were missing in a systematic fashion, we should not have too much confidence in the results.
 
 For grader: If you grade another students homework, then assign full points only if the student arrives at the conclusion that we cannot be certain which results are closer to the truth.
 
@@ -96,14 +96,16 @@ library(car)
 crPlots(lm3)
 @
 
-The component plus residual plots do not indicate any non-linear relationships for any of the variables utilized. There is a small amount of outliers for each of the three variables. However, those outliers do change the general linear trend.
+The component plus residual plots do not indicate any non-linear relationships for any of the variables utilized. There is a small amount of outliers for each of the three variables. However, those outliers do change the impression that there are generally linear trends.
 
 <<results='show',tidy=TRUE>>=
 library(lmtest)
 resettest(lm3, power = 2:3, type = c("regressor"), data = LDC)
 @
 
-The Ramsey RESET test does not yield a significant result, indicating that our model has been specified correctly. With a p-value of 0.1625 we cannot reject the null hypothesis at any common level of statistical significance. Therefore, we can conclude that we have correctly estimated the relationship.
+The Ramsey RESET test yields a significant test result with $p < 0.001$, indicating that our model has not been specified correctly. We have to reject the null hypothesis that our model correctly captures the relationship. Therefore, including squared or cubic terms of our independent variables has the potential to improve the fit of our model.
+
+Note that we should nonetheless be critical about including additional terms. The component plus residual plots have not revealed any strongly visible non-linear relationships. Like in other situations, there might be a trade off between overfitting the data and gaining higher R-squared values. (This second paragraph is not required from students.)
 
 
 
@@ -121,7 +123,7 @@ model.sims=sim(lm4, n.sims=1000)
 
 curve(coef(lm4)[1] + coef(lm4)[2]*x + coef(lm4)[3]*mean(LDC$l1signed, na.rm=T) + coef(lm4)[4]*mean(LDC$l1office, na.rm=T) + coef(lm4)[5]*mean(LDC$l1gdp_pc, na.rm=T) + coef(lm4)[6]*mean(LDC$l1lnpop, na.rm=T) + coef(lm4)[7]*mean(LDC$l1ecris2, na.rm=T) + coef(lm4)[8]*mean(LDC$l1bpc1, na.rm=T), from=-10, to=10, ylim=c(-5,45), xlab="Polity IV Score (t-1)", ylab="Tariff Level", main="Tariff Level as Function of the Polity IV Score (t-1)", lwd=2)
 for (i in 1:1000){
-	curve(coef(model.sims)[i,1] + coef(model.sims)[i,2]*x + coef(lm4)[3]*mean(LDC$l1signed, na.rm=T) + coef(lm4)[4]*mean(LDC$l1office, na.rm=T) + coef(lm4)[5]*mean(LDC$l1gdp_pc, na.rm=T) + coef(lm4)[6]*mean(LDC$l1lnpop, na.rm=T) + coef(lm4)[7]*mean(LDC$l1ecris2, na.rm=T) + coef(lm4)[8]*mean(LDC$l1bpc1, na.rm=T), add=TRUE, col="gray80")
+	curve(coef(model.sims)[i,1] + coef(model.sims)[i,2]*x + coef(model.sims)[i,3]*mean(LDC$l1signed, na.rm=T) + coef(model.sims)[i,4]*mean(LDC$l1office, na.rm=T) + coef(model.sims)[i,5]*mean(LDC$l1gdp_pc, na.rm=T) + coef(model.sims)[i,6]*mean(LDC$l1lnpop, na.rm=T) + coef(model.sims)[i,7]*mean(LDC$l1ecris2, na.rm=T) + coef(model.sims)[i,8]*mean(LDC$l1bpc1, na.rm=T), add=TRUE, col="gray80")
 }
 curve(coef(lm4)[1] + coef(lm4)[2]*x + coef(lm4)[3]*mean(LDC$l1signed, na.rm=T) + coef(lm4)[4]*mean(LDC$l1office, na.rm=T) + coef(lm4)[5]*mean(LDC$l1gdp_pc, na.rm=T) + coef(lm4)[6]*mean(LDC$l1lnpop, na.rm=T) + coef(lm4)[7]*mean(LDC$l1ecris2, na.rm=T) + coef(lm4)[8]*mean(LDC$l1bpc1, na.rm=T), col="black", lwd=2, add=TRUE)
 @
@@ -189,7 +191,9 @@ segments(1, quantile(m.l1polity, probs=c(.025)), 1, quantile(m.l1polity, probs=c
 segments(2, quantile(m.l1gdp_pc, probs=c(.025)), 2, quantile(m.l1gdp_pc, probs=c(.975)))
 @
 
-Interpretation: although the Polity IV Score appears to have the larger average substantive effect (when looking at changes from the 25th to the 75th percentile value), there is also greater uncertainty about its impact. The mean effect of GDP per capita changes (for the same percentile values) is smaller but uncertainty about the effect is smaller as well. Considering both the means and the confidence intervals, we cannot make any definitive statements about which variable has the greater substantive impact, but the Polity-IV score could have a marginally larger one. (It is fine to say that there is no difference if you are grading someone's homework and the person ahs said that.)
+Interpretation: although the Polity IV Score appears to have the larger average substantive effect (when looking at changes from the 25th to the 75th percentile value), there is also greater uncertainty about its impact. The mean effect of GDP per capita changes (for the same percentile values) is smaller but uncertainty about the effect is smaller as well. Considering both the means and the confidence intervals, we cannot make any definitive statements about which variable has the greater substantive impact, but the Polity-IV score is likely to have a larger one considering these results.
+
+Note: It is fine to say that there is no significant visible difference if you are grading someone's homework and the person has arrived at this conclusion.
 
 
 \end{document}
