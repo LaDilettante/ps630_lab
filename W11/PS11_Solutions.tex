@@ -100,8 +100,8 @@
 \hlkwd{library}\hlstd{(foreign)}
 \hlstd{LDC} \hlkwb{=} \hlkwd{read.dta}\hlstd{(}\hlstr{"LDC_IO_replication.dta"}\hlstd{)}
 
-\hlstd{LDCs} \hlkwb{=} \hlkwd{subset}\hlstd{(LDC, ctylabel} \hlopt{==} \hlkwd{c}\hlstd{(}\hlstr{"Brazil"}\hlstd{,} \hlstr{"Jamaica"}\hlstd{,} \hlstr{"Kuwait"}\hlstd{,} \hlstr{"HongKong"}\hlstd{,}
-    \hlstr{"KyrgyzRepublic"}\hlstd{))}
+\hlstd{LDCs} \hlkwb{=} \hlkwd{subset}\hlstd{(LDC, ctylabel} \hlopt{==} \hlstr{"Brazil"} \hlopt{|} \hlstd{ctylabel} \hlopt{==} \hlstr{"Jamaica"} \hlopt{|} \hlstd{ctylabel} \hlopt{==}
+    \hlstr{"Kuwait"} \hlopt{|} \hlstd{ctylabel} \hlopt{==} \hlstr{"HongKong"} \hlopt{|} \hlstd{ctylabel} \hlopt{==} \hlstr{"KyrgyzRepublic"}\hlstd{)}
 \hlstd{keep} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlstr{"ctylabel"}\hlstd{,} \hlstr{"date"}\hlstd{,} \hlstr{"newtar"}\hlstd{,} \hlstr{"fdignp"}\hlstd{,} \hlstr{"gdp_pc_95d"}\hlstd{,} \hlstr{"polityiv_update2"}\hlstd{)}
 \hlstd{LDCs} \hlkwb{=} \hlstd{LDCs[, keep]}
 
@@ -115,20 +115,22 @@
 ##     data = LDCs)
 ## 
 ## Residuals:
-##      161      166      171      176     1037     1042 
-##  0.05183 -0.02418 -0.45405  0.12750 -2.03000  2.32889 
+##     Min      1Q  Median      3Q     Max 
+## -2.9792 -1.0033 -0.1529  0.8006  4.9776 
 ## 
 ## Coefficients:
-##                    Estimate Std. Error t value Pr(>|t|)
-## (Intercept)       2.7045980  4.6035908   0.587    0.616
-## newtar           -0.0024225  0.0781062  -0.031    0.978
-## gdp_pc_95d       -0.0004426  0.0008877  -0.499    0.667
-## polityiv_update2 -0.0185336  0.2453485  -0.076    0.947
+##                    Estimate Std. Error t value Pr(>|t|)   
+## (Intercept)       4.9768361  1.6501106   3.016  0.00566 **
+## newtar           -0.0710902  0.0312451  -2.275  0.03137 * 
+## gdp_pc_95d       -0.0002303  0.0003059  -0.753  0.45824   
+## polityiv_update2 -0.1065855  0.1017928  -1.047  0.30470   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 2.21 on 2 degrees of freedom
-##   (24 observations deleted due to missingness)
-## Multiple R-squared:  0.1396,	Adjusted R-squared:  -1.151 
-## F-statistic: 0.1082 on 3 and 2 DF,  p-value: 0.9478
+## Residual standard error: 1.812 on 26 degrees of freedom
+##   (120 observations deleted due to missingness)
+## Multiple R-squared:  0.2433,	Adjusted R-squared:  0.1559 
+## F-statistic: 2.786 on 3 and 26 DF,  p-value: 0.0607
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -173,11 +175,11 @@
 ## lm(formula = formula, weights = weights, model = F, data = data)
 ## 
 ## Coefficients:
-##                          Value  Std. Error      t-stat   p-value
-## (Intercept)       2.5061875175 3.119203852  0.80347026 0.4345457
-## newtar           -0.1103502122 0.258558615 -0.42678993 0.6900061
-## gdp_pc_95d        0.0009103463 0.003106773  0.29301990 0.7840107
-## polityiv_update2  0.0047873562 0.194316761  0.02463687 0.9808083
+##                          Value   Std. Error     t-stat      p-value
+## (Intercept)       4.7825511224 0.9280951222  5.1530829 0.0001891294
+## newtar           -0.0692846804 0.0263073710 -2.6336604 0.0280189979
+## gdp_pc_95d       -0.0003673317 0.0001984485 -1.8510179 0.1298043418
+## polityiv_update2 -0.0139006929 0.0502203761 -0.2767939 0.7852298382
 ## 
 ## For combined results from datasets i to j, use summary(x, subset = i:j).
 ## For separate results, use print(summary(x), subset = i:j).
@@ -189,9 +191,9 @@ The results that every student will get can differ significantly. However, it is
 
 Are these results from the first or the second regression more accurate (i.e. closer to the truth)? This is impossible to tell. Although multiple imputation potentially is a powerful tool in the sense that it allows us to make inferences about missing data points,these guesses have some uncertainty attached and we can never be fully certain about their accuracy.
 
-Before we ran any regression we had a fairly small number of observations and many missing values for several of our variables. Does this mean that the imputation of data has improved our results? Considering that the imputation itself is also a process of statistical inference that relies on our data and considering that imputation is more precise the more data we have to impute missing values, the results of our imputation here are questionable in their accuracy.
+Before we ran any regression we had a fairly small number of observations and many missing values for several of our variables. Does this mean that the imputation of data has improved our results? Considering that the imputation itself is also a process of statistical inference that relies on our data and considering that imputation is more precise the more data we have, the results of our imputation here are questionable in their accuracy.
 
-It could be the case that the results from the second regression are more accurate than from the first one. The reverse could also be true. In short, we cannot say with certainty which of the two is better.
+It could be the case that the results from the second regression are more accurate than from the first one. The reverse could also be true. In short, we cannot say with certainty which of the two is better. Given that observations were missing in a systematic fashion, we should not have too much confidence in the results.
 
 For grader: If you grade another students homework, then assign full points only if the student arrives at the conclusion that we cannot be certain which results are closer to the truth.
 
@@ -241,7 +243,7 @@ For grader: If you grade another students homework, then assign full points only
 
 \end{knitrout}
 
-The component plus residual plots do not indicate any non-linear relationships for any of the variables utilized. There is a small amount of outliers for each of the three variables. However, those outliers do change the general linear trend.
+The component plus residual plots do not indicate any non-linear relationships for any of the variables utilized. There is a small amount of outliers for each of the three variables. However, those outliers do change the impression that there are generally linear trends.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -263,7 +265,9 @@ The component plus residual plots do not indicate any non-linear relationships f
 \end{kframe}
 \end{knitrout}
 
-The Ramsey RESET test does not yield a significant result, indicating that our model has been specified correctly. With a p-value of 0.1625 we cannot reject the null hypothesis at any common level of statistical significance. Therefore, we can conclude that we have correctly estimated the relationship.
+The Ramsey RESET test yields a significant test result with $p < 0.001$, indicating that our model has not been specified correctly. We have to reject the null hypothesis that our model correctly captures the relationship. Therefore, including squared or cubic terms of our independent variables has the potential to improve the fit of our model.
+
+Note that we should nonetheless be critical about including additional terms. The component plus residual plots have not revealed any strongly visible non-linear relationships. Like in other situations, there might be a trade off between overfitting the data and gaining higher R-squared values. (This second paragraph is not required from students.)
 
 
 
@@ -322,11 +326,12 @@ The Ramsey RESET test does not yield a significant result, indicating that our m
     \hlkwc{from} \hlstd{=} \hlopt{-}\hlnum{10}\hlstd{,} \hlkwc{to} \hlstd{=} \hlnum{10}\hlstd{,} \hlkwc{ylim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlopt{-}\hlnum{5}\hlstd{,} \hlnum{45}\hlstd{),} \hlkwc{xlab} \hlstd{=} \hlstr{"Polity IV Score (t-1)"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Tariff Level"}\hlstd{,}
     \hlkwc{main} \hlstd{=} \hlstr{"Tariff Level as Function of the Polity IV Score (t-1)"}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)}
 \hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{1000}\hlstd{) \{}
-    \hlkwd{curve}\hlstd{(}\hlkwd{coef}\hlstd{(model.sims)[i,} \hlnum{1}\hlstd{]} \hlopt{+} \hlkwd{coef}\hlstd{(model.sims)[i,} \hlnum{2}\hlstd{]} \hlopt{*} \hlstd{x} \hlopt{+} \hlkwd{coef}\hlstd{(lm4)[}\hlnum{3}\hlstd{]} \hlopt{*}
-        \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1signed,} \hlkwc{na.rm} \hlstd{= T)} \hlopt{+} \hlkwd{coef}\hlstd{(lm4)[}\hlnum{4}\hlstd{]} \hlopt{*} \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1office,} \hlkwc{na.rm} \hlstd{= T)} \hlopt{+}
-        \hlkwd{coef}\hlstd{(lm4)[}\hlnum{5}\hlstd{]} \hlopt{*} \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1gdp_pc,} \hlkwc{na.rm} \hlstd{= T)} \hlopt{+} \hlkwd{coef}\hlstd{(lm4)[}\hlnum{6}\hlstd{]} \hlopt{*} \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1lnpop,}
-        \hlkwc{na.rm} \hlstd{= T)} \hlopt{+} \hlkwd{coef}\hlstd{(lm4)[}\hlnum{7}\hlstd{]} \hlopt{*} \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1ecris2,} \hlkwc{na.rm} \hlstd{= T)} \hlopt{+} \hlkwd{coef}\hlstd{(lm4)[}\hlnum{8}\hlstd{]} \hlopt{*}
-        \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1bpc1,} \hlkwc{na.rm} \hlstd{= T),} \hlkwc{add} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{"gray80"}\hlstd{)}
+    \hlkwd{curve}\hlstd{(}\hlkwd{coef}\hlstd{(model.sims)[i,} \hlnum{1}\hlstd{]} \hlopt{+} \hlkwd{coef}\hlstd{(model.sims)[i,} \hlnum{2}\hlstd{]} \hlopt{*} \hlstd{x} \hlopt{+} \hlkwd{coef}\hlstd{(model.sims)[i,}
+        \hlnum{3}\hlstd{]} \hlopt{*} \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1signed,} \hlkwc{na.rm} \hlstd{= T)} \hlopt{+} \hlkwd{coef}\hlstd{(model.sims)[i,} \hlnum{4}\hlstd{]} \hlopt{*} \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1office,}
+        \hlkwc{na.rm} \hlstd{= T)} \hlopt{+} \hlkwd{coef}\hlstd{(model.sims)[i,} \hlnum{5}\hlstd{]} \hlopt{*} \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1gdp_pc,} \hlkwc{na.rm} \hlstd{= T)} \hlopt{+}
+        \hlkwd{coef}\hlstd{(model.sims)[i,} \hlnum{6}\hlstd{]} \hlopt{*} \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1lnpop,} \hlkwc{na.rm} \hlstd{= T)} \hlopt{+} \hlkwd{coef}\hlstd{(model.sims)[i,}
+        \hlnum{7}\hlstd{]} \hlopt{*} \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1ecris2,} \hlkwc{na.rm} \hlstd{= T)} \hlopt{+} \hlkwd{coef}\hlstd{(model.sims)[i,} \hlnum{8}\hlstd{]} \hlopt{*} \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1bpc1,}
+        \hlkwc{na.rm} \hlstd{= T),} \hlkwc{add} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{"gray80"}\hlstd{)}
 \hlstd{\}}
 \hlkwd{curve}\hlstd{(}\hlkwd{coef}\hlstd{(lm4)[}\hlnum{1}\hlstd{]} \hlopt{+} \hlkwd{coef}\hlstd{(lm4)[}\hlnum{2}\hlstd{]} \hlopt{*} \hlstd{x} \hlopt{+} \hlkwd{coef}\hlstd{(lm4)[}\hlnum{3}\hlstd{]} \hlopt{*} \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1signed,} \hlkwc{na.rm} \hlstd{= T)} \hlopt{+}
     \hlkwd{coef}\hlstd{(lm4)[}\hlnum{4}\hlstd{]} \hlopt{*} \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1office,} \hlkwc{na.rm} \hlstd{= T)} \hlopt{+} \hlkwd{coef}\hlstd{(lm4)[}\hlnum{5}\hlstd{]} \hlopt{*} \hlkwd{mean}\hlstd{(LDC}\hlopt{$}\hlstd{l1gdp_pc,}
@@ -458,7 +463,9 @@ The Ramsey RESET test does not yield a significant result, indicating that our m
 
 \end{knitrout}
 
-Interpretation: although the Polity IV Score appears to have the larger average substantive effect (when looking at changes from the 25th to the 75th percentile value), there is also greater uncertainty about its impact. The mean effect of GDP per capita changes (for the same percentile values) is smaller but uncertainty about the effect is smaller as well. Considering both the means and the confidence intervals, we cannot make any definitive statements about which variable has the greater substantive impact, but the Polity-IV score could have a marginally larger one. (It is fine to say that there is no difference if you are grading someone's homework and the person ahs said that.)
+Interpretation: although the Polity IV Score appears to have the larger average substantive effect (when looking at changes from the 25th to the 75th percentile value), there is also greater uncertainty about its impact. The mean effect of GDP per capita changes (for the same percentile values) is smaller but uncertainty about the effect is smaller as well. Considering both the means and the confidence intervals, we cannot make any definitive statements about which variable has the greater substantive impact, but the Polity-IV score is likely to have a larger one considering these results.
+
+Note: It is fine to say that there is no significant visible difference if you are grading someone's homework and the person has arrived at this conclusion.
 
 
 \end{document}

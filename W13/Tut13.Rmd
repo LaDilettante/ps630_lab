@@ -1,5 +1,5 @@
 ---
-title: "Tutorial 13: Autocorrelation, Fixed Effects, and Causal Inference Techniques"
+title: "Tutorial 13: Autocorrelation, Fixed vs. Random Effects, and Causal Inference Techniques"
 author: "Jan Vogler (jan.vogler@duke.edu)"
 date: "November 20, 2015"
 output: pdf_document
@@ -7,17 +7,16 @@ output: pdf_document
 
 # Today's Agenda
 
-1. Autocorrelation
-2. Fixed-effects regression
-3. Spatial lag models
-4. Differences-in-differences
-5. Regression discontinuity designs
+1. Autocorrelation in Time and Space
+2. Fixed-effects vs. random-effects regression
+3. Differences-in-differences
+4. Regression discontinuity designs
 
 
 
-# 1. Autocorrelation
+# 1. Autocorrelation in Time and Space
 
-Create lags with DataCombine.
+Create lags of dependent and independent variables with DataCombine.
 
 install.packages("DataCombine")
 
@@ -41,23 +40,44 @@ for (lagVar in toLag){
 }
 ```
 
+Durbin-Watson Test
+
+```{r}
+library(car)
+```
+
+Newey West Standard Errors
+
+```{r}
+library(lmtest)
+coeftest(model, NeweyWest(model, lag=3))
+```
 
 
-# 2. Fixed-effects regression
+
+# 2. Fixed-effects vs. random-effects regression
+
+We have seen fixed effects previously. We can simply integrate fixed effects by using the factor() command.
+
+```{r}
+lm()
+```
+
+Now let's introduce RE.
+
+```{r}
+library(lme4)
+```
 
 
 
-# 3. Spatial lag models
-
-
-
-# 4. Differences-in-differences
+# 3. Differences-in-differences
 
 Differences-in-differences analysis makes use of parallel time trends.
 
 
 
-# 5. Regression discontinuity designs
+# 4. Regression discontinuity designs
 
 Regression discontinuity designs are powerful tools for causal inference.
 
