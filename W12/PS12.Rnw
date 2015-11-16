@@ -1,0 +1,118 @@
+\documentclass{article}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{Pol Sci 630:  Problem Set 12: Heteroskedasticity, Autocorrelation}
+
+\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+
+\date{Due Date: Tue, Nov 17, 2015, 10 AM (Beginning of Class)}
+
+\maketitle
+
+<<message = FALSE>>=
+rm(list = ls())
+library(ggplot2)
+@
+
+
+\section{Heteroskedasticity (8 points)}
+
+One common cause of heteroskedasticity is that our model does not take into account heterogenous effect across sub-populations. For example, we have a model of spending (dependent var) as a function of income (independent var), and the propensity to spend differs across ethnic groups. Formally,
+
+\begin{align}
+spending &= \beta_{ethnic} income + \epsilon
+\end{align}
+
+where $\beta{ethnic}$ takes a different value for white, black, and asian. If we don't know about this heterogeneity of propensity to spend across ethnic groups, the graph will show heteroskedasticity:
+
+<<echo = FALSE, fig.height=3, fig.width=4>>=
+# Propensity to spend of different groups
+
+income_w <- runif(100, min = 0, max = 1000)
+income_b <- runif(100, min = 0, max = 1000)
+income_a <- runif(100, min = 0, max = 1000)
+
+f_spending <- function(income, propensity) {
+  propensity * income + rnorm(length(income), sd = 100)
+}
+
+beta_w <- 0.01 ; beta_b <- 0.5 ; beta_a <- 1
+d <- data.frame(income = c(income_w, income_b, income_a),
+                   spending = c(f_spending(income_w, beta_w),
+                                f_spending(income_b, beta_b),
+                                f_spending(income_a, beta_a)),
+                   group = rep(c("w", "b", "a"), each = 100))
+
+ggplot(data = d, aes(x = income, y = spending)) +
+  geom_point()
+@
+
+Buf if we are smart researcher, we'll realize the underlying cause of the heterogeneity, as shown in the following plot:
+
+<<fig.height=3, fig.width=4.5, echo=FALSE>>=
+ggplot(data = d, aes(x = income, y = spending)) +
+  geom_point(aes(col = group))
+@
+
+The take-home point is that heteroskedasticity could be a signal of underlying model specification, and we should think hard about the cause of heteroskedasticity instead of applying a quick fix.
+
+\subsection{Simulating}
+
+Simulate the spending and income pattern for three ethnic groups as described above. Re-create the two plots above. The numbers don't have to be the same -- just make sure that your data has heteroskedasticity due to underlying heterogenous effect across ethnic groups as described in the example above. Note: Don't look at my code.
+
+\subsection{Diagnostics: Visual}
+
+Using the simulated data above, regress spending on income, plot the residual against the predicted value.
+
+\subsection{Diagonistics: Hypothesis test}
+
+Conduct BP test and White test. Why do the tests reach the same conclusion here, unlike in the lab tutorial?
+
+\subsection{Fixing: robust standard error}
+
+Run hypothesis test without and with robust standard error. What's the conclusion?
+
+\subsection{Fixing: FGLS}
+
+Conduct FGLS. Hint: For stability, log transform $residual^2$ in the auxiliary regression, then exponentiate the predicted value of the auxiliary regression to get the weight.
+
+\subsection{Fixing: Provide a correct model}
+
+Specify a regression model that takes into account heterogenous effect of income on spending across ethnic groups. Show that there's no longer heteroskedasticity.
+
+\section{Multicollinearity (4 points)}
+
+\subsection{Diagnosing with VIF}
+
+Using dataset \verb`Prestige`, run regression of prestiage against income, education, and women. Calculate VIF. Interpret the largest VIF.
+
+\subsection{Dealing with multicollinearity}
+
+If you are concerned that the VIF is causing your SEs to be pretty big. What should you do to address this issue?
+
+\section{Diagnosing autocorrelation (4 points)}
+
+\subsection{Generating autocorrelated data}
+
+Similar to the lab, generate data (i.e. e, X, Y) that follow an AR(2) process, i.e.:
+
+\begin{align}
+v(t) &\sim N(0, 1) \\
+e(t) &= a_1e(t-1) + a_2 e(t-2) + v(t) \qquad \text{Important: $a_1 + a_2 < 1$} \\
+Y(t) &= X(t) + e(t)
+\end{align}
+
+\subsection{Diagnostics: Visual}
+
+Plot residual against time and against lagged , up to 4 lags (e.g. residual ~ lag-1 residual, residual ~ lag-2 residual, etc. up to 4 plots) How does the correlation look across the four plots?
+
+\subsection{Diagnostics: Hypothesis testing}
+
+Regress residuals against X and lag1 and lag2 residuals, and then doing an F test for joint significance in the lagged residuals.
+
+\end{document}

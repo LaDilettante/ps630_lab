@@ -1,0 +1,284 @@
+---
+title: 'Tutorial 12: Model fit, Heteroskedasticity, and Multicollinearity'
+author: "Anh Le"
+date: "November 10, 2015"
+output: pdf_document
+---
+
+1. AIC and BIC (cover if have time)
+2. Test of heteroskedasticity (graphical and White test)
+3. Standard error robust to heteroskedasticity
+4. FGLS approach to fixing heteroskedasticity
+5. Generating VIF statistics related to multicollinearity
+6. Generating lagged variables in R
+7. Tips and tricks
+- R project
+- [Animation in R](http://vis.supstat.com/2013/04/central-limit-theorem/)
+- [Shiny webapp in R](http://shiny.rstudio.com/gallery/movie-explorer.html)
+
+# AIC and BIC
+
+The formula for AIC and BIC is:
+
+\begin{align}
+AIC &= 2k - 2ln(\hat L) \\
+BIC &= ln(n)k - 2ln(\hat L)
+\end{align}
+
+where, $n$ is the number of data points, $k$ is the number of parameters, $L$ is the maximized value of the likelihood function of the model M, i.e. $L = p(x|\hat \theta, M)$, where $\hat \theta$ are the parameter values that maximize the likelihood function. (Source: [Wikipedia](https://en.wikipedia.org/wiki/Bayesian_information_criterion))
+
+**In-class Quiz**: While comparing two models, if one has lower AIC / BIC than the other, it is considered better. Why? (Hint: Think about how each of the two terms in AIC / BIC affects the value of AIC / BIC)
+
+**In-class Quiz**: How are AIC / BIC different from R-squared?
+
+```{r}
+data(swiss) # Load the dataset
+summary(swiss) # Get an overview of the dataset
+
+lm1 <- lm(Fertility ~ . , data = swiss)
+AIC(lm1)
+BIC(lm1)
+
+lm2 <- update(lm1, . ~ . -Examination)
+AIC(lm1, lm2)
+BIC(lm1, lm2)
+```
+
+Note how the AIC / BIC punishes models with more parameters. Model 1 is considered worse even though it has more parameters.
+
+```{r}
+summary(lm1)$r.squared
+summary(lm2)$r.squared
+```
+
+On the other hand, R squared will always favor models with more parameters.
+
+# Heteroskedasticity test
+
+## Generate heteroskedastic data
+
+For example, we have the following data generating process (DGP):
+
+\begin{align}
+y &= 2 X + u \\
+X &= N(0, 1) \\
+u &\sim N(0, |x|) \qquad \text{Note how $V(u) = |x|$, instead of being constant}
+\end{align}
+
+I implement that DGP in R as follows:
+
+```{r}
+x <- rnorm(500)
+u <- rnorm(500, sd = sqrt(abs(x)))
+y <- 0.01 * x + u
+```
+
+## Test for Heteroskedasticity:
+
+### Visual test
+
+```{r}
+m_het <- lm(y ~ x)
+plot(resid(m_het) ~ predict(m_het))
+```
+
+### Breush-Pagan and White test
+
+```{r, message = FALSE}
+library(AER) # For the tests
+```
+
+```{r}
+## Breusch-Pagan test (p. 113)
+bptest(m_het, varformula = ~ x)
+
+## White test
+bptest(m_het, ~ x + I(x^2))
+```
+
+Note how the BP test doesn't pick up the heteroskedasticity, but the White test does. 
+
+> The defaultBreusch-Pagan test specified by is a test for linear forms of heteroskedasticity, e.g. as $\hat y$ goes up, the error variancesgo up. In this default form, the test does not work well for non-linear forms of heteroskedasticity, such as the hourglass shape we saw before (where error variances got larger as X got more  extreme in either direction). The default test also has problems when the errors are not normally distributed 
+
+> Part of the reason the test is more general is because it adds a lot of terms to test for more types of heteroskedasticity. For example, adding the squares of regressors helps to detect nonlinearities such as the hourglass shape. In a large data set with many explanatory variables, this may make the test difficult to calculate. Also, the addition of all these terms may make the test less powerful in those situations when a simpler test like the default Breusch-Pagan would be appropriate, i.e. adding a bunch of extraneous terms may make the test less likely to produce a significant result than a less general test would.
+([Source](https://www3.nd.edu/~rwilliam/stats2/l25.pdf))
+
+## Get the correct standard error
+
+White HC standard errors (sandwich standard error)
+```{r}
+vcovHC(m_het, type = "HC") # from package sandwich, loaded by AER
+```
+
+Hypothesis test with White standard error (more precisely, with the heteroskedasticity-consistent 
+estimation of the cov matrix, calculated above). Notice how the coefficients are basically the same as regular OLS. Only the standard error is different.
+
+```{r}
+coeftest(m_het, vcov = vcovHC(m_het, type = "HC"))
+summary(m_het)
+```
+
+**Foonote:** Etymology of the "sandwich" estimator of the standard error
+
+Formula for standard error is:
+\[
+V(\hat \beta_{OLS}|X) = (X'X)^{-1}X'V(\epsilon | X) X(X'X)^{-1}
+\]
+, which reduces to $\sigma^2 (X'X)^{-1}$ only in the case of homoskedasticity.
+
+When there's heteroskedasticity, the estimate is (as done in Stata) (notice the "bread" ($(X'X)^{-1}$) and the "meat" ($X'V(\epsilon|X)X$) of the sandwich):
+\begin{align}
+V(\hat \beta_{OLS}|X) &= (X'X)^{-1} X'V(\epsilon | X) X(X'X)^{-1} \\
+\hat V (\hat \beta_{OLS}|X) &= (X'X)^{-1} X' 
+\left(\begin{matrix} 
+\hat \epsilon^2_1 & 0 & \dots & 0 \\
+0 & \hat \epsilon^2_2 & \dots & 0 \\
+\vdots & \vdots & \dots & \vdots \\
+0 & 0 & \dots & \hat \epsilon^2_n
+\end{matrix}\right) X (X'X)^{-1} \\
+\hat V (\hat \beta_{OLS}|X) &= \frac{N}{N-K} (X'X)^{-1} \sum_{i=1}^N \{ X_i X_i' \hat \epsilon_i^2\} (X'X)^{-1} \qquad \text{Similar to slide 62 of your lecture notes}
+\end{align}
+
+The constant is added since we are estimating the sample variance of the error. In practice, $N >> K$, so it doesn't matter.
+
+# FGLS approach to fixing heteroskedasticity
+
+**Math footnote**: 
+
+- Case 1 (GLS): $V(\epsilon | X) = \sigma^2 \Sigma(X)$, where $\Sigma (X)$ is known. In this case, $\beta_{OLS}$ is inefficient, but $\beta_{GLS} = (X'\Sigma(X)^{-1}X)^{-1}X'\Sigma(X)^{-1}y$ is BLUE again (intuition: we weigh the observation so that ones with small variance has higher weights, and pay less attention to the observation with high variance. Thus the WLS estimate is more efficient than OLS). To do this weighting, we run linear regression with weight $= \Sigma(X)^{-1}$.  Equivalently, divide y and all x's by $\frac{1}{\sqrt{\hat\sigma}}$). 
+
+This is called *generalized* least square because OLS is a special case where $\Sigma(X) = I$
+
+- Case 2 (FGLS): More realistically, we don't actually know $\Sigma(X)$ (and it has more parameters than our number of observations). So we must impose some structure so that it's *feasible* to estimate it. For example, in the lecture, we assume that $\Sigma(X)$ is some linear combinations of X's (but not of $X^2$, or some non-linear combinations)
+
+[Some Resources on FGLS](http://www.econ.uiuc.edu/~wsosa/econ507/gls.pdf)
+
+Following this assumption, we estimate $V(\epsilon|X)$ by regressing the residual squared, i.e. $\hat \epsilon^2$ on all X, then get the predicted value of this auxiliary regression.
+
+```{r}
+LinearModel.OLS <- lm(y ~ x)
+
+# Auxiliary regression of residual squared agaisnt all X (there's only 1 x in this case)
+auxiliary.FGLS <- lm(I(resid(LinearModel.OLS)^2) ~ x)
+
+# The weight is the predicted value of the auxiliary regression
+w <- predict(auxiliary.FGLS)
+
+# Use the w in weighted least square regression
+LinearModel.WLS <- lm(y ~ x, weights = 1/w)
+
+summary(LinearModel.WLS)
+```
+
+# Generating VIF statistics related to multicollinearity
+
+The formula for VIF:
+
+\[VIF_k = \frac{1}{1 - R_k^2} \]
+
+where $R_k^2$ is the R-squared of the regression of $X_k$ against all the other $X$. If this R-squared is larged, it means that $X_k$ is highly correlated with all the other X's.
+
+Let's generate some highly correlated data to check. The classic case of high multicollnearity is age and experience.
+
+```{r}
+age <- rnorm(100, mean = 32, sd = 10)
+# Experience is age - 16 years of high school / college + error term
+# i.e. some people go for grad school, some drop out early
+experience <- age - 16 + rnorm(100)
+salary <- 2 * age + 3 * experience + rnorm(100)
+```
+
+Test for VIF
+
+```{r}
+m_vif <- lm(salary ~ age + experience)
+library(car)
+vif(m_vif)
+```
+
+Interpret VIF: The variance of $\beta_{age}$ is inflated by `r vif(m_vif)['age']` times due to the inclusion of experience in the regression.
+
+**Question:** How do we deal with multicollinearity?
+
+# Generating lagged variables in R
+
+```{r}
+df <- data.frame(year = 2000:2005, gdp = rnorm(6))
+df$gdp_lag1 <- c(NA, df$gdp[1:(length(df$gdp) - 1)])
+df$gdp_lag2 <- c(rep(NA, 2), df$gdp[1:(length(df$gdp) - 2)])
+df
+```
+
+That looks like an awful lot of typing for basically the same pattern, so let's make a function. (Rule of thumb in programming: If you are typing something more than 3 times, you should write a function)
+
+**In-class Quiz:** The first step of writing a function is to think about: what are the inputs and outputs of this function?
+
+```{r}
+lag <- function(x, lag_period) {
+  return(c(rep(NA, lag_period), x[1:(length(x) - lag_period)]))
+}
+
+# Try it
+df <- data.frame(year = 2000:2005, gdp = rnorm(6))
+df$gdp_lag1 <- lag(df$gdp, 1)
+df$gdp_lag2 <- lag(df$gdp, 2)
+df
+```
+
+# Testing for autocorrelation
+
+Following is the example of autocorrelation. Note how the $e(t)$ and $e(t-1)$ are correlated. (This is an example of AR(1) process, as mentioned on slide 13 of lecture notes.)
+
+\begin{align}
+e(t) &= ae(t-1) + v(t) \\
+Y(t) &= X(t) + e(t)
+\end{align}
+
+We now model this DGP in R.
+```{r}
+T <- 100 # Num of time periods
+
+# Generate autocorrelated e
+e <- vector(mode = 'numeric', length = T)
+e[1] <- rnorm(1)
+for (t in 2:T) {
+  e[t] <- 0.8 * e[t - 1] + rnorm(1)
+}
+
+X <- rnorm(T)
+Y <- X + e
+```
+
+## Visual
+
+Let's take a look at $Y$
+```{r, message = FALSE, fig.height = 6}
+par(mfrow = c(2, 1))
+plot(Y, type = 'l')
+library(quantmod)
+getSymbols(Symbols = 'NDAQ', src = 'yahoo', from = '2015-01-01')
+plot(NDAQ)
+```
+
+Plot residuals against time and against lagged residuals
+```{r}
+m_auto <- lm(Y ~ X)
+e <- resid(m_auto)
+plot(e, type = 'l')
+plot(lag(e, lag_period = 1), e)
+```
+
+## Hypothesis testing
+
+Regress residuals against X and lagged residuals, and then doing an F test for joint significance in the lagged residuals.
+
+```{r}
+lag_e <- lag(e, lag_period = 1)
+
+# Reg residual against X and lagged residuals
+m_autotest <- lm(e ~ X + lag_e)
+
+# Doing an F test
+library(car) # to run F-test
+linearHypothesis(m_autotest, c("lag_e"))
+```

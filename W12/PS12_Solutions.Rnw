@@ -1,0 +1,235 @@
+\documentclass{article}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{Pol Sci 630:  Problem Set 12 Solutions: Heteroskedasticity, Autocorrelation}
+
+\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+
+\date{Due Date: Friday, Nov 20, 2015, 12 AM (Beginning of Lab)}
+
+\maketitle
+
+<<message = FALSE>>=
+rm(list = ls())
+library(ggplot2)
+@
+
+
+\section{Heteroskedasticity}
+
+One common cause of heteroskedasticity is that our model does not take into account heterogenous effect across sub-populations. For example, we have a model of spending (dependent var) as a function of income (independent var), and the propensity to spend differs across ethnic groups. Formally,
+
+\begin{align}
+spending &= \beta_{ethnic} income + \epsilon
+\end{align}
+
+where $\beta{ethnic}$ takes a different value for white, black, and asian. If we don't know about this heterogeneity of propensity to spend across ethnic groups, the graph will show heteroskedasticity:
+
+<<echo = FALSE, fig.height=3, fig.width=4>>=
+# Propensity to spend of different groups
+
+income_w <- runif(100, min = 0, max = 1000)
+income_b <- runif(100, min = 0, max = 1000)
+income_a <- runif(100, min = 0, max = 1000)
+
+f_spending <- function(income, propensity) {
+  propensity * income + rnorm(length(income), sd = 100)
+}
+
+beta_w <- 0.01 ; beta_b <- 0.5 ; beta_a <- 1
+d <- data.frame(income = c(income_w, income_b, income_a),
+                   spending = c(f_spending(income_w, beta_w),
+                                f_spending(income_b, beta_b),
+                                f_spending(income_a, beta_a)),
+                   group = rep(c("w", "b", "a"), each = 100))
+
+ggplot(data = d, aes(x = income, y = spending)) +
+  geom_point()
+@
+
+Buf if we are smart researcher, we'll realize the underlying cause of the heterogeneity, as shown in the following plot:
+
+<<fig.height=3, fig.width=4.5, echo=FALSE>>=
+ggplot(data = d, aes(x = income, y = spending)) +
+  geom_point(aes(col = group))
+@
+
+The take-home point is that heteroskedasticity could be a signal of underlying model specification, and we should think hard about the cause of heteroskedasticity instead of applying a quick fix.
+
+\subsection{Simulating}
+
+Simulate the spending and income pattern for three ethnic groups as described above. Re-create the two plots above. The numbers don't have to be the same -- just make sure that your data has heteroskedasticity due to underlying heterogenous effect across ethnic groups as described in the example above. Note: Don't look at my code.
+
+\subsection{Diagnostics: Visual}
+
+Using the simulated data above, regress spending on income, plot the residual against the predicted value.
+
+\textbf{Solution}
+
+<<fig.width=3.5, fig.height=3>>=
+m_het <- lm(spending ~ income, data = d)
+plot(predict(m_het), resid(m_het))
+@
+
+\subsection{Diagonistics: Hypothesis test}
+
+Conduct BP test and White test. Why do the tests reach the same conclusion here, unlike in the lab tutorial?
+
+\textbf{Solution}
+
+<<message = FALSE>>=
+library(AER)
+bptest(m_het, varformula = ~ d$income)
+bptest(m_het, varformula = ~ d$income + I(d$income^2))
+@
+
+The test reaches the same conclusion because the variance of the error terms is a linear function of $income$ (not of $income^2$, for example), so both the BP and the White tests are able to detect this.
+
+\subsection{Fixing: robust standard error}
+
+Run hypothesis test without and with robust standard error. What's the conclusion?
+
+\textbf{Solution}
+
+<<>>=
+summary(m_het)
+coeftest(m_het, vcov = vcovHC(m_het, type = "HC"))
+@
+
+Both regressions show that income has a positive and significant impact on spending
+
+\subsection{Fixing: FGLS}
+
+Conduct FGLS. Hint: For stability, log transform $residual^2$ in the auxiliary regression, then exponentiate the predicted value of the auxiliary regression to get the weight.
+
+\textbf{Solution}
+
+<<>>=
+auxiliary_FGLS <- lm(I(log(resid(m_het)^2)) ~ d$income)
+w <- exp(predict(auxiliary_FGLS))
+m_het_wls <- lm(spending ~ income, weights = 1 / w, data = d)
+summary(m_het_wls)
+@
+
+FGLS also confirms that income has a positive and significant impact on spending.
+
+\subsection{Fixing: Provide a correct model}
+
+Specify a regression model that takes into account heterogenous effect of income on spending across ethnic groups. Show that there's no longer heteroskedasticity.
+
+\textbf{Solution}
+
+<<fig.width = 3.5, fig.height=3>>=
+m_group <- lm(spending ~ income + group + income:group, data = d)
+plot(resid(m_group) ~ predict(m_group))
+@
+
+As shown in the diagnostics plot, there's no longer heteroskedasticity
+
+\section{Multicollinearity}
+
+\subsection{Diagnosing with VIF}
+
+Using dataset \verb`Prestige`, run regression of prestiage against income, education, and women. Calculate VIF. Interpret the largest VIF.
+
+\textbf{Solution}
+
+<<>>=
+vif(lm(prestige ~ income + education + women, data=Prestige))
+@
+
+The largest VIF is 2.28 for income, meaning that by including other variables, the variance of the coefficient for income is inflated 2.28 times.
+
+\subsection{Dealing with multicollinearity}
+
+If you are concerned that the VIF is causing your SEs to be pretty big. What should you do to address this issue?
+
+\textbf{Solution}
+
+\textit{Note to grader: Just grade on how the submission makes an argument. We don't expect everyone to hit all the points below.}
+
+We should either collect more data (and hopefully the multicollinearity only exists in the previous sample and not in population), or to live with imprecision in our estimates, as omitting variables would likely lead to OVB.
+
+It's important to note that there's no magic statistical fix for multicollinearity. If two variables are highly correlated, it's simply impossible to vary one and control for the other.
+
+One thing one may do is to conduct dimension reduction (e.g. factor analysis, PCA) so that we recover the latent factor that drives all of these highly correlated variables. For example, in a survey of governance, we may see that the measurement of road quality, electricity quality, water quality are all highly correlated. Perhaps there's a common and latent factor of ``public provision'' that drives all of them.
+
+
+\section{Diagnosing autocorrelation}
+
+\subsection{Generating autocorrelated data}
+
+Similar to the lab, generate data (i.e. e, X, Y) that follow an AR(2) process, i.e.:
+
+\begin{align}
+v(t) &\sim N(0, 1) \\
+e(t) &= a_1e(t-1) + a_2 e(t-2) + v(t) \qquad \text{Important: $a_1 + a_2 < 1$} \\
+Y(t) &= X(t) + e(t)
+\end{align}
+
+\textbf{Solution}
+
+<<>>=
+T <- 100 # Num of time periods
+
+# Generate autocorrelated e
+e <- vector(mode = 'numeric', length = T)
+e[1] <- rnorm(1)
+e[2] <- 0.4 * e[1] + rnorm(1)
+for (t in 3:T) {
+  e[t] <- 0.4 * e[t - 1] + 0.2 * e[t - 2] + rnorm(1)
+}
+
+X <- rnorm(T)
+Y <- X + e
+@
+
+\subsection{Diagnostics: Visual}
+
+Plot residual against time and against lagged , up to 4 lags (e.g. residual ~ lag-1 residual, residual ~ lag-2 residual, etc. up to 4 plots) How does the correlation look across the four plots?
+
+\textbf{Solution}
+
+<<fig.width=6, fig.height=6>>=
+lag <- function(x, lag_period) {
+  return(c(rep(NA, lag_period), x[1:(length(x) - lag_period)]))
+}
+
+m_auto <- lm(Y ~ X)
+e <- resid(m_auto)
+
+par(mfrow = c(2, 2))
+plot(lag(e, 1), e)
+plot(lag(e, 2), e)
+plot(lag(e, 3), e)
+plot(lag(e, 4), e)
+@
+
+We see that he error autocorrelation diminishes the further the lag is (See how the relationship is very strong in the first plot, but not so much in the fourth?).
+
+\subsection{Diagnostics: Hypothesis testing}
+
+Regress residuals against X and lag1 and lag2 residuals, and then doing an F test for joint significance in the lagged residuals.
+
+\textbf{Solution}
+
+<<>>=
+lag1_e <- lag(e, 1)
+lag2_e <- lag(e, 2)
+
+# Reg residual against X and lagged residuals
+m_autotest <- lm(e ~ X + lag1_e + lag2_e)
+
+# Doing an F test
+library(car) # to run F-test
+linearHypothesis(m_autotest, c("lag1_e", "lag2_e"))
+@
+
+We reject the null of no autocorrelation. Notice how we can do the F-test on more than just one lag to detect autocorrelation. In real research, you would use your judgement to guess the autocorrelation structure (i.e. how far back does the autocorrelation go?) and test it.
+
+\end{document}
