@@ -7,16 +7,26 @@ output: pdf_document
 
 # Today's Agenda
 
-1. Autocorrelation in Time and Space
+1. Autocorrelation
 2. Fixed-effects vs. random-effects regression
 3. Differences-in-differences
 4. Regression discontinuity designs
 
 
 
-# 1. Autocorrelation in Time and Space
+# 1. Autocorrelation
 
-Create lags of dependent and independent variables with DataCombine.
+Create lags of dependent and independent variables for panel datasets with DataCombine.
+
+Let us first load the LDC dataset.
+
+```{r,tidy=TRUE}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+library(foreign)
+LDC=read.dta("LDC_IO_replication.dta")
+```
+
+The DataCombine package is designed for data management, especially time series and panel data. It allows us to easily generate lags of our dependent variable. We might want to generate lags of our dependent variable to control for autocorrelation.
 
 install.packages("DataCombine")
 
@@ -40,13 +50,24 @@ for (lagVar in toLag){
 }
 ```
 
+Let us now work with a regression that we have already seen in past tutorials and homeworks to illustrate the phenomenon of autocorrelation.
+
+```{r,tidy=TRUE}
+main=lm(newtar ~ l1polity + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel), data = LDC)
+summary(main)
+```
+
 Durbin-Watson Test
 
 ```{r}
 library(car)
+DurbinWatson(main)
 ```
 
 Newey West Standard Errors
+
+install.packages("sandwich")
+install.packages("lmtest")
 
 ```{r}
 library(lmtest)
@@ -67,6 +88,8 @@ Now let's introduce RE.
 
 ```{r}
 library(lme4)
+lmer(Health ~ lag1_lpr + lag1_lpr2 + (1 + lag1_lpr + lag1_lpr2 | Country), data=combi4)
+summary(random1)
 ```
 
 
