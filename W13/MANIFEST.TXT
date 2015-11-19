@@ -1,4 +1,0 @@
-codebook.pdf (application/pdf) 83946 bytes.
-readme.txt (text/plain) 283 bytes.
-replication_data.tab (text/tab-separated-values) 4576384 bytes.
-voter_buying_replication_file.R (text/plain; charset=US-ASCII) 74302 bytes.

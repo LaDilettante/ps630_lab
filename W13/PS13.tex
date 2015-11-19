@@ -11,11 +11,11 @@
 
 \begin{document}
 
-\title{Pol Sci 630: Problem Set 13 - Autocorrelation, Fixed Effects, and Causal Inference Techniques}
+\title{Pol Sci 630: Problem Set 13 - Autocorrelation, Fixed, Random, Mixed Effects, and Causal Inference Techniques}
 
 \author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
-\date{Due Date: Tuesday, November 24th, 2015, 10 AM}
+\date{Due Date: Tuesday, December 1st, 2015, 10 AM}
  
 \maketitle 
 
@@ -31,39 +31,99 @@ Make sure that the PDF files you submit do not include any references to your id
 
 \section*{R Programming}
 
-\subsection*{Problem 1 (4 points)}
+\subsection*{Problem 1: Autocorrelation (4 points)}
 
 \paragraph{Do the following in R:}
 
-\subparagraph{} Load the \textit{2010 CCES\_data} that is attached to the email you received. Simulations.
+\subparagraph{} Load the \textit{LDC\_IO\_replication} data.
+
+\subparagraph{a)} Estimate a linear regression with the following characteristics and show the results:
+
+\begin{enumerate}
+	\item Dependent variable: net changes in FDI as percentage of GNP
+	\item Independent variables: tariff Level, GDP per capita, Polity score
+	\item Please use lagged versions of the independent variables (lagged by 1 year). This includes a lagged version of tariff level that is not included in the original dataset.
+	\item Please use country fixed effects.
+\end{enumerate}
+
+\subparagraph{b)} Create three lags of your dependent variable and estimate a new regression that includes those lags as independent variables. Comparing the results of the two regression, is there autocorrelation in your original model?
 
 
 
-\subsection*{Problem 2 (4 points)}
+\subsection*{Problem 2: Fixed-, Random-, and Mixed-Effects Models (4 points)}
 
 \paragraph{Do the following in R:}
 
-\subparagraph{} 
+\subparagraph{a)} Estimate a \textbf{random}  effects model with the following characteristics:
+
+\begin{enumerate}
+	\item Dependent variable: net changes in FDI as percentage of GNP
+	\item Independent variables: tariff Level, GDP per capita, Polity score
+	\item Please use lagged versions of the independent variables (lagged by 1 year).
+	\item Please assume that the intercept is random.
+\end{enumerate}
+
+\subparagraph{b)} Interpret the results of the regression you estimated.
+
+\subparagraph{c)} Show the distribution of the intercept graphically.
+
+\subparagraph{} Estimate a \textbf{mixed} effects model with the following characteristics:
+
+\begin{enumerate}
+	\item Dependent variable: net changes in FDI as percentage of GNP
+	\item Independent variables: tariff Level, GDP per capita, Polity score
+	\item Please use lagged versions of the independent variables (lagged by 1 year).
+	\item Assume that the intercept and the coefficient of tariff level are randomly distributed across units.
+	\item Assume that the coefficients of the other independent variables is fixed across units.
+\end{enumerate}
+
+\subparagraph{d)} Interpret the results of the regression you estimated.
+
+\subparagraph{e)} Show the distribution of the coefficient graphically.
 
 
 
-\subsection*{Problem 3 (4 points)}
+\subsection*{Problem 3: Regression Discontinuity Designs (4 points)}
 
 \paragraph{Do the following in R:}
 
-\subparagraph{a)} 
+\subparagraph{a)} Load the \textit{SocialSecurity} data that is available on the course website and display the summary statistics.
 
-\subparagraph{b)} 
+This artificial dataset contains observations of two variables, namely the vote share that the ``liberal party" has received and expenditures for social security.\footnote{Assume that each data point represents one election period in one state.} The liberal party is in a two-party system (with the other party being the ``conservative party") in which gaining 50\% of the vote share means election victory. The goal of the analysis is to estimate the effect of liberal-party election victories on social security expenditures.
+
+\subparagraph{b)} Turn the data frame into a regression discontinuity object and display the average values of social security expenditures for different bins of liberal party vote shares.
+
+\subparagraph{c)} Estimate two parametric regressions of the effects of liberal-party election victory on social security expenditures. One regression should be a regular OLS expression without higher-order polynomials. The second regression should include polynomials of up to the 4th order. Interpret the results of your regressions --- is there a discontinuity in 
+
+\subparagraph{d)} Estimate a nonparametric regression of the effects of liberal-party election victory on social security expenditures.
+
+\subparagraph{e)} For the non-parametric regression, show a regression sensitivity plot (for bandwidths of 0 to 5) and interpret it.
+
+\subparagraph{f)} Conduct a regression sensitivity test and interpret the results.
+
+\subparagraph{g)} Conduct a McCrary density test and interpret the results.
 
 
+
+
+\section*{Statistical Theory: Differences-in-differences}
 
 \subsection*{Problem 4 (4 points)}
 
-\paragraph{Do the following problems. Show every step.}
+\paragraph{Answer the following questions:}
 
-\subparagraph{a)}
+\subparagraph*{a)} In the tutorial it was shown that a simple differences-in-differences estimate using four groups is the following:
 
-\subparagraph{b)}
+$$ \delta = (\bar{x} _{t2} - \bar{y} _{t2}) - (\bar{x} _{t1} - \bar{y} _{t1}) $$
+
+
+Where $x$ is the treatment group and $y$ is the control group and $t1$ and $t2$ indicate time points 1 and 2 respectively.
+
+Assuming that the parallel trends assumption is valid, how does the above calculation allow us to make a causal inference about the effect of the treatment of $x$?
+
+\subparagraph*{b)} What happens if the parallel trends assumption is violated?
+
+\subparagraph*{c)} Based on \textit{Angrist \& Pischke}, describe one way how the parallel trends assumption can be relaxed.
 
 
 

@@ -12,11 +12,11 @@
 
 \begin{document}
 
-\title{Pol Sci 630: Problem Set 13 - Autocorrelation, Fixed Effects, and Causal Inference Techniques - Solutions}
+\title{Pol Sci 630: Problem Set 13 - Autocorrelation, Fixed, Random, Mixed Effects, and Causal Inference Techniques - Solutions}
 
 \author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
-\date{Grading Due Date: Friday, November 27th, 12.00 PM}
+\date{Grading Due Date: Friday, December 4th, 12.00 PM}
  
 \maketitle
 
@@ -47,45 +47,72 @@
 \subsection*{Problem 1}
 
 <<results='show',tidy=TRUE>>=
-### a
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+library(foreign)
+LDC=read.dta("LDC_IO_replication.dta")
+
+LDC=slide(LDC, Var=newtar, # Specify variable to lag
+                 TimeVar="date", # Specificy time variable
+                 GroupVar="ctylabel", # Unit variable
+                 NewVar=lag1_newtar, # Name of new variable
+                 slideBy = -1, # Lag by how many units, minus -> past
+                 keepInvalid = FALSE,
+                 reminder = TRUE)
+
+lm_fdi=lm(fdignp ~ l1polity + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
 @
 
-\subparagraph{b)}
 
 
 
 \subsection*{Problem 2}
-
-\paragraph{a)}
 
 <<results='show',tidy=TRUE>>=
 ### b
 @
 
 
+
+\subsection*{Problem 3}
+
 <<results='show',tidy=TRUE>>=
-### c
+library(rddtools)
+library(foreign)
+
+load("SocialSecurity.Rdata")
+
+social_rdd <- rdd_data(y = SocialSecurity$SocialSecurityExp, x = SocialSecurity$LibPartyVoteShare, cutpoint = 50)
+
+summary(social_rdd)
+plot(social_rdd)
+
+reg_para <- rdd_reg_lm(rdd_object = social_rdd, order = 1)
+reg_para
+plot(reg_para)
+
+reg_para2 <- rdd_reg_lm(rdd_object = social_rdd, order = 4)
+reg_para2
+plot(reg_para2)
+
+bw_ik <- rdd_bw_ik(social_rdd)
+reg_nonpara <- rdd_reg_np(rdd_object = social_rdd, bw = bw_ik)
+print(reg_nonpara)
+
+plot(reg_nonpara)
+
+plot(x = reg_nonpara)
+
+plotSensi(reg_nonpara, from = 0.05, to = 1, by = 0.1)
+
+plotPlacebo(reg_nonpara)
+
+dens_test(reg_nonpara)
 @
 
 
 
-\subsection*{Problem 3}
-
-\paragraph*{a)}
-
-\paragraph*{b)}
-
-\paragraph*{c)}
-
-
-
-\section*{Regression Discontinuity}
-
 \subsection*{Problem 4}
 
-\subparagraph{a)}
-
-\subparagraph{b)}
 
 
 
