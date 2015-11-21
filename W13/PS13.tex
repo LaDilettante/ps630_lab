@@ -46,7 +46,11 @@ Make sure that the PDF files you submit do not include any references to your id
 	\item Please use country fixed effects.
 \end{enumerate}
 
-\subparagraph{b)} Create three lags of your dependent variable and estimate a new regression that includes those lags as independent variables. Comparing the results of the two regression, is there autocorrelation in your original model?
+\subparagraph{b)} Create three lags of your dependent variable and estimate a new regression that includes those lags as independent variables. Compare the results of your two regressions.
+
+\subparagraph{c)} Now, in addition to the three lags, add a variable to capture a time trend to your model and interpret the results. Considering the results, is there a time trend?
+
+\subparagraph{d)} Finally, for your last model, including both three lags of your dependent variable and the time trend, do you find any autocorrelation between the residuals at time t and time t-1.
 
 
 
@@ -54,20 +58,20 @@ Make sure that the PDF files you submit do not include any references to your id
 
 \paragraph{Do the following in R:}
 
-\subparagraph{a)} Estimate a \textbf{random}  effects model with the following characteristics:
+\subparagraph{a)} Estimate a \textbf{random}  effects model with the following characteristics. (Note: random effects here refers to the intercept only)
 
 \begin{enumerate}
 	\item Dependent variable: net changes in FDI as percentage of GNP
 	\item Independent variables: tariff Level, GDP per capita, Polity score
 	\item Please use lagged versions of the independent variables (lagged by 1 year).
-	\item Please assume that the intercept is random.
+	\item Please assume that the intercept is randomly distributed (but not any of the coefficients).
 \end{enumerate}
 
 \subparagraph{b)} Interpret the results of the regression you estimated.
 
-\subparagraph{c)} Show the distribution of the intercept graphically.
+\subparagraph{c)} Show the density distribution of the intercept graphically.
 
-\subparagraph{} Estimate a \textbf{mixed} effects model with the following characteristics:
+\subparagraph{} Estimate a \textbf{mixed} effects model with the following characteristics. (Note: Mixed effects refers to the inclusion of some coefficients as randomly distributed --- for details see below).
 
 \begin{enumerate}
 	\item Dependent variable: net changes in FDI as percentage of GNP
@@ -79,7 +83,7 @@ Make sure that the PDF files you submit do not include any references to your id
 
 \subparagraph{d)} Interpret the results of the regression you estimated.
 
-\subparagraph{e)} Show the distribution of the coefficient graphically.
+\subparagraph{e)} Show the distribution of the coefficient of tariff level graphically.
 
 
 
@@ -89,15 +93,15 @@ Make sure that the PDF files you submit do not include any references to your id
 
 \subparagraph{a)} Load the \textit{SocialSecurity} data that is available on the course website and display the summary statistics.
 
-This artificial dataset contains observations of two variables, namely the vote share that the ``liberal party" has received and expenditures for social security.\footnote{Assume that each data point represents one election period in one state.} The liberal party is in a two-party system (with the other party being the ``conservative party") in which gaining 50\% of the vote share means election victory. The goal of the analysis is to estimate the effect of liberal-party election victories on social security expenditures.
+This artificial dataset contains observations of two variables, namely the vote share that the ``liberal party" has received and expenditures for social security.\footnote{Assume that each data point represents one election period in one state.} The liberal party is in a two-party system (with the other party being the ``conservative party") in which gaining 50\% of the vote share means election victory. The goal of the analysis is to estimate the effect of liberal-party election victories on social security expenditures via RDD.
 
 \subparagraph{b)} Turn the data frame into a regression discontinuity object and display the average values of social security expenditures for different bins of liberal party vote shares.
 
-\subparagraph{c)} Estimate two parametric regressions of the effects of liberal-party election victory on social security expenditures. One regression should be a regular OLS expression without higher-order polynomials. The second regression should include polynomials of up to the 4th order. Interpret the results of your regressions --- is there a discontinuity in 
+\subparagraph{c)} Estimate two parametric regressions of the effects of liberal-party election victory on social security expenditures. One regression should be a regular OLS expression without higher-order polynomials. The second regression should include polynomials of up to the 3rd order. Choose a bandwidth of 15. Interpret the results of your regressions --- is there a discontinuity in the data at a vote share of 50\%?
 
-\subparagraph{d)} Estimate a nonparametric regression of the effects of liberal-party election victory on social security expenditures.
+\subparagraph{d)} Estimate a nonparametric regression of the effects of liberal-party election victory on social security expenditures. Use the IK procedure introduced in the tutorial to estimate the optimal bandwidth.
 
-\subparagraph{e)} For the non-parametric regression, show a regression sensitivity plot (for bandwidths of 0 to 5) and interpret it.
+\subparagraph{e)} For the non-parametric regression, show a regression sensitivity plot (for bandwidths of 5 to 20) and interpret it.
 
 \subparagraph{f)} Conduct a regression sensitivity test and interpret the results.
 
@@ -116,14 +120,13 @@ This artificial dataset contains observations of two variables, namely the vote 
 
 $$ \delta = (\bar{x} _{t2} - \bar{y} _{t2}) - (\bar{x} _{t1} - \bar{y} _{t1}) $$
 
-
 Where $x$ is the treatment group and $y$ is the control group and $t1$ and $t2$ indicate time points 1 and 2 respectively.
 
 Assuming that the parallel trends assumption is valid, how does the above calculation allow us to make a causal inference about the effect of the treatment of $x$?
 
 \subparagraph*{b)} What happens if the parallel trends assumption is violated?
 
-\subparagraph*{c)} Based on \textit{Angrist \& Pischke}, describe one way how the parallel trends assumption can be relaxed.
+\subparagraph*{c)} Describe one way how the parallel trends assumption can be relaxed. What needs to be true to relax it?
 
 
 
