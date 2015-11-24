@@ -47,28 +47,144 @@
 \subsection*{Problem 1}
 
 <<results='show',tidy=TRUE>>=
+### a
+
 setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
 library(foreign)
 LDC=read.dta("LDC_IO_replication.dta")
 
-LDC=slide(LDC, Var=newtar, # Specify variable to lag
-                 TimeVar="date", # Specificy time variable
-                 GroupVar="ctylabel", # Unit variable
-                 NewVar=lag1_newtar, # Name of new variable
-                 slideBy = -1, # Lag by how many units, minus -> past
+library(DataCombine)
+
+toLag = c("newtar","fdignp")
+
+numberLag = c("lag1_","lag2_","lag3_")
+
+for (i in 1:3){
+  for (lagVar in toLag){
+    LDC=slide(LDC, Var=lagVar,
+                 TimeVar="date",
+                 GroupVar="ctylabel",
+                 NewVar=paste0(numberLag[i],lagVar),
+                 slideBy = -i,
                  keepInvalid = FALSE,
                  reminder = TRUE)
-
-lm_fdi=lm(fdignp ~ l1polity + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
+  }
+}
 @
 
+<<results='show',tidy=TRUE>>=
+lm_fdi=lm(fdignp ~ lag1_newtar + l1gdp_pc + l1polity + factor(ctylabel)-1, data = LDC)
+summary(lm_fdi)
 
+### b
 
+lm_fdi_lag=lm(fdignp ~ lag1_fdignp + lag2_fdignp + lag3_fdignp + lag1_newtar + l1gdp_pc + l1polity + factor(ctylabel)-1, data = LDC)
+summary(lm_fdi_lag)
+@
+
+Interpretation: In the first regression (that does not include any lags), all three coefficients of our independent variables are statistically significant predictors of the level of FDI changes as percentage of GNP. Tariff levels have a negative effect on FDI changes, GDP per capita has a positive effect, and the Polity score also has a positive effect. (Note: Let us be cautious about using the word "effect" though as we cannot make any causal statements per se)
+
+In the second regression, in which we include three lags of the dependent variable, two of our three coefficients from the previous regression are no longer statistically significant. Instead, the level of past FDI inflows appears to be highly correlated with the current level of FDI inflows. Only the coefficient of the Polity score is still significant at alpha < 0.1.
+
+The following paragraph is not required from students: Does this cast doubt on the results of the first regression? Not necessarily. As we discussed in the tutorial, lagging dependent variables is not always a good solution. Although we can potentially decrease the level of autocorrelation, there is always the danger that we explain a variable by itself by adding it to both the left-hand side and the right-hand side of the equation. Therefore, one should carefully consider whether or not generating lagged variables makes sense in the context of a specific problem.
+
+<<results='show',tidy=TRUE>>=
+### c
+lm_fdi_time=lm(fdignp ~ lag1_fdignp + lag2_fdignp + lag3_fdignp + lag1_newtar + l1gdp_pc + l1polity + date + factor(ctylabel)-1, data = LDC)
+summary(lm_fdi_time)
+@
+
+Interpretation: There appears to be a positive time trend in the level of FDI changes. This is reflected by the low p-value that is associated with the variable that captures the year. The result indicates that we would expect a more positive level of FDI changes in the later years than in the earlier years of the sample.
+
+<<results='show',tidy=TRUE>>=
+### Solution 1:
+
+### d
+res_t0=lm_fdi_time$resid
+res_t1=c(lm_fdi_time$resid[2:length(lm_fdi_time$resid)],NA)
+res_data=as.data.frame(cbind(res_t1,res_t0))
+head(res_data)
+lm_res=lm(res_t1 ~ res_t0, data=res_data)
+summary(lm_res)
+@
+
+Interpretation: The first method indicates that there is no statistically significant level of autocorrelation in the errors. This is due to the fact that the p-value of 0.343 does not allow us to reject the null hypothesis that the error at time t-1 is related to the error at time t.
+
+Note: However, the second method below shows us that due to the TSCS format of the data, our results here are not completely accurate. We can improve the accuracy of our results by lagging the variable based on unit and time as demonstrated below.
+
+Note: Please do not subtract any points if someone has applied method one to solve this question, but please do recommend to pay attention to the second method discussed in detail below. The second solution makes use of the \texit{DataCombine} package and its feature to lag variables in accordance with both unit- and time-variables, meaning that we do not capture transitions between units that we would capture with the simple method above.
+
+<<results='show',tidy=TRUE>>=
+### Solution 2 (better and more accurate):
+
+### First: generate a sample of the data with complete cases of all variables to make sure that we add the residuals to the correct observations
+
+LDC2=LDC[with(LDC, complete.cases(fdignp,lag1_fdignp,lag2_fdignp,lag3_fdignp,lag1_newtar,l1gdp_pc,l1polity)),]
+
+### Second: add the residuals to the respective observations
+
+LDC2=cbind(LDC2,res_t0)
+
+### Third: generate lags of the residuals
+
+for (i in 1:3){
+    LDC2=slide(LDC2, Var="res_t0",
+                 TimeVar="date",
+                 GroupVar="ctylabel",
+                 NewVar=paste0(numberLag[i],"res_t0"),
+                 slideBy = -i,
+                 keepInvalid = FALSE,
+                 reminder = TRUE)
+}
+@
+
+<<results='show',tidy=TRUE>>=
+lm_res=lm(res_t0 ~ lag1_res_t0, data=LDC2)
+summary(lm_res)
+@
+
+Interpretation: The second method shows us that there is indeed some level of autocorrelation in the errors remaining, even after introducing both three lags of the dependent variable and a time trend.
+
+\textbf{Note: Although solution 2 is better and more accurate, please do not subtract any points if a student has correctly found solution 1.}
 
 \subsection*{Problem 2}
 
 <<results='show',tidy=TRUE>>=
-### b
+### a
+
+library(lme4)
+
+lm_fdi_re=lmer(fdignp ~ lag1_newtar + l1gdp_pc + l1polity + date + (1 | ctylabel), data = LDC)
+summary(lm_fdi_re)
+@
+
+Interpretation: Compared to a fixed-effects model, a random-effects models assumes a specific distribution for the country-intercept. The distribution that is assumed is a normal distribution with mean and variance depending on the data. Other than fixed-effects models that reduce our results to within-country variation, random-effects models capture both within- and across-unit variation. The following plot shows the (approximately) normal distribution of our intercept across units.
+
+<<results='show',tidy=TRUE>>=
+### c
+
+dist=coef(lm_fdi_re)$ctylabel
+
+colnames(dist)[1]="intercept"
+
+plot(density(dist$intercept))
+@
+
+<<results='show',tidy=TRUE>>=
+### d
+
+library(lme4)
+
+lm_fdi_me=lmer(fdignp ~ lag1_newtar + l1gdp_pc + l1polity + date + (1 + lag1_newtar | ctylabel), data = LDC)
+summary(lm_fdi_me)
+@
+
+Interpretation: In the random-coefficients model estimated above, we assume that both the intercept and the coefficient of newtar are normally distributed across our units. This method allows us to capture differences in the effect that tariff levels may have on FDI changes for different countries. Both the regression output and the graph below show us that in the majority of cases the effect of tariff levels is not statistically significant from zero. With a t-value of -1.342, the coefficient is not statistically significant at common levels of significance.
+
+<<results='show',tidy=TRUE>>=
+dist2=coef(lm_fdi_me)$ctylabel
+
+plot(density(dist2$lag1_newtar))
 @
 
 
@@ -77,42 +193,76 @@ lm_fdi=lm(fdignp ~ l1polity + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewta
 
 <<results='show',tidy=TRUE>>=
 library(rddtools)
-library(foreign)
 
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w13/')
 load("SocialSecurity.Rdata")
+summary(SocialSecurity)
 
 social_rdd <- rdd_data(y = SocialSecurity$SocialSecurityExp, x = SocialSecurity$LibPartyVoteShare, cutpoint = 50)
 
 summary(social_rdd)
 plot(social_rdd)
 
-reg_para <- rdd_reg_lm(rdd_object = social_rdd, order = 1)
+reg_para <- rdd_reg_lm(rdd_object = social_rdd, order = 1, bw=15)
 reg_para
 plot(reg_para)
 
-reg_para2 <- rdd_reg_lm(rdd_object = social_rdd, order = 4)
+reg_para2 <- rdd_reg_lm(rdd_object = social_rdd, order = 3, bw=15)
 reg_para2
 plot(reg_para2)
+@
 
+Interpretation: Both the parametric regression of first order and the third order show a very similar result. With a p-value of p < 0.001, the positive effect of liberal-party victories on social security expenditures is statistically significant at all common levels of significance. The magnitude of the effect appears to be very close to the value 20. This result holds for both models, increasing our confidence in its validity.
+
+<<results='show',tidy=TRUE>>=
 bw_ik <- rdd_bw_ik(social_rdd)
 reg_nonpara <- rdd_reg_np(rdd_object = social_rdd, bw = bw_ik)
+summary(reg_nonpara)
 print(reg_nonpara)
+plot(reg_nonpara)
+@
 
+Interpretation: The nonparametric regression based on the IK optimal bandwidth confirms the result of the parametric regression. The magnitude of the estimate is once again close to the value 20 and the p-value of p < 0.001 indicates that this result is statistically significant at all common levels of significance.
+
+<<results='show',tidy=TRUE>>=
 plot(reg_nonpara)
 
-plot(x = reg_nonpara)
+plotSensi(reg_nonpara, from = 5, to = 20, by = 1)
+@
 
-plotSensi(reg_nonpara, from = 0.05, to = 1, by = 0.1)
+Interpretation: The sensitivity test reveals that our results are not sensitive to changes in the bandwidth. Indeed, they differ only marginally between a bandwidth of 5 and a bandwidth of 20. This should increase our confidence that the discontinuity at 50 percent is not based on arbitrary model specifications.
 
+<<results='show',tidy=TRUE>>=
 plotPlacebo(reg_nonpara)
+@
 
+Interpretation: The Placebo test shows that, if we choose other cut-off points at random, we do not get a result that is statistically significant from zero. Indeed, it appears that all confidence intervals at other values include the value zero, meaning that we would not find any effect if we set the cut-off point at this value.
+
+<<results='show',tidy=TRUE>>=
 dens_test(reg_nonpara)
 @
+
+Interpretation: The McCrary density test fails to reject the null hypothesis that there is no discontinuity in density around the cut-off point. This result indicates that units are not subject to an artificial treatment. We can thus be more confident in the validity of our results.
 
 
 
 \subsection*{Problem 4}
 
+\subparagraph{a)} Differences-in-differences is a powerful tool for causal inference if its assumptions are true. The most crucial assumption in the simple diff-in-diff framework is the parallel trends assumption. Why is this the case? We compare the characteristics of two groups over time. In the vast majority of cases, the characteristic of interest is not static but moves. The parallel trends assumption means \textit{that the characteristic of interest does not trend for the two groups in a systematically different way}. Note that there may still be some degree of random error for individual observations but as long as we have a sufficiently large number of observations drawn at random from the population, this random error will not bias the results. The parallel trends assumption is such an important part of diff-in-diff because we \textit{approximate} (however, we do never perfectly meet the requirements of) a randomized experiment in which we have one control group and one treatment group.
+
+Most importantly, if the parallel trends assumption is true for the population and individual deviations are caused by random error only, the group not affected by the treatment can \textit{plausibly function as (near-)counterfactual} to the group that is affected by it.
+
+In other words, when the parallel trends assumption is true, the comparison of group differences at time t-1 and t reveals the effect of the exogeneous treatment that only affects one of the two groups because both groups are subject to the same intertemporal dynamics in all other respects. Accordingly, the following mathematical expression captures the magnitude of the difference:
+
+$$ \delta = (\bar{x} _{t2} - \bar{y} _{t2}) - (\bar{x} _{t1} - \bar{y} _{t1}) $$
+
+Where $x$ is the treatment group and $y$ is the control group and $t1$ and $t2$ indicate time points 1 and 2 respectively.
+
+\subparagraph{b)} Without any additional model features or assumptions, when the parallel trends assumption is violated, the difference in differences could be caused by diverging intertemporal dynamics in the characteristic of interest. This means that the effect cannot be effectively reduced to the treatment by which only one group is affected. Because we cannot distinguish between the impact of the treatment and the impact of other unobserved factors, we can no longer make an inference about the magnitude of the treatment effect.
+
+Note that this also means that we have to be very confident in the parallel trends assumption to make causal claims based on a simple diff-in-diff framework.
+
+\subparagraph{c)} If we have three time points per group that we analyze, we can estimate time trends that are group-specific. As long as the time trend of the treatment group is correctly captured by at least two points in time before the treatment, we can still make claims about the effect that the treatment had. Therefore, these individual time trends allow us to relax the parallel trends assumption. We merely need a stable trend in both groups.
 
 
 
