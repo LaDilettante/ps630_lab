@@ -84,7 +84,7 @@ summary(lm_fdi_lag)
 
 Interpretation: In the first regression (that does not include any lags), all three coefficients of our independent variables are statistically significant predictors of the level of FDI changes as percentage of GNP. Tariff levels have a negative effect on FDI changes, GDP per capita has a positive effect, and the Polity score also has a positive effect. (Note: Let us be cautious about using the word "effect" though as we cannot make any causal statements per se)
 
-In the second regression, in which we include three lags of the dependent variable, two of our three coefficients from the previous regression are no longer statistically significant. Instead, the level of past FDI inflows appears to be highly correlated with the current level of FDI inflows. Only the coefficient of the Polity score is still significant at alpha < 0.1.
+In the second regression, in which we include three lags of the dependent variable, two of our three coefficients from the previous regression are no longer statistically significant. Instead, the level of past FDI inflows appears to be highly correlated with the current level of FDI inflows. Only the coefficient of the Polity score is still significant at $\alpha < 0.1$.
 
 The following paragraph is not required from students: Does this cast doubt on the results of the first regression? Not necessarily. As we discussed in the tutorial, lagging dependent variables is not always a good solution. Although we can potentially decrease the level of autocorrelation, there is always the danger that we explain a variable by itself by adding it to both the left-hand side and the right-hand side of the equation. Therefore, one should carefully consider whether or not generating lagged variables makes sense in the context of a specific problem.
 
@@ -118,6 +118,8 @@ Note: Please do not subtract any points if someone has applied method one to sol
 ### Solution 2 (better and more accurate):
 
 ### First: generate a sample of the data with complete cases of all variables to make sure that we add the residuals to the correct observations
+
+### Note: if you do not include this step, you will add the residuals to the wrong observations, so it is essential!
 
 LDC2=LDC[with(LDC, complete.cases(fdignp,lag1_fdignp,lag2_fdignp,lag3_fdignp,lag1_newtar,l1gdp_pc,l1polity)),]
 
@@ -212,7 +214,7 @@ reg_para2
 plot(reg_para2)
 @
 
-Interpretation: Both the parametric regression of first order and the third order show a very similar result. With a p-value of p < 0.001, the positive effect of liberal-party victories on social security expenditures is statistically significant at all common levels of significance. The magnitude of the effect appears to be very close to the value 20. This result holds for both models, increasing our confidence in its validity.
+Interpretation: Both the parametric regression of first order and the third order show a very similar result. With a p-value of $p < 0.001$, the positive effect of liberal-party victories on social security expenditures is statistically significant at all common levels of significance. The magnitude of the effect appears to be very close to the value 20. This result holds for both models, increasing our confidence in its validity.
 
 <<results='show',tidy=TRUE>>=
 bw_ik <- rdd_bw_ik(social_rdd)
@@ -222,7 +224,7 @@ print(reg_nonpara)
 plot(reg_nonpara)
 @
 
-Interpretation: The nonparametric regression based on the IK optimal bandwidth confirms the result of the parametric regression. The magnitude of the estimate is once again close to the value 20 and the p-value of p < 0.001 indicates that this result is statistically significant at all common levels of significance.
+Interpretation: The nonparametric regression based on the IK optimal bandwidth confirms the result of the parametric regression. The magnitude of the estimate is once again close to the value 20 and the p-value of $p < 0.001$ indicates that this result is statistically significant at all common levels of significance.
 
 <<results='show',tidy=TRUE>>=
 plot(reg_nonpara)
@@ -242,7 +244,7 @@ Interpretation: The Placebo test shows that, if we choose other cut-off points a
 dens_test(reg_nonpara)
 @
 
-Interpretation: The McCrary density test fails to reject the null hypothesis that there is no discontinuity in density around the cut-off point. This result indicates that units are not subject to an artificial treatment. We can thus be more confident in the validity of our results.
+Interpretation: The McCrary density test fails to reject the null hypothesis that there is no discontinuity in density around the cut-off point at common levels of statistical significance. This result indicates that units are not subject to an artificial treatment. We can thus be more confident in the validity of our results.
 
 
 
@@ -262,7 +264,7 @@ Where $x$ is the treatment group and $y$ is the control group and $t1$ and $t2$ 
 
 Note that this also means that we have to be very confident in the parallel trends assumption to make causal claims based on a simple diff-in-diff framework.
 
-\subparagraph{c)} If we have three time points per group that we analyze, we can estimate time trends that are group-specific. As long as the time trend of the treatment group is correctly captured by at least two points in time before the treatment, we can still make claims about the effect that the treatment had. Therefore, these individual time trends allow us to relax the parallel trends assumption. We merely need a stable trend in both groups.
+\subparagraph{c)} If we have three time points per group that we analyze, we can estimate time trends that are group-specific. As long as the time trend of the treatment group is correctly captured by at least two points in time before the treatment, we can still make claims about the effect that the treatment had. We can technically catpure such a trend through an interaction of unit dummies and time variables. Therefore, these individual time trends allow us to relax the parallel trends assumption. We merely need a stable trend in the analyzed groups.
 
 
 
