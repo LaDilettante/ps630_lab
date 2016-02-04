@@ -37,7 +37,7 @@ confint(fit1)
 
 # Estimate kernal density of that distribution
 
-kden <- kde2d(sims1[,1], sims1[,2], n = 100)
+kden <- kde2d(sims1[,1], sims1[,2])
 
 # Plot the bivariate normal
 
@@ -64,6 +64,8 @@ axis(2, at=c(1:6), labels=c("Age","Male","Income","Union","Unemp","Open"), las=2
 segments(confint(fit2)[2:7,1], 1:6, confint(fit2)[2:7,2], 1:6, lty=1, lwd=1)
 abline(v=0, lty=2)
 title(main="Predictors of support for social welfare")
+
+coefplot(fit2)
 
 # Adding education via nominal operationalization #
 

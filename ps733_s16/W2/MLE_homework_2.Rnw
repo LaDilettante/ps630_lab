@@ -1,0 +1,59 @@
+\documentclass{article}
+
+\usepackage{amsmath, amssymb}
+
+\begin{document}
+
+\section{}
+
+<<'load_data'>>=
+data <- na.omit(read.delim("County Vote for McCain.txt", header=TRUE))
+@
+
+
+Estimate the following model via maximum likelihood using bbmle in R and interpret your output.
+
+\begin{align}
+logodds_i &\sim N(\mu_i, \sigma^2) \\
+\mu_i &= \beta_0 + \beta_1 pcollege_i + \beta_2 medinc_i
+\end{align}
+
+Specifically, do the following:
+
+a. Write an R function for the log-likelihood that can be called from mle2 and optimized to estimate the model above.
+
+<<>>=
+# Function to return negative loglikelihood
+# Input:
+#   params: a vector of parameters, i.e. \beta_0, \beta_1, ..., \sigma
+#   y, X: vector of outcome, matrix of covariates
+# Output: minus log likelihood
+LL_normreg = function(params, y, X){
+  B = matrix(NA, nrow = length(params) - 1, ncol = 1)
+  B[,1] = params[-length(params)]
+  sigma    = params[[length(params)]]
+  minusll  = -sum(dnorm(y, X %*% B, sigma, log=T))
+  return(minusll)
+}
+
+# Declare the names of the parameters (from B0 to B[# of predictors], and sigma):
+
+parnames(LL_normreg) <- c("B0", "B1", "B2", "sigma")
+
+# Fit the model using mle2 ('vecpar=TRUE' tells mle2 that the first argument passed to the
+  # LL function is a vector of all parameters with names declared in 'parnames' above and in the start values):
+
+fit <- mle2(LL_normreg, start = c(B0 = mean(y), B1 = 0, B2 = 0, sigma = sd(y)),
+            data=list(y=y,X=X), vecpar = TRUE, control=list(maxit=5000))
+
+summary(fit)
+@
+
+
+b. Use mle2 to optimize the function given the provided data.
+c. Generate marginal effects on McCain’s share of the two-party vote (not the logodds) for both predictors. That is, calculate the difference in McCain’s predicted proportion comparing counties at the 95th percentile of each predictor to those at the 5th percentile, holding the other variable at its median value. [Note: you do not need to generate confidence intervals for the marginal effects for this problem].
+d. Interpret each of these effects in substantive terms: what do the results say about the predictors of McCain support and their influence relative to one another? Describe the results in an intuitive way with respect to the scales of the predictors, such that your reader can get a sense of how these variables relate to the DV.
+
+
+
+\end{document}

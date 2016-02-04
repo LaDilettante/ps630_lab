@@ -1,0 +1,123 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage{amsmath, amssymb}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\section{}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{anesdata} \hlkwb{<-} \hlkwd{na.omit}\hlstd{(}\hlkwd{read.delim}\hlstd{(}\hlstr{"W2/County Vote for McCain.txt"}\hlstd{,} \hlkwc{header}\hlstd{=}\hlnum{TRUE}\hlstd{))}
+\end{alltt}
+
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning in file(file, "{}rt"{}): cannot open file 'W2/County Vote for McCain.txt': No such file or directory}}
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in file(file, "{}rt"{}): cannot open the connection}}\end{kframe}
+\end{knitrout}
+
+
+Estimate the following model via maximum likelihood using bbmle in R and interpret your output.
+
+\begin{align}
+logodds_i &\sim N(\mu_i, \sigma^2) \\
+\mu_i &= \beta_0 + \beta_1 pcollege_i + \beta_2 medinc_i
+\end{align}
+
+Specifically, do the following:
+
+a. Write an R function for the log-likelihood that can be called from mle2 and optimized to estimate the model above.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{LL_normreg} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{params}\hlstd{,} \hlkwc{y}\hlstd{,} \hlkwc{X}\hlstd{)\{}
+  \hlstd{B} \hlkwb{=} \hlkwd{matrix}\hlstd{(}\hlnum{NA}\hlstd{,} \hlkwc{nrow} \hlstd{=} \hlkwd{length}\hlstd{(params)} \hlopt{-} \hlnum{1}\hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{1}\hlstd{)}
+  \hlstd{B[,}\hlnum{1}\hlstd{]} \hlkwb{=} \hlstd{params[}\hlopt{-}\hlkwd{length}\hlstd{(params)]}
+  \hlstd{sigma}    \hlkwb{=} \hlstd{params[[}\hlkwd{length}\hlstd{(params)]]}
+  \hlstd{minusll}  \hlkwb{=} \hlopt{-}\hlkwd{sum}\hlstd{(}\hlkwd{dnorm}\hlstd{(y, X} \hlopt{%*%} \hlstd{B, sigma,} \hlkwc{log}\hlstd{=T))}
+  \hlkwd{return}\hlstd{(minusll)}
+\hlstd{\}}
+
+\hlcom{# Declare the names of the parameters (from B0 to B[# of predictors], and sigma):}
+
+\hlkwd{parnames}\hlstd{(LL_normreg)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"B0"}\hlstd{,} \hlstr{"B1"}\hlstd{,} \hlstr{"B2"}\hlstd{,} \hlstr{"sigma"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in parnames(LL\_normreg) <- c("{}B0"{}, "{}B1"{}, "{}B2"{}, "{}sigma"{}): could not find function "{}parnames<-"{}}}\begin{alltt}
+\hlcom{# Fit the model using mle2 ('vecpar=TRUE' tells mle2 that the first argument passed to the}
+  \hlcom{# LL function is a vector of all parameters with names declared in 'parnames' above and in the start values):}
+
+\hlstd{fit} \hlkwb{<-} \hlkwd{mle2}\hlstd{(LL_normreg,} \hlkwc{start} \hlstd{=} \hlkwd{c}\hlstd{(}\hlkwc{B0} \hlstd{=} \hlkwd{mean}\hlstd{(y),} \hlkwc{B1} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{B2} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{sigma} \hlstd{=} \hlkwd{sd}\hlstd{(y)),}
+            \hlkwc{data}\hlstd{=}\hlkwd{list}\hlstd{(}\hlkwc{y}\hlstd{=y,}\hlkwc{X}\hlstd{=X),} \hlkwc{vecpar} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{control}\hlstd{=}\hlkwd{list}\hlstd{(}\hlkwc{maxit}\hlstd{=}\hlnum{5000}\hlstd{))}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): could not find function "{}mle2"{}}}\begin{alltt}
+\hlkwd{summary}\hlstd{(fit)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in summary(fit): object 'fit' not found}}\end{kframe}
+\end{knitrout}
+
+
+b. Use mle2 to optimize the function given the provided data.
+c. Generate marginal effects on McCain’s share of the two-party vote (not the logodds) for both predictors. That is, calculate the difference in McCain’s predicted proportion comparing counties at the 95th percentile of each predictor to those at the 5th percentile, holding the other variable at its median value. [Note: you do not need to generate confidence intervals for the marginal effects for this problem].
+d. Interpret each of these effects in substantive terms: what do the results say about the predictors of McCain support and their influence relative to one another? Describe the results in an intuitive way with respect to the scales of the predictors, such that your reader can get a sense of how these variables relate to the DV.
+
+
+
+\end{document}
