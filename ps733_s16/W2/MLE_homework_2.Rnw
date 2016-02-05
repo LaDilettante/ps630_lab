@@ -4,12 +4,16 @@
 
 \begin{document}
 
-\section{}
-
-<<'load_data'>>=
+<<'load_data_and_package', message=FALSE>>=
+library(bbmle)
+library(arm)
+library(ggplot2)
+library(reshape2)
+library(dplyr)
 data <- na.omit(read.delim("County Vote for McCain.txt", header=TRUE))
 @
 
+\section{}
 
 Estimate the following model via maximum likelihood using bbmle in R and interpret your output.
 
@@ -22,38 +26,184 @@ Specifically, do the following:
 
 a. Write an R function for the log-likelihood that can be called from mle2 and optimized to estimate the model above.
 
-<<>>=
+<<'1a'>>=
 # Function to return negative loglikelihood
 # Input:
 #   params: a vector of parameters, i.e. \beta_0, \beta_1, ..., \sigma
 #   y, X: vector of outcome, matrix of covariates
 # Output: minus log likelihood
-LL_normreg = function(params, y, X){
+LL_normreg = function(params) {
   B = matrix(NA, nrow = length(params) - 1, ncol = 1)
-  B[,1] = params[-length(params)]
+  B[,1] = params[-length(params)] # dim(B) = K x 1, length(params) = K + 1
   sigma    = params[[length(params)]]
   minusll  = -sum(dnorm(y, X %*% B, sigma, log=T))
   return(minusll)
 }
+@
 
+b. Use mle2 to optimize the function given the provided data.
+
+\textbf{Solution}
+
+<<'1b'>>=
 # Declare the names of the parameters (from B0 to B[# of predictors], and sigma):
-
 parnames(LL_normreg) <- c("B0", "B1", "B2", "sigma")
 
 # Fit the model using mle2 ('vecpar=TRUE' tells mle2 that the first argument passed to the
-  # LL function is a vector of all parameters with names declared in 'parnames' above and in the start values):
+# LL function is a vector of all parameters with names declared in 'parnames' above and in the start values):
 
-fit <- mle2(LL_normreg, start = c(B0 = mean(y), B1 = 0, B2 = 0, sigma = sd(y)),
-            data=list(y=y,X=X), vecpar = TRUE, control=list(maxit=5000))
+y <- data$logodds
+X <- as.matrix(cbind(1, data[ , c("pcollege", "medinc")])) ; colnames(X) <- NULL
+m_1b <- mle2(LL_normreg, start = c(B0 = mean(y), B1 = 0, B2 = 0, sigma = sd(y)),
+            data=list(y=y, X=X),
+            vecpar = TRUE, control=list(maxit=5000))
 
-summary(fit)
+summary(m_1b)
+@
+
+c. Generate marginal effects on McCain’s share of the two-party vote (not the logodds) for both predictors. That is, calculate the difference in McCain’s predicted proportion comparing counties at the 95th percentile of each predictor to those at the 5th percentile, holding the other variable at its median value. [Note: you do not need to generate confidence intervals for the marginal effects for this problem].
+
+\textbf{Solution}
+
+TA's Note 1: The problem asks for the marginal effect on McCain's sahre of the two-party vote. Thus, we need to know how to convert logodds to the share as follows. (This is something worth understanding for logit model later).
+
+Let $p$ denotes McCain's share / proportion of vote. We have:
+
+\begin{align}
+ln(\frac{p}{1-p}) &= logodd &&\qquad \text{definition of logodd} \\
+\frac{p}{1 - p} &= \exp(logodd) &&\qquad \text{exponentiate both sides} \\
+p &= \frac{\exp(logodd)}{1 + \exp(logodd)} \\
+&= \frac{1}{1 - exp(-logodd)} &&\qquad \text{another expression of $p$}
+\end{align}
+
+TA's Note 2: \verb`predict` only works when the model is fit using a formula (which we're not doing). Thus, we have to calculate the predicted values by hand as follows.
+
+
+Marginal effect of \verb`pcollege` on \verb`logodds`:
+
+<<>>=
+q90_pcollege <- quantile(data$pcollege, probs = c(0.05, 0.95))
+
+(pred_logodd_college <- coef(m_1b)[1] + coef(m_1b)[2] * q90_pcollege +
+  coef(m_1b)[3] * median(data$medinc))
+@
+
+Marginal effect of \verb`pcollege` on \verb`pmccain`:
+
+<<>>=
+# Convert logodds to original variable vote share
+(pred_pmccain_college <- exp(pred_logodd_college) / (1 + exp(pred_logodd_college)))
+
+# Alternatively, use a built-in function to convert logodds to original var
+(plogis(pred_logodd_college))
+(me_pmccain_college <- pred_pmccain_college["95%"] - pred_pmccain_college["5%"])
+@
+
+Similarly, marginal effect of \verb`medinc` on \verb`pmccain`:
+
+<<>>=
+q90_medinc <- quantile(data$medinc, probs = c(0.05, 0.95))
+pred_pmccain_medinc <- plogis(coef(m_1b)[1] + coef(m_1b)[2] * median(data$pcollege) +
+                                coef(m_1b)[3] * q90_medinc)
+(me_pmccain_medinc <- pred_pmccain_medinc["95%"] - pred_pmccain_medinc["5%"])
 @
 
 
-b. Use mle2 to optimize the function given the provided data.
-c. Generate marginal effects on McCain’s share of the two-party vote (not the logodds) for both predictors. That is, calculate the difference in McCain’s predicted proportion comparing counties at the 95th percentile of each predictor to those at the 5th percentile, holding the other variable at its median value. [Note: you do not need to generate confidence intervals for the marginal effects for this problem].
 d. Interpret each of these effects in substantive terms: what do the results say about the predictors of McCain support and their influence relative to one another? Describe the results in an intuitive way with respect to the scales of the predictors, such that your reader can get a sense of how these variables relate to the DV.
 
+\textbf{Solution}
+
+Comparing counties with \verb`pcollege`, i.e. county proportion with college degree, at 5\% and 95\% percentile (i.e. \Sexpr{round(q90_pcollege, 2)}), county proportion vote for McCain changes from \Sexpr{round(pred_pmccain_college["5%"], 2)} to \Sexpr{round(pred_pmccain_college["95%"], 2)}.
+
+Comparing counties with \verb`medinc`, i.e. median income, at 5\% and 95\% percentile (i.e. \$31000 vs \$69000), county proportion vote for McCain changes from \Sexpr{round(pred_pmccain_medinc["5%"], 2)} to \Sexpr{round(pred_pmccain_medinc["95%"], 2)}.
+
+\section{}
+
+Estimate the following model via maximum likelihood using bbmle in R and interpret your output for the variance equation.
+
+\begin{align}
+pmccain_i &\sim N(\mu_i, \sigma_i^2) \\
+\mu_i &= \beta_0 + \beta_1 pcollege_i + \beta_2 medinc_i \\
+\sigma_i^2 &= \gamma_0 + \gamma_1 ginicnty_i
+\end{align}
+
+a. Write an R function for the log-likelihood that can be called from mle2 and optimized.
+
+<<>>=
+LL_normreg_hetero <- function(b0, b1, b2, g0, g1) {
+  - sum(dnorm(y, b0 + b1*x1 + b2*x2, sqrt(g0 + g1*x3), log = T))
+}
+@
+
+b. Use mle2 to optimize the function given the provided data.
+
+<<warning=FALSE>>=
+m_2b <- mle2(LL_normreg_hetero,
+             start = list(b0 = mean(y), b1 = 0, b2 = 0, g0 = var(y), g1 = 0),
+             data = list(y = data$pmccain,
+                         x1 = data$pcollege, x2 = data$medinc,
+                         x3 = data$ginicnty))
+summary(m_2b)
+@
+
+c. Calculate the marginal effect of a 5-95\% change in ginicnty on the standard deviation of the error term for the model.
+
+\textbf{Solution}
+
+<<>>=
+q90_ginicnty <- quantile(data$ginicnty, probs = c(0.05, 0.95))
+
+# Predicted value of error sd when ginicnty is at 5% and 95% percentile
+(pred_errorsd <- sqrt(coef(m_2b)["g0"] + coef(m_2b)["g1"] * q90_ginicnty))
+@
+
+The marginal effect of a 5-95\% change in ginicnty on the standard deviation of the error term is \Sexpr{round(pred_errorsd["95%"] - pred_errorsd["5%"], 2)}.
+
+d. Describe and interpret this marginal effect. Does inequality have a statistically significant effect on the model errors? How do changes in Gini relate to changes in the SD? What is the substantive significance of this effect (if any)?
+
+\textbf{Solution}
+
+Inequality does have a statistically significant effect on the model errors with very small p value. If Gini changes from 5\% to 95\%, i.e. from \Sexpr{q90_ginicnty["5%"]} to \Sexpr{q90_ginicnty["95%"]}, the standard error changes from \Sexpr{round(pred_errorsd["5%"], 2)} to \Sexpr{round(pred_errorsd["95%"], 2)}.
+
+Given that the unconditional SD is \Sexpr{round(sd(data$pmccain), 2)}, this change is substantively not very big.
+
+\section{}
+
+Estimate the following model via OLS (use ‘lm’) and use a simulation-based approach (use the ‘sim’ function in R) to generate point estimates and 95\% confidence intervals for all predictors. Plot the estimates and their associated confidence intervals in a pretty graph, and interpret each effect in substantive terms.
+
+\begin{align}
+pmccain &\sim N(\mu_i, \sigma^2) \\
+\mu_i &= \beta_0 + \beta_1 pcollege_i + \beta_2 medinc_i + \beta_3 pblack_i + \beta_4 phisp_i + \beta_5 ginicnty_i
+\end{align}
+
+<<>>=
+m_3 <- lm(pmccain ~ pcollege + medinc + pblack + phisp + ginicnty, data = data)
+sim_3 <- sim(m_3, n.sims = 1000)
+@
+
+Point estimates and 95\% confidence interval:
+
+<<>>=
+(est_3 <- apply(coef(sim_3), 2, quantile, probs = c(0.025, 0.5, 0.975)))
+@
+
+Plot:
+
+<<>>=
+coefplot(m_3)
+@
+
+That was too easy, so here's another plot
+
+<<fig.height=5, fig.width=7>>=
+pd <- melt(est_3) %>% filter(Var2 != "(Intercept)") %>%
+  dcast(Var2 ~ Var1)
+ggplot(data = pd) +
+  geom_pointrange(aes(x = Var2, y = `50%`, ymin = `2.5%`, ymax = `97.5%`)) +
+  geom_hline(aes(yintercept = 0), linetype = "dotted") +
+  coord_flip() + theme_bw() +
+  labs(x = "", y = "Regression Coefficients")
+@
 
 
 \end{document}
