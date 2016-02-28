@@ -1,0 +1,153 @@
+\documentclass{article}
+
+\usepackage{amsmath, amssymb}
+
+\begin{document}
+
+<<'load_data_and_package', message=FALSE>>=
+rm(list = ls())
+library(Zelig)
+library(arm)
+data(mid)
+@
+
+\section{Probit model of conflict}
+
+<<>>=
+m_1 <- glm(conflict ~ major + contig + power + years, data = mid,
+           family = binomial(link = "probit"))
+@
+
+\subsection{binnedplot of residuals against powers and years}
+
+<<results='hold'>>=
+par(mfrow = c(2, 1))
+binnedplot(m_1$data$power, residuals(m_1), xlab = "Power")
+binnedplot(m_1$data$year, residuals(m_1), xlab = "Year")
+par(mfrow = c(1, 1))
+@
+
+The fit looks pretty good especially for power (all residuals hover around 0). For year, the residuals seem to have a quadratic relationship and also big residuals near the two extremes of the distribution.
+
+\subsection{Influence statistics to find problematic data point}
+
+<<>>=
+library(car)
+influenceIndexPlot(m_1, vars=c("Cook","hat","Studentized"), id.n=3)
+@
+
+Point 30624 seems problematic according to Cook's D and Studentized residuals. (hat-values plot indicate other problematic points, may be worth investigating).
+
+<<>>=
+compareCoefs(m_1, update(m_1, subset=-c(which(row.names(mid) == 30624))))
+@
+
+Deleting this point doesn't change the estimate too much
+
+\section{Robit model, same variables, using t-distribution with 3 df}
+
+<<>>=
+library(bbmle)
+
+LL_robit_3 <- function(params,y,X){
+  B <- params
+  p <- pt(X %*% B, 3) #t link w/ 3 df
+  minusll  = -sum(y*log(p) + (1-y)*log(1-p))
+  return(minusll)
+}
+
+parnames(LL_robit_3) <- c("Intercept", "Major", "Contig", "Power", "Years")
+
+m_2 <- mle2(LL_robit_3, start = c(Intercept=0, Major=0, Contig=0, Power=0, Years=0),
+             data=list(y=mid$conflict,
+                       X=cbind(1, as.matrix(mid[ , c("major", "contig", "power", "years")]))),
+            vecpar = TRUE)
+summary(m_2)
+@
+
+\section{Model with same variables, using complementary log log link}
+
+<<>>=
+m_3 <- glm(conflict ~ major + contig + power + years, data = mid,
+           family = binomial(link = "cloglog"))
+summary(m_3)
+@
+
+\section{Rare event logit, same variables}
+
+<<>>=
+m_4 <- zelig(conflict ~ major + contig + power + years, data = mid,
+             model = "relogit", cite = FALSE)
+summary(m_4)
+@
+
+\section{Logit model, same variables, weakly informative priors on all coefs}
+
+<<>>=
+m_5 <- bayesglm(conflict ~ major + contig + power + years, data = mid,
+         family = binomial(link = "logit"))
+summary(m_5)
+@
+
+\section{}
+
+Plot the relationship between the predicted probability that two states are in conflict in a given year and the balance of power between the states for all 5 models on the same plot. Hold “contig” and “major” at 0 and years at “10.” Use a different line type for each model. Describe what you find. Then create a second plot where you change “major” to 1 and “years” to “0.” Again, describe what you find. You do NOT need to plot confidence intervals for any of the estimates.
+
+<<>>=
+library(ggplot2)
+library(reshape2)
+
+f_predict <- function(model, contig, major, years) {
+  newdata <- model$data
+  newdata$contig <- contig
+  newdata$major <- major
+  newdata$years <- years
+  predict(model, newdata = newdata, type = "response")
+}
+
+f_predict_robit <- function(model, contig, major, years) {
+  X <- model@data$X
+  X[ , "contig"] <- contig
+  X[ , "major"] <- major
+  X[ , "years"] <- years
+
+  B <- coef(model)
+  p <- pt(X %*% B, 3) #t link w/ 3 df
+  return(p)
+}
+
+f_predict_zelig <- function(model, contig, major, years) {
+  X <- cbind(1, major = major, contig = contig, power = mid$power, years = years)
+  B <- coef(m_4)[[1]]
+  return(plogis(X %*% B))
+}
+
+pdata <- data.frame(
+  power = mid$power,
+  probit = f_predict(m_1, contig = 0, major = 0, years = 10),
+  robit = f_predict_robit(m_2, contig = 0, major = 0, years = 10),
+  cll = f_predict(m_3, contig = 0, major = 0, years = 10),
+  relogit = f_predict_zelig(m_4, contig = 0, major = 0, years = 10),
+  bayes = f_predict(m_5, contig = 0, major = 0, years = 10)
+)
+
+ggplot(data = melt(pdata, id.vars = "power"), aes(power, value)) +
+  geom_line(aes(linetype = variable))
+@
+
+<<>>=
+pdata <- data.frame(
+  power = mid$power,
+  probit = f_predict(m_1, contig = 0, major = 1, years = 0),
+  robit = f_predict_robit(m_2, contig = 0, major = 1, years = 0),
+  cll = f_predict(m_3, contig = 0, major = 1, years = 0),
+  relogit = f_predict_zelig(m_4, contig = 0, major = 1, years = 0),
+  bayes = f_predict(m_5, contig = 0, major = 1, years = 0)
+)
+
+ggplot(data = melt(pdata, id.vars = "power"), aes(power, value)) +
+  geom_line(aes(linetype = variable))
+@
+
+
+\end{document}
