@@ -1,0 +1,296 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{color}
+\onehalfspacing
+
+
+
+\begin{document}
+
+\title{Pol Sci 733: MLE Assignment 1 - Solutions}
+
+\author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
+
+\date{Grading Due Date: Tuesday, February 2nd, 2016, 3.00 PM}
+ 
+\maketitle
+
+
+
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: ``GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was.}
+
+\bigskip
+
+\textbf{Use the following scheme to assign points: For problems that were solved correctly in their entirety, assign the full point value. For correctly solved bonus problems, add that value to the total score for a problem but do not go above the maximum score for each problem. If there are mistakes in the homework, subtract points according to the extent of the mistake. If you subtract points, explain why.}
+
+\bigskip
+
+\textbf{In order to make your text bold and red, you need to insert the following line at the beginning of the document:}
+
+\begin{verbatim} \usepackage{color} \end{verbatim}
+
+\textbf{and the following lines above the solution of the specific task:}
+
+\begin{verbatim} \textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points} \end{verbatim}
+
+
+
+\pagebreak
+
+\section*{Problem 1 (5 points)}
+
+Given is the probability density function of the exponential distribution for a single observation:
+
+\bigskip
+
+$f(x) = \lambda * exp(-\lambda*x)$
+
+\bigskip
+
+In order to find the MLE for $\lambda$, we first treat the value of our observation (X=x) as fixed, which means that we now have a function of $\lambda$.
+
+\bigskip
+
+$L(\lambda | X = x) = L(\lambda) = \lambda * exp(-\lambda*x)$
+
+\bigskip
+
+Next, we take the natural logarithm of this function:
+
+\bigskip
+
+$\log(L(\lambda))) = \log(\lambda) - \lambda *x$
+
+\bigskip
+
+Taking the derivative of this function is easy:
+
+\bigskip
+
+$\dfrac{d \log(L(\lambda))}{d \lambda} = \dfrac{1}{\lambda} - x$
+
+\bigskip
+
+If we set this to zero, we find that:
+
+\bigskip
+
+$\hat{\lambda} = \dfrac{1}{x}$
+
+\bigskip
+
+We still need to verify that the second derivative is negative, so:
+
+\bigskip
+
+$\dfrac{d^2 \log(L(\lambda))}{d \lambda^2} = - \dfrac{1}{\lambda^2}$
+
+\bigskip
+
+$- \dfrac{1}{\lambda^2}$ is negative for all values of $x > 0$ because $\hat{\lambda} = \dfrac{1}{x}$. Accordingly, we have found a maximum.
+
+\bigskip
+
+The solution for multiple draws from the exponential distribution is:
+
+\bigskip
+
+$L(\lambda | X = x_1, ..., x_n) = L(\lambda) = \lambda ^n * exp(-\lambda*\sum_{i=1}^{n} x_i)$
+
+\bigskip
+
+$\log(L(\lambda))) = n * \log(\lambda) - \lambda * \sum_{i=1}^{n} x_i$
+
+\bigskip
+
+$\dfrac{d \log(L(\lambda))}{d \lambda} = \dfrac{n}{\lambda} - \sum_{i=1}^{n} x_i = 0$
+
+\bigskip
+
+$\hat{\lambda} = \dfrac{n}{\sum_{i=1}^{n} x_i}$
+
+\bigskip
+
+The second derivative in this case is:
+
+\bigskip
+
+$\dfrac{d^2 \log(L(\lambda))}{d \lambda^2} = - \dfrac{n}{\lambda^2}$
+
+\bigskip
+
+Which is also negative for all values of $\hat{\lambda} = \dfrac{n}{\sum_{i=1}^{n} x_i}$ where $\sum_{i=1}^{n} x_i > 0$, so we found a maximum.
+
+
+
+\section*{Problem 2 (5 points)}
+
+The second problem requires us to find the variance of the MLE $\hat{\lambda}$.
+
+If we find the MLE by setting the first derivative to zero, we can find the variance of the MLE through Fisher's information $I(\hat{\lambda})$.
+
+To be precise:
+
+\bigskip
+
+$\hat{\lambda} \sim Normal(\lambda,\dfrac{\tau^2}{n})$
+
+\bigskip
+
+Where:
+
+\bigskip
+
+$\tau^2 =  \dfrac{1}{I(\hat{\lambda})}$
+
+\bigskip
+
+Fortunately, we have already calculated the second derivative of the log-likelihood for a single observation (which is the one required to find Fisher's information), which was:
+
+\bigskip
+
+$\dfrac{d^2 \log(L(\lambda))}{d \lambda^2} = - \dfrac{1}{\lambda^2}$.
+
+\bigskip
+
+$I(\hat{\lambda})$ is equivalent to $- E(\dfrac{d^2 \log(L(\lambda))}{d \lambda^2})$.
+
+\bigskip
+
+In this case:
+
+\bigskip
+
+$- E(- \dfrac{1}{\lambda^2})$, which is $\dfrac{1}{\lambda^2}$.
+
+\bigskip
+
+This means that:
+
+\bigskip
+
+$I(\hat{\lambda}) = \dfrac{1}{\lambda^2} \Rightarrow \tau^2 = \lambda^2$
+
+\bigskip
+
+Therefore, the estimator is distributed as a Normal with the following properties:
+
+\bigskip
+
+$\hat{\lambda} \sim Normal(\lambda,\dfrac{\lambda^2}{n})$
+
+\bigskip
+
+As $n = 1$, we know that the variance is $\lambda^2$. For multiple draws, the variance simply is $\dfrac{\lambda^2}{n}$.
+
+
+
+\section*{Problem 3 (6 points)}
+
+\textbf{Graders, please do not subtract any points if someone has not included the graphics. The homework does not require the inclusion of graphics.}
+
+\subsection*{a)}
+
+<<results='show',tidy=TRUE>>=
+# Simulate 100 data points from exponential distribution with rate 0.5
+
+set.seed(2)
+simdata = rexp(100,rate=0.5)
+summary(simdata)
+hist(simdata)
+@
+
+\subsection*{b)}
+
+<<results='show',tidy=TRUE>>=
+# Declare log-likelihood function in general terms
+
+LL_exponential <- function(rate,data){
+  -sum(dexp(data,rate,log=TRUE)) #We take the negative of the sum because the optimizer in 'mle2' finds the minimum of a function
+}
+@
+
+\subsection*{c)}
+
+<<results='show',tidy=TRUE>>=
+
+# Load required package
+library(bbmle)
+
+# Optimize given the observed data
+
+fit <- mle2(LL_exponential, start=list(rate=1), data=list(data=simdata))
+@
+
+\subsection*{d)}
+
+<<results='show',tidy=TRUE>>=
+# Report estimates and uncertainty bounds
+
+summary(fit)
+confint(fit)
+@
+
+\subsection*{e)}
+
+<<results='show',tidy=TRUE>>=
+# One-tailed Wald test for null hypothesis rate = 0.75
+
+wald <- abs(coef(fit)[1] - 0.75)/sqrt(vcov(fit))
+wald
+
+curve(dnorm(x,0,1), from=-10, to=10)
+abline(v=wald, lty=2)
+
+1 - pnorm(wald)
+
+# Two-tailed Wald test for null hypothesis rate = 0.75
+
+1 - pnorm(wald) + pnorm(-wald)
+@
+
+\subsection*{f)}
+
+<<results='show',tidy=TRUE>>=
+# One-tailed likelihood ratio test comparing fit model with null model
+
+fit_null <- mle2(LL_exponential, start=list(), fixed=list(rate=0.75), data=list(data=simdata))
+
+summary(fit_null)
+summary(fit)
+
+# Easy and quick calculation of the LR test
+
+lrtest=359.5551-339.9707
+lrtest
+
+# Alternative calculation of LR test (just for demonstration purposes)
+
+# First find the original likelihoods
+lnull = exp(-0.5*(359.5551))
+lalt = exp(-0.5*(339.9707))
+
+lnull
+lalt
+
+# Original LR test formula
+
+lrtest2 = -2*log(lnull/lalt)
+lrtest2
+
+# Plug into curve
+
+curve(dchisq(x, 1), from=0, to=100)
+abline(v=lrtest, lty=2)
+
+1 - pchisq((lrtest), 1)
+@
+
+
+
+\end{document}
