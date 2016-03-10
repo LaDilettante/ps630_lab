@@ -3,7 +3,7 @@
 library(arm)
 
 data1 <- read.table(
-  "C:/Users/cdj19/Documents/Teaching/Graduate/Classes/Applied regression/Homeworks/HW4/swingvoterafrica.txt", header=TRUE)
+  "swingvoterafrica.txt", header=TRUE)
 summary(data1)
 
 
