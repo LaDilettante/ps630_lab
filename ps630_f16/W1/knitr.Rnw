@@ -1,0 +1,51 @@
+\documentclass{article}
+
+\usepackage{hyperref}
+
+\begin{document}
+
+\author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
+
+\title{knitr Example File}
+
+\maketitle
+
+Please compare this PDF file to the source code file (.Rnw) that you can also download from the course website. You may use this file as starting point for your problem set submission. Please do not forget that you have to submit the homework anonymously.
+
+\bigskip
+
+You can simply write in the document by using regular \LaTeX \ code. You can then add chunks of R code as shown below. Remember that you always have to indicate the beginning of your R code by writing \texttt{<<>>=} and the end of your R code by writing \texttt{@}.
+
+\bigskip
+
+Regular R code:
+
+<<>>=
+paste("hello","you",collapse=" ")
+@
+
+No R code, only output:
+
+<<echo=FALSE>>=
+paste("hello","you",collapse=" ")
+@
+
+No output, only R code:
+
+<<results='hide'>>=
+paste("hello","you",collapse=" ")
+@
+
+With warnings:
+
+<<results='hide'>>=
+warning("This is a warning.")
+@
+
+No warnings:
+
+<<warning=FALSE>>=
+warning("This is a warning.")
+@
+
+\end{document}
