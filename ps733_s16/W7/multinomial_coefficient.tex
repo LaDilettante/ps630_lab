@@ -1,0 +1,54 @@
+\documentclass[12pt]{article}
+
+\usepackage[margin=1in]{geometry}  % set the margins to 1in on all sides
+\usepackage{graphicx}              % to include figures
+\usepackage{amsmath}               % great math stuff
+\usepackage{amsfonts}              % for blackboard bold, etc
+\usepackage{amsthm}                % better theorem environments
+
+\usepackage{rotating} % for sideway table
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+\usepackage{cleveref}
+
+\usepackage{array,tabularx}
+  
+\usepackage{float}
+\restylefloat{table}
+
+% bibliography
+\usepackage{natbib}
+\bibpunct{(}{)}{;}{a}{}{,} % no comma between author and year
+
+\title{Multinomial model's coefficient}
+\author{Anh Le}
+
+
+\begin{document}
+\maketitle
+
+We have
+\begin{align}
+p_{ij} &= \frac{\exp(x_i \beta_j)}{\sum_{l} \exp(x_i \beta_l)} \\
+\end{align}
+
+We want to derive the marginal effect of $x_i$ on $p_{ij}$ , so we take the derivative of $p_{ij}$ with regards to $x_{ij}$
+\begin{align}
+\frac{\partial p_{ij}}{\partial x_i} &= \frac{[\sum_{l} \exp(x_i \beta_l)]\exp(x_i \beta_j) \beta_j - \exp(x_i \beta_j) [\sum_l \exp(x_i \beta_l) \beta_l] }{[\sum_l \exp(x_i \beta_l)]^2} \\
+&= \frac{\exp(x_i \beta_j) \beta_j}{\sum_l \exp(x_i \beta_l)} - \frac{\exp(x_i \beta_j) }{\sum_l \exp(x_i \beta_l)} \times \frac{\sum_l \exp(x_i \beta_l) \beta_l}{\sum_l \exp(x_i \beta_l)} \\
+&= \frac{\exp(x_i \beta_j)}{\sum_l \exp(x_i \beta_l)} \beta_j - \frac{\exp(x_i \beta_j) }{\sum_l \exp(x_i \beta_l)} \times \sum_l\left[\frac{\exp(x_i \beta_l)}{\sum_l \exp(x_i \beta_l)}\beta_l\right] \\
+&= p_{ij} \beta_j - p_{ij} \times \sum_l p_{il} \beta_l \\
+&= p_{ij}(\beta_j - \sum_l p_{il} \beta_l)
+\end{align}
+
+The key point here is that even if we know the sign of $\beta_j$, we won't be able to deduce the sign of $\frac{\partial p_{ij}}{\partial x_i}$, i.e. the marginal effect of $x_j$. 
+
+Indeed, since $p_{ij} > 0$, for $\frac{\partial p_{ij}}{\partial x_i}$ to be positive, $\beta_j - \sum_l p_{il} \beta_l$ must be positive, i.e. $\beta_j$ needs to be larger than all the other $\beta$. That is not guaranteed even if $\beta_j > 0$. So even if we know $\beta_j > 0$, we know nothing about the sign of $\frac{\partial p_{ij}}{\partial x_i}$.
+
+\end{document}

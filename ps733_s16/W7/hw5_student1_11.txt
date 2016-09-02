@@ -1,0 +1,37 @@
+1. Robert Allred. 
+- You say "likelihood" when you mean "odd", for example by "log likelihood" you actually mean "log odds"
+- For 2e, you should remove "independent" from the data set instead of recoding
+
+2. Chambers
+- For 2e, you should remove "independent" from the data set instead of recoding
+
+3. Chang
+- For 2d, I think you need to recode tpid so that it ranges from 1-3. Indeed, it's hard to believe that PRE is actually negative
+- In addition to interpretation on the log-odds scale, also interpret on the odds scale
+
+4. Chen, Bidan
+- Have you tried using the regular zelig() instead of zologit$new()?
+- 2e missing?
+
+5. Chen, Chong
+
+6. Cheng
+- In addition to log-odd scale interpretation, add odd scale interpretation. Otherwise very good
+
+7. Gall
+- In addition to interpretation on the log-odds scale, also interpret on the odds scale
+- For 2d, I think you need to recode tpid so that it ranges from 1-3. Indeed, it's hard to believe that PRE is actually negative
+- Your "modelfit" wasn't actually estimated. See error message: you need to recode y accordingly
+
+8. Guay
+- For 2d, I think you need to recode tpid so that it ranges from 1-3. Indeed, it's hard to believe that PRE is actually negative
+
+9. Lee, So Jin
+- For 2d, I think you need to recode tpid so that it ranges from 1-3. Indeed, it's hard to believe that PRE is actually negative
+- For 2e, you should remove "independent" from the data set instead of recoding
+
+10. Handi
+
+11. Hauke
+- For 2d, I think you need to recode tpid so that it ranges from 1-3. Indeed, it's hard to believe that PRE is actually negative
+

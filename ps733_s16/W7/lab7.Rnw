@@ -1,0 +1,17 @@
+\documentclass{article}
+
+\usepackage{amsmath, amssymb}
+
+\begin{document}
+
+- Constraint one coefficient so that the multinomial is identified
+
+- Zelig: can do interpretation in the probability space instead of the log odd space
+
+- When the probability of one category declines, which other categories increase?
+
+- Independence of Irrelevant alternatives
+
++ If fail: use nested logit / multinomial probit
+
+\end{document}
