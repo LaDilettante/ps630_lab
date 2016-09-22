@@ -1,0 +1,443 @@
+\documentclass[12pt,letter]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{color}
+\onehalfspacing
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\title{Pol Sci 630: Problem Set 3 - Comparisons and Inference - Solutions}
+
+\author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
+
+\date{Grading Due Date: Friday, September 23rd, 1.40 PM (Beginning of Lab)}
+
+
+
+\maketitle
+
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: ``GRADER COMMENT: everything is correct!" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
+
+\bigskip
+
+\textbf{In order to make your text bold and red, you need to insert the following line at the beginning of the document:}
+
+\begin{verbatim} \usepackage{color} \end{verbatim}
+
+\\ \textbf{and the following lines above the solution of the specific task:}
+
+\begin{verbatim} \textbf{\color{red} GRADER COMMENT: everything is correct!} \end{verbatim}
+
+
+
+\pagebreak
+
+\section*{R Programming}
+
+\subsection*{Problem 1}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### Problem 1:}
+
+\hlcom{### a}
+
+\hlstd{x} \hlkwb{=} \hlkwd{seq}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{1000}\hlstd{,} \hlkwc{by} \hlstd{=} \hlnum{1}\hlstd{)}
+\hlstd{y} \hlkwb{=} \hlnum{2} \hlopt{*} \hlstd{x} \hlopt{-} \hlnum{5}
+
+\hlkwd{cov}\hlstd{(x, y)}
+\end{alltt}
+\begin{verbatim}
+## [1] 166833.3
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Interpretation: the covariance indicates that there might be a positive linear relationship of x and y. However, because the covariance is not to-scale, the number itself is not very meaningful.
+
+Note: if someone created a different kind of linear function, the result might be a covariance that indicates a negative linear relationship.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{cor}\hlstd{(x, y)}
+\end{alltt}
+\begin{verbatim}
+## [1] 1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Interpretation: the correlation is bound between -1 and 1. The correlation value of 1 here means that x and y have a perfect positive linear relationship. As x goes above its mean, y goes above its mean. This is not surprising as we created y through a linear function of x.
+
+Note: if someone created a different kind of linear function, the result might be a correlation value of -1, indicating a perfect negative linear relationship. As x goes above its mean, y goes below its mean.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{noise} \hlkwb{=} \hlkwd{rnorm}\hlstd{(}\hlnum{1000}\hlstd{,} \hlkwc{mean} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{sd} \hlstd{=} \hlnum{10}\hlstd{)}
+\hlstd{y2} \hlkwb{=} \hlstd{y} \hlopt{+} \hlstd{noise}
+
+\hlkwd{cov}\hlstd{(x, y2)}
+\end{alltt}
+\begin{verbatim}
+## [1] 167022.4
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Interpretation: same as above - the covariance indicates that there might be a linear positive relationship of x and y. However, because the covariance is not to-scale, the number itself is not very meaningful.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{cor}\hlstd{(x, y2)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.9998433
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+The correlation is bound between -1 and 1. The correlation value here should be very close to 1 or -1 but not be exactly that value due to the random error. As long as some random error has been introduced to a formerly perfect linear relationship, even if that relationship is still generally linear, there will be a reduction in the absolute value of the correlation. Accordingly, the result you can expect to get here is an absolute value of approximately 0.99. The exact value, however, depends on the size of the random error that you introduced. If you introduce a random error that has a greater variance, then the value of your correlation will go down further.
+
+Interpretation: a correlation close to 1 or -1 indicates a nearly perfect linear relationship of two variables. If the relationship is positive, the following is true: as x goes above its mean, y goes above its mean. If the relationship is negative, the following is true: as x goes above its mean, y goes below its mean. In most cases the randomly distributed error will not change the generally strong linear relationship between the two variables.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### b}
+
+\hlstd{correlation} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{v1}\hlstd{,} \hlkwc{v2}\hlstd{) \{}
+    \hlstd{numerator} \hlkwb{=} \hlkwd{sum}\hlstd{((v1} \hlopt{-} \hlkwd{mean}\hlstd{(v1))} \hlopt{*} \hlstd{(v2} \hlopt{-} \hlkwd{mean}\hlstd{(v2)))}\hlopt{/}\hlstd{(}\hlkwd{length}\hlstd{(a)} \hlopt{-} \hlnum{1}\hlstd{)}
+    \hlstd{denominator} \hlkwb{=} \hlkwd{sd}\hlstd{(v1)} \hlopt{*} \hlkwd{sd}\hlstd{(v2)}
+    \hlkwd{print}\hlstd{(numerator}\hlopt{/}\hlstd{denominator)}
+\hlstd{\}}
+
+\hlcom{### Let's try this function.}
+
+\hlstd{a} \hlkwb{=} \hlkwd{seq}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{10}\hlstd{,} \hlkwc{by} \hlstd{=} \hlnum{1}\hlstd{)}
+\hlstd{noise2} \hlkwb{=} \hlkwd{rnorm}\hlstd{(}\hlnum{10}\hlstd{,} \hlkwc{mean} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{sd} \hlstd{=} \hlnum{1}\hlstd{)}
+\hlstd{b} \hlkwb{=} \hlstd{a} \hlopt{+} \hlstd{noise2}
+
+\hlkwd{cor}\hlstd{(a, b)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.9661803
+\end{verbatim}
+\begin{alltt}
+\hlkwd{correlation}\hlstd{(a, b)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.9661803
+\end{verbatim}
+\begin{alltt}
+\hlcom{# These two return the same result, meaning that we did it correctly.}
+
+\hlcom{### Bonus problem:}
+
+\hlstd{correlation2} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{v1}\hlstd{,} \hlkwc{v2}\hlstd{) \{}
+    \hlkwa{if} \hlstd{(}\hlkwd{length}\hlstd{(v1)} \hlopt{==} \hlkwd{length}\hlstd{(v2)) \{}
+        \hlkwa{if} \hlstd{(}\hlkwd{is.numeric}\hlstd{(v1)} \hlopt{&} \hlkwd{is.numeric}\hlstd{(v2)) \{}
+            \hlstd{numerator} \hlkwb{=} \hlkwd{sum}\hlstd{((v1} \hlopt{-} \hlkwd{mean}\hlstd{(v1))} \hlopt{*} \hlstd{(v2} \hlopt{-} \hlkwd{mean}\hlstd{(v2)))}\hlopt{/}\hlstd{(}\hlkwd{length}\hlstd{(a)} \hlopt{-}
+                \hlnum{1}\hlstd{)}
+            \hlstd{denominator} \hlkwb{=} \hlkwd{sd}\hlstd{(v1)} \hlopt{*} \hlkwd{sd}\hlstd{(v2)}
+            \hlkwd{print}\hlstd{(numerator}\hlopt{/}\hlstd{denominator)}
+        \hlstd{\}} \hlkwa{else} \hlstd{\{}
+            \hlkwd{print}\hlstd{(}\hlstr{"The two vectors need to be numeric."}\hlstd{)}
+        \hlstd{\}}
+    \hlstd{\}} \hlkwa{else} \hlstd{\{}
+        \hlkwd{print}\hlstd{(}\hlstr{"The two vectors need to be of the same length."}\hlstd{)}
+    \hlstd{\}}
+\hlstd{\}}
+
+\hlcom{### Let's plug in vectors that do not work.}
+
+\hlstd{c} \hlkwb{=} \hlkwd{seq}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{11}\hlstd{)}
+\hlkwd{length}\hlstd{(c)}
+\end{alltt}
+\begin{verbatim}
+## [1] 11
+\end{verbatim}
+\begin{alltt}
+\hlkwd{correlation2}\hlstd{(a, c)}
+\end{alltt}
+\begin{verbatim}
+## [1] "The two vectors need to be of the same length."
+\end{verbatim}
+\begin{alltt}
+\hlcom{# Returns the correct error message.}
+
+\hlstd{d} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlstr{"a"}\hlstd{,} \hlstr{"b"}\hlstd{,} \hlstr{"c"}\hlstd{,} \hlstr{"d"}\hlstd{,} \hlstr{"e"}\hlstd{,} \hlstr{"f"}\hlstd{,} \hlstr{"g"}\hlstd{,} \hlstr{"h"}\hlstd{,} \hlstr{"i"}\hlstd{,} \hlstr{"j"}\hlstd{)}
+\hlkwd{is.numeric}\hlstd{(d)}
+\end{alltt}
+\begin{verbatim}
+## [1] FALSE
+\end{verbatim}
+\begin{alltt}
+\hlkwd{correlation2}\hlstd{(a, d)}
+\end{alltt}
+\begin{verbatim}
+## [1] "The two vectors need to be numeric."
+\end{verbatim}
+\begin{alltt}
+\hlcom{# Returns the correct error message.}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+
+\subsection*{Problem 2}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### a}
+
+\hlkwd{set.seed}\hlstd{(}\hlnum{2}\hlstd{)}
+\hlstd{vec1} \hlkwb{=} \hlkwd{rpois}\hlstd{(}\hlnum{50}\hlstd{,} \hlkwc{lambda} \hlstd{=} \hlnum{10}\hlstd{)}
+\hlkwd{set.seed}\hlstd{(}\hlnum{2}\hlstd{)}
+\hlstd{vec2} \hlkwb{=} \hlkwd{rpois}\hlstd{(}\hlnum{50}\hlstd{,} \hlkwc{lambda} \hlstd{=} \hlnum{12}\hlstd{)}
+
+\hlkwd{t.test}\hlstd{(vec1, vec2)}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	Welch Two Sample t-test
+## 
+## data:  vec1 and vec2
+## t = -3.2796, df = 94.967, p-value = 0.001454
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -3.3711865 -0.8288135
+## sample estimates:
+## mean of x mean of y 
+##       9.5      11.6
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\subparagraph{b)} The mean of the first vector is 9.5, the mean of the second vector is 11.6. Given the number of observations -- 50 in each vector -- the t.test function returns a t-value of -3.2796. The 95-percent confidence interval shows us that we are 95 percent confident that the first distribution has a mean that is lower by a number between -3.3711865 and -0.8288135. The fact that 0 is not included in this interval implies a p-value of $p < 0.05$. Indeed, given 98 degrees of freedom, the t-value is associated with a p-value of $p = 0.001454$. This p-value implies that the probability of obtaining this result or a result with more extreme evidence against $H_0$ if vector 1 and vector 2 were from a distribution with the same mean is approximately 0.15 percent ($= 0.0015$). This is very strong evidence against the null hypothesis ( $H_0$ ), which is that they have the same mean. Given a type-1 error rate ($\alpha$) of 0.1, 0.5, or 0.01, we can reject $H_0$. (However, we cannot reject $H_0$ at a type-1 error rate of 0.001.)
+
+
+
+\subsection*{Problem 3}
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### a}
+\hlstd{tTestFunction} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{a}\hlstd{,} \hlkwc{b}\hlstd{) \{}
+    \hlstd{numerator} \hlkwb{=} \hlkwd{mean}\hlstd{(a)} \hlopt{-} \hlkwd{mean}\hlstd{(b)}
+    \hlstd{denominator} \hlkwb{=} \hlkwd{sqrt}\hlstd{(}\hlkwd{var}\hlstd{(a)}\hlopt{/}\hlkwd{length}\hlstd{(a)} \hlopt{+} \hlkwd{var}\hlstd{(b)}\hlopt{/}\hlkwd{length}\hlstd{(b))}
+    \hlkwd{print}\hlstd{(numerator}\hlopt{/}\hlstd{denominator)}
+\hlstd{\}}
+
+\hlcom{### b}
+\hlkwd{tTestFunction}\hlstd{(vec1, vec2)}
+\end{alltt}
+\begin{verbatim}
+## [1] -3.279649
+\end{verbatim}
+\begin{alltt}
+\hlcom{### Bonus problem:}
+
+\hlstd{tTestFunction2} \hlkwb{=} \hlkwa{function}\hlstd{(}\hlkwc{a}\hlstd{,} \hlkwc{b}\hlstd{) \{}
+    \hlkwa{if} \hlstd{(}\hlkwd{is.numeric}\hlstd{(a)} \hlopt{&} \hlkwd{is.numeric}\hlstd{(b)) \{}
+        \hlstd{numerator} \hlkwb{=} \hlkwd{mean}\hlstd{(a)} \hlopt{-} \hlkwd{mean}\hlstd{(b)}
+        \hlstd{denominator} \hlkwb{=} \hlkwd{sqrt}\hlstd{(}\hlkwd{var}\hlstd{(a)}\hlopt{/}\hlkwd{length}\hlstd{(a)} \hlopt{+} \hlkwd{var}\hlstd{(b)}\hlopt{/}\hlkwd{length}\hlstd{(b))}
+        \hlkwd{print}\hlstd{(numerator}\hlopt{/}\hlstd{denominator)}
+    \hlstd{\}} \hlkwa{else} \hlstd{\{}
+        \hlkwd{print}\hlstd{(}\hlstr{"Both vectors must be numeric."}\hlstd{)}
+    \hlstd{\}}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+
+\section*{Probability Theory: Covariance and Correlation}
+
+\subsection*{Problem 4}
+
+\subparagraph{a)} $\mathbb{E}(X) = \dfrac{1}{3}*(-1) + \dfrac{1}{3}*(0) + \dfrac{1}{3}*(1) = 0$
+
+$\mathbb{E}(Y) = \dfrac{1}{3}*(1) + \dfrac{1}{3}*(0) + \dfrac{1}{3}*(1) = \dfrac{2}{3}$
+
+$\mathbb{E}(X*Y) = \dfrac{1}{3}*(-1) + \dfrac{1}{3}*(0) + \dfrac{1}{3}*(1) = 0$
+
+$Cov (X, Y) = \mathbb{E}(X*Y) - \mathbb{E}(X)*\mathbb{E}(Y) = 0 - \dfrac{2}{3} * 0 = 0$
+
+Are X and Y independent? No. We don't need to prove this because we know that $Y=X^2$, so $Y$ was defined to be a function of X. The reason why we don't capture their dependence is that they are not \textit{linearly dependent}. Instead, they are dependent through a quadratic function. Alternatively, one can also show that they're not independent because they violate $Pr (X=x \cap Y=y) = Pr(X=x)*Pr(Y=y)$ for some values of X and Y (for example X=0 and Y=1). This would be a proof by contradiction.
+
+\subparagraph{b)} In order to solve this problem, as in the above problems, we need to calculate the following:
+
+$Cov(X, Y) = \mathbb{E}(X*Y)-\mathbb{E}(X)*\mathbb{E}(Y)$
+
+In order to do this, R is extremely helpful.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### a}
+
+\hlcom{### In order to calculate E(XY), use the following:}
+
+\hlstd{sum} \hlkwb{=} \hlnum{0}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{6}\hlstd{) \{}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{6}\hlstd{) \{}
+        \hlstd{sum} \hlkwb{=} \hlstd{(i} \hlopt{+} \hlstd{j)} \hlopt{*} \hlstd{(i} \hlopt{-} \hlstd{j)} \hlopt{+} \hlstd{sum}
+    \hlstd{\}}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+This calculation returns the sum of all 36 outcomes, for all possible combinations of the first and the second die. Each of the above outcomes is equally likely with probability 1/36. We can either multiply every single value by 1/36 or we can, alternatively, simply divide the sum by 36 to get of $E(X*Y)$. The same applies to $E(X)$ and $E(Y)$ in the calculations below.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{exy} \hlkwb{=} \hlstd{sum}\hlopt{/}\hlnum{36}  \hlcom{# = 0}
+\hlstd{exy}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\begin{alltt}
+\hlcom{### In order to calculate E(X), use the following:}
+
+\hlstd{sum2} \hlkwb{=} \hlnum{0}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{6}\hlstd{) \{}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{6}\hlstd{) \{}
+        \hlstd{sum2} \hlkwb{=} \hlstd{(i} \hlopt{+} \hlstd{j)} \hlopt{+} \hlstd{sum2}
+    \hlstd{\}}
+\hlstd{\}}
+
+\hlstd{ex} \hlkwb{=} \hlstd{sum2}\hlopt{/}\hlnum{36}
+\hlstd{ex}
+\end{alltt}
+\begin{verbatim}
+## [1] 7
+\end{verbatim}
+\begin{alltt}
+\hlcom{### In order to calculate E(Y), use the following:}
+
+\hlstd{sum3} \hlkwb{=} \hlnum{0}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{6}\hlstd{) \{}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{6}\hlstd{) \{}
+        \hlstd{sum3} \hlkwb{=} \hlstd{(i} \hlopt{-} \hlstd{j)} \hlopt{+} \hlstd{sum3}
+    \hlstd{\}}
+\hlstd{\}}
+
+\hlstd{ey} \hlkwb{=} \hlstd{sum3}\hlopt{/}\hlnum{36}
+\hlstd{ey}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\begin{alltt}
+\hlcom{### The covariance is given by the following formula:}
+
+\hlstd{exy} \hlopt{-} \hlstd{ex} \hlopt{*} \hlstd{ey}  \hlcom{# Returns 0.}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\begin{alltt}
+\hlcom{### Note: We can alternatively use vectorized operations to calculate this}
+
+\hlcom{### For E(X)}
+
+\hlstd{is} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{,} \hlnum{6}\hlstd{)}
+\hlstd{js} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{,} \hlkwc{each} \hlstd{=} \hlnum{6}\hlstd{)}
+
+\hlstd{ex2} \hlkwb{=} \hlkwd{sum}\hlstd{(is} \hlopt{+} \hlstd{js)}\hlopt{/}\hlnum{36}
+
+\hlcom{### For E(Y)}
+
+\hlstd{is} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{,} \hlnum{6}\hlstd{)}
+\hlstd{js} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{,} \hlkwc{each} \hlstd{=} \hlnum{6}\hlstd{)}
+
+\hlstd{ey2} \hlkwb{=} \hlkwd{sum}\hlstd{(is} \hlopt{-} \hlstd{js)}\hlopt{/}\hlnum{36}
+
+\hlcom{### For E(XY)}
+
+\hlstd{exy2} \hlkwb{=} \hlkwd{sum}\hlstd{((is} \hlopt{+} \hlstd{js)} \hlopt{*} \hlstd{(is} \hlopt{-} \hlstd{js))}\hlopt{/}\hlnum{36}
+
+\hlcom{### To get the result, we calculate}
+
+\hlstd{exy2} \hlopt{-} \hlstd{ex2} \hlopt{*} \hlstd{ey2}  \hlcom{# Also returns zero}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Why aren't X and Y independent? Let's try to find a similar contradiction like above.
+
+$Pr (X=12 \cap Y=1) = 0$ because this event never occurs.
+
+$Pr (X=12) = \dfrac{1}{36}$ and $Pr (Y=1) = \dfrac{4}{36} = \dfrac{1}{9}$, meaning that $Pr (X=12)*Pr(Y=1) = \dfrac{1}{324}$
+
+Accordingly, $Pr (X=12)*Pr(Y=1) = \dfrac{1}{324} \neq 0 = Pr (X=12 \cap Y=1)$
+
+\end{document}
