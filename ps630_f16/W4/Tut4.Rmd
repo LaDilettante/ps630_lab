@@ -1,0 +1,208 @@
+---
+title: "Tutorial 4: Regression Model Estimation"
+author: "Anh Le (anh.le@duke.edu)"
+date: "September 18, 2015"
+output: pdf_document
+---
+
+# Agenda
+
+1. Create data frames
+2. Subset data frames
+3. Estimate a linear model with `lm()`
+
+4. Tips and tricks
+- Prefix your objects in R (and related `TAB` tricks, i.e. arguments within function, variables within a data frame)
+- `fig.height()`, `fig.width()`
+- Code length $<= 80$ (RStudio > Tools > Options > Code)
+
+# 1. Create data frames
+
+```{r}
+my_dataframe <- data.frame(var1 = c(11, 12, 13),
+                var2 = c(21, 22, 23),
+                var3 = c("a", "b", "c"))
+my_dataframe
+```
+
+# 2. Subset data frames
+
+All subsetting can be done with the following construct: `my_dataframe[?1 , ?2]`
+
+The first question mark (`?1`) refers to which rows we want.
+The second question mark (`?2`) refers to which columns we want.
+
+How to indicate to R which rows / columns we want? Multiple ways:
+
+1. Use rows / columns index
+```{r}
+my_dataframe[1, 2]
+my_dataframe[1:2, 2]
+my_dataframe[1:2, ]
+```
+
+Rapid fire quiz
+
+```{r, results='hide'}
+my_dataframe[2:3, ]
+my_dataframe[ , 1:2]
+my_dataframe[1:2, 2:3]
+
+my_dataframe[c(1, 3), ]
+my_dataframe[c(1, 3, 2), ]
+```
+
+2. Use rows / columns name
+
+```{r}
+my_dataframe[ , "var2"]
+```
+
+Rapid fire quiz:
+
+```{r, results='hide'}
+my_dataframe[ , c("var1", "var3")]
+my_dataframe[c(2, 3), c("var1", "var3")]
+```
+
+
+3. Use a condition
+
+```{r}
+my_dataframe[c(TRUE, TRUE, FALSE), ]
+my_dataframe[, c(TRUE, FALSE, TRUE)]
+```
+
+Of course this is not tenable for a large data frame. So we have this very useful trick:
+
+```{r}
+my_dataframe[my_dataframe$var1 < 13, ]
+```
+
+This works because `my_dataframe$var1 < 13` actuall returns `c(TRUE, TRUE, FALSE)` (vectorized operation in the wild!). Indeed:
+
+```{r}
+my_dataframe$var1 < 13
+```
+
+Rapid fire quiz:
+```{r, results='hide'}
+my_dataframe[my_dataframe$var2 == 22, ]
+my_dataframe[my_dataframe$var2 == 25, ]
+```
+
+4. Use a combination of condition
+
+```{r}
+my_dataframe[my_dataframe$var1 > 10 & my_dataframe$var2 > 21, ]
+my_dataframe[my_dataframe$var1 > 10 | my_dataframe$var2 > 21, ]
+```
+
+# 3. Estimate a linear model with `lm()`
+
+In this section, I'll demo a (simplified) pipeline of steps in doing regression analysis with real data.
+
+## Download and clean data
+```{r}
+library(WDI)
+d_2010 <- WDI(indicator = c("NY.GDP.PCAP.CD", "SP.DYN.IMRT.IN", "SH.MED.PHYS.ZS"),
+              start = 2010, end = 2010, extra = TRUE)
+# d_2010[d_2010$region != "Aggregates", ]
+```
+
+There are a lot of unwanted columns. What if I just want `country`, `year`, and the three variables of interest (`NY.GDP.PCAP.CD`, `SP.DYN.IMRT.IN`, `SH.MED.PHYS.ZS`)? (Hint: subsetting)
+
+```{r}
+d_2010 <- d_2010[d_2010$region != "Aggregates", 
+       c("country", "year", "NY.GDP.PCAP.CD", "SP.DYN.IMRT.IN", "SH.MED.PHYS.ZS")]
+```
+
+Rename columns:
+
+```{r}
+colnames(d_2010)
+colnames(d_2010)[3:5] <- c('gdppc', 'infant_mortality', 'number_of_physician')
+colnames(d_2010)
+```
+
+Log gdp per capita
+
+```{r}
+d_2010$log_gdppc <- log(d_2010$gdppc)
+```
+
+Remove missing data
+
+```{r}
+d_2010 <- na.omit(d_2010)
+```
+
+
+## Build a linear model
+
+```{r}
+lm(infant_mortality ~ log_gdppc, data = d_2010)
+m1 <- lm(infant_mortality ~ log_gdppc, data = d_2010)
+summary(m1)
+```
+
+```{r}
+m2 <- lm(infant_mortality ~ log_gdppc + number_of_physician, data = d_2010)
+summary(m2)
+```
+
+## Extract result from the model
+
+`str()` (stands for `structure`) is used to look into the structure of an object in `R`, see what it contains. 
+
+```{r}
+str(m1)
+```
+
+You can extract the coefficients
+
+```{r}
+m1$coefficients
+m1$coefficients['(Intercept)']
+m1$coefficients['log_gdppc']
+```
+
+You can also generate predicted / fitted values:
+
+```{r}
+d_2010$pred_infant_mortality1 <- predict(m1)
+d_2010$pred_infant_mortality2 <- m1$coefficients['(Intercept)'] + m1$coefficients['log_gdppc'] * d_2010$log_gdppc
+```
+
+Now we can use them for other things, e.g plotting
+
+```{r}
+par(mfrow = c(1, 2))
+plot(infant_mortality ~ log_gdppc, data = d_2010, main = "Plot predicted values-method 1")
+abline(a = m1$coefficients['(Intercept)'], b = m1$coefficients['log_gdppc'])
+points(d_2010$log_gdppc, d_2010$pred_infant_mortality1, col = 'red')
+
+plot(infant_mortality ~ log_gdppc, data = d_2010, main = "Plot predicted values-method 2")
+abline(a = m1$coefficients['(Intercept)'], b = m1$coefficients['log_gdppc'])
+points(d_2010$log_gdppc, d_2010$pred_infant_mortality2, col = 'red')
+```
+
+## Report the model in a nice, journal-ready format
+
+The `stargazer` library takes your model objects and generates tables in LaTeX. This package has a lot of customizing options, which you'll explore in the homework.
+
+```{r}
+library(stargazer)
+```
+
+```{r}
+# LaTeX code that you can copy paste into LateX
+stargazer(m1, m2)
+```
+
+```{r results='asis'}
+# If using knir, use the option results='asis'
+stargazer(m1, m2)
+```
+
+
