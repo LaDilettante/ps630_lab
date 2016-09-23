@@ -21,6 +21,7 @@
 \newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
 \newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
 \newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
 
 \usepackage{framed}
 \makeatletter
@@ -64,7 +65,7 @@
 
 \author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
-\date{Grading Due Date: Friday, September 4th, 12.15 PM (Beginning of Lab)}
+\date{Grading Due Date: Friday, September 9th, 1.40 PM (Beginning of Lab)}
  
 \maketitle 
 
@@ -74,16 +75,7 @@
 
 \subsection*{Problem 1}
 
-\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
-
-\bigskip
-
-\textbf{Use the following scheme to assign points: \\
-Nothing correct: 0 points \\ 
-25 \% or more correct: 1 point \\
-50 \% or more correct: 2 points \\
-75 \% or more correct: 3 points \\
-100 \% correct: 4 points}
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: ``GRADER COMMENT: everything is correct!" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
 
 \bigskip
 
@@ -91,9 +83,9 @@ Nothing correct: 0 points \\
 
 \begin{verbatim} \usepackage{color} \end{verbatim}
 
-\textbf{and the following lines above the solution of the specific task:}
+\\ \textbf{and the following lines above the solution of the specific task:}
 
-\begin{verbatim} \textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points} \end{verbatim}
+\begin{verbatim} \textbf{\color{red} GRADER COMMENT: everything is correct!} \end{verbatim}
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -143,7 +135,7 @@ Nothing correct: 0 points \\
 
 \subsection*{Problem 2}
 
-\textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points}
+\textbf{\color{red} GRADER COMMENT: everything is correct!}
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -189,7 +181,7 @@ Nothing correct: 0 points \\
 \hlkwd{DiceAverage}\hlstd{(}\hlnum{1000}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 3.532
+## [1] 3.507
 \end{verbatim}
 \begin{alltt}
 \hlcom{### Bonus}
@@ -253,7 +245,7 @@ Nothing correct: 0 points \\
 
 \subsection*{Problem 3}
 
-\textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points}
+\textbf{\color{red} GRADER COMMENT: everything is correct!}
 
 \subparagraph{a)} If $a$ and $b$ are independent events, are the following true or false?
 \begin{enumerate}
@@ -277,7 +269,7 @@ We solve for $P(B)$ to get $P(B)=\frac{P(A \cup B)-P(A)}{1-P(A)}=\frac{0.5-0.3}{
 
 \subsection*{Problem 4}
 
-\textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points}
+\textbf{\color{red} GRADER COMMENT: everything is correct!}
 
 \subparagraph{a)} Each time a fundraiser is observed or not observed, the legislator should again update his beliefs, in each case using posterior beliefs at the end of the previous month as his priors in the present month. Further, as $Pr(f|I_r)$ increases, the degree to which observing a fundraiser (or not observing one) is informative increases as well. (Note that is need not be perfectly informative as $Pr(f|I_r)$ approaches 1, however, as $Pr(f|\sim I_r)$ is logically independent of $Pr(f|I_r)$ and need not change as $Pr(f|I_r)$ changes.) We assume that the legislator's posterior belief is $0.6$ at the end of December, as in the problem in Section 9.2.3.  After observing no fundraiser in January, his posterior belief is $\Pr(I_r|\sim f)=\frac{Pr(\sim f|I_r)Pr(I_r)}{Pr(\sim f|I_r)Pr(I_r)+Pr(\sim f|\sim I_r)Pr(\sim I_r)}=\frac{(0.3)(0.6)}{(0.3)(0.6)+(0.6)(0.4)}=0.43$. If he now sees one in February, this changes to $\Pr(I_r|f)=\frac{Pr(f|I_r)Pr(I_r)}{Pr(f|I_r)Pr(I_r)+Pr(f|\sim I_r)Pr(\sim I_r)}=\frac{(0.8)(0.43)}{(0.8)(0.43)+(0.4)(0.57)}=0.6$. Finally, if he does not see one in March, his posterior is $\Pr(I_r|\sim f)=\frac{Pr(\sim f|I_r)Pr(I_r)}{Pr(\sim f|I_r)Pr(I_r)+Pr(\sim f|\sim I_r)Pr(\sim I_r)}=\frac{(0.1)(0.6)}{(0.1)(0.6)+(0.6)(0.4)}=0.2$. So two positive signals and two negative ones drop the final posterior below the prior because later signals are more informative.
 
@@ -319,7 +311,7 @@ The total probability of both outcomes is approximately 0.1 or 10 percent.
 
 \subsection*{Problem 5 (Bonus Problem)}
 
-\textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points}
+\textbf{\color{red} GRADER COMMENT: everything is correct!}
 
 Let's write a function to represent the Monty Hall problem. What is the proportion of successful trials, for any number of trials n, if you always switch to the other door when Monty reveals an empty one? The theoretical expectation derived from the calculation in the lecture was $2/3$. The following function returns an empirical proportion of successes for any number of trials.
 
@@ -363,7 +355,7 @@ Let's write a function to represent the Monty Hall problem. What is the proporti
 \hlkwd{Switching}\hlstd{(}\hlnum{1000}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.696
+## [1] 0.653
 \end{verbatim}
 \begin{alltt}
 \hlcom{# Returns approximately 0.68.}

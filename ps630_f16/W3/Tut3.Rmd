@@ -1,0 +1,292 @@
+---
+title: 'Tutorial 3: Comparisons and Inference'
+author: "Jan Vogler (jan.vogler@duke.edu)"
+date: "September 16, 2016"
+output: pdf_document
+---
+
+# Today's Agenda
+
+1. Covariance
+2. Correlation
+3. Cross-tabs
+4. Central Limit Theorem
+5. t-tests and p-values
+
+
+
+**Question: sometimes R gives you output like this:**
+
+2.43e-05
+
+**What does this mean?**
+
+
+
+# Topic 1: Covariance
+
+Let us create two variables that are clearly linearly dependent on each other.
+
+```{r,tidy=TRUE}
+x=seq(-10,10)
+y=(x+5)
+plot(x,y)
+```
+
+The covariance of these two variables is positive - as x increases so does y. A positive covariance indicates that as x is above its mean value, y is above its mean value (on average).
+
+```{r,tidy=TRUE}
+cov(x,y)
+```
+
+Let us create two variables that have no relationship to each other:
+
+```{r,tidy=TRUE}
+x2=rnorm(100,mean=5,sd=5)
+y2=rnorm(100,mean=5,sd=5) # Both variables are just random drows from the normal distribution
+plot(x2,y2)
+```
+
+The covariance should be close to zero - due to the randomness of the data it is most likely not exactly zero though.
+
+```{r,tidy=TRUE}
+cov(x2,y2)
+```
+
+Note that this means even variables that are completely random and not related to each other may produce a non-zero covariance. However, the E(Cov(x2,y2)) = 0, so the distribution of the covariance is centered on the value 0. If our variables have large variances though, we might get a large value of the covariance. The problem is that covariance is not to-scale.
+
+Independence implies that the expected value of the covariance is zero.
+
+Does a covariance of zero imply independence?
+
+```{r,tidy=TRUE}
+x3=seq(-10,10)
+y3=x3^2
+plot(x3,y3)
+```
+
+As we can clearly see from the plot, there is a curvilinear relationship of the two variables - they are not independent. When one variable is a function of another variable, even a quadratic function, they are not independent.
+
+```{r,tidy=TRUE}
+cov(x3,y3)
+```
+
+The formula tells us that the covariance is zero. Why?
+
+Covariance captures linear relationships.
+
+When x3 is below its mean, the values of y3 vary in the exact same way as when x3 is above its mean.
+
+The formula can't capture the curvilinear relationship because it looks at the variation of y3 relative to x3's deviation from its mean. y3 varies in the exact same way when x3 moves above and below its mean. Thus, there is no linear relationship that could be captured.
+
+
+
+# Topic 2: Correlation
+
+As you've learned in the lecture, the problem with covariance is that it is not to scale. It doesn't really tell us that much about how much variables vary with each other because it doesn't account for their individual variation magnitudes. However, correlation standardizes covariance by the standard deviation of the two variables. The result is that the measure of correlation is bound between -1 and 1.
+
+```{r,tidy=TRUE}
+cor(x,y) ### Why does this produce "1". What is the meaning of this value?
+```
+
+How about x2 and y2 that are completely random?
+
+```{r,tidy=TRUE}
+cor(x2,y2) # The correlation is extremely close to zero, indicating that there is no systematic linear relationship, which is true as both variables were generated in a completely random fashion.
+```
+
+Does correlation capture non-linear relationships equally well?
+
+Correlation is a mathematical concept. We cannot find the correlation between a numeric and a character vector.
+
+```{r,error=TRUE}
+y4=rep(c("a","b","c"),7)
+y4
+is.numeric(y4) # Checks whether y4 is numeric and returns the argument FALSE.
+cor(x,y4) # Gives us the error message "y must be numeric".
+```
+
+Interestingly, however, R allows us to find the correlation between a numeric and a logical vector, although a logical vector is not numeric.
+
+```{r,tidy=TRUE}
+y5=rep(c(T,F,F),7)
+y5
+is.numeric(y5) # Checks whether y5 is numeric and returns the argument FALSE.
+class(y5) # Returns the class of the vector.
+cor(x,y5) # Returns a value.
+```
+
+How do we have to think about this?
+
+Assume that T=1 and F=0.
+
+```{r,tidy=TRUE}
+y6=rep(c(1,0,0),7)
+cor(x,y6) # Returns the same value as above, meaning that R views T=1 and F=0
+```
+
+
+
+# Topic 3: Cross-tabs
+
+R has several built-in datasets, let's have a look at them.
+
+```{r,tidy=TRUE}
+library(datasets)
+data(occupationalStatus)
+occupationalStatus
+```
+
+According to the documentation this is "Cross-classification of a sample of British males according to each subject's occupational status and his father's occupational status."
+
+The source is a journal article from 1979: "Goodman, L. A. (1979) Simple Models for the Analysis of Association in Cross-Classifications having Ordered Categories."
+
+Let us assume that 1 is a low occupational status and 8 is a high occupational status (it might be the opposite). Is there a relationship between the status of the father and the son?
+
+Before using the command below, use the following command:
+install.packages("gmodels")
+
+```{r,tidy=TRUE}
+library(gmodels)
+CrossTable(occupationalStatus)
+```
+
+How can we interpret this table?
+
+
+
+# Topic 4: Central Limit Theorem
+
+The Central Limit Theorem states that if we have infinitely many draws of the same size from a specific distribution, the mean of this distribution will be approximately normally distributed.
+
+Let us illustrate this with a simple example of the exponential distribution. The exponential distribution doesn't look like a normal distribution.
+
+How does an exponential distribution look like?
+
+```{r,tidy=TRUE}
+x4=seq(0,10,by=0.01)
+y4=dexp(x4, rate=0.5) # Returns the density
+plot(x4,y4) # This doesn't look nice
+plot(x4,y4, type="l") # Use type="l" for a line plot
+```
+
+We can also use the ggplot2 package to make it look even nicer.
+
+Use the command the following command before you run this code:
+install.packages("ggplot2")
+
+```{r,tidy=TRUE}
+library(ggplot2)
+plot1=qplot(x4,y4) # Now that looks even nicer
+```
+
+Recall: The Central Limit Theorem states that if we have multiple samples of the same size, their mean will be approximately normally distributed.
+
+So, what happens if we draw 1000 times 10 samples from this distribution, how will their mean be distributed?
+
+```{r,tidy=TRUE}
+meanstore=rep(0,1000)
+for (i in 1:1000){
+  expdraw=rexp(10, rate=0.5)
+  meanstore[i]=mean(expdraw)
+}
+hist(meanstore, breaks=20) # It is approximately normally distributed, as predicted by the CLT.
+```
+
+Let us expand this example and increase the number of draws to 50:
+
+```{r,tidy=TRUE}
+meanstore2=rep(0,1000)
+for (i in 1:1000){
+  expdraw=rexp(50, rate=0.5)
+  meanstore2[i]=mean(expdraw)
+}
+hist(meanstore2, breaks=20) # It is approximately normally distributed, as predicted by the CLT.
+```
+
+And a final example with 100 draws:
+
+```{r,tidy=TRUE}
+meanstore3=rep(0,1000)
+for (i in 1:1000){
+  expdraw=rexp(100, rate=0.5)
+  meanstore3[i]=mean(expdraw)
+}
+hist(meanstore3, breaks=20) # It is approximately normally distributed, as predicted by the CLT.
+```
+
+
+
+# Topic 5: t-tests and p-values
+
+t-tests allow us to either compare the mean of two populations or to compare the mean of one population against a theoretical mena value.
+
+Let us create two sets of numbers that come from normal distributions with different means.
+
+```{r,tidy=TRUE}
+vec1=rnorm(30,mean=2,sd=1)
+vec2=rnorm(30,mean=3,sd=1)
+```
+
+The t-test allows us to find out the likelihood that these two come from the same distribution:
+
+```{r,tidy=TRUE}
+t.test(vec1,vec2)
+```
+
+What does this t-value mean? What does this p-value mean?
+
+We can also compare a single sample against a mean that we define to be our H0.
+
+```{r,tidy=TRUE}
+t.test(vec1,mu=2)
+t.test(vec1,mu=2.5)
+t.test(vec1,mu=3)
+t.test(vec1,mu=3.5)
+```
+
+What do these t-values mean? What do these p-values mean?
+
+Typically, a p-value is related to a type-1 error rate (alpha) that we define in advance. Type-1 erors refer to the incorrect rejection of a true null hypothesis. Often we want alpha to be smaller than 0.05.
+
+Typically, our null hypothesis (H0) is that (1) the vectors have the same mean or (2) the mean of the observations is the same as our theoretical mean.
+
+The p-value is the probability that we get data with evidence that is such strong AGAINST H0 if H0 was true. Think about what this means. If we define a threshold of p to be p < 0.05, then we have a type-1 error rate of alpha = 0.05.
+
+This produces a very small p-value:
+
+```{r,tidy=TRUE}
+t.test(vec1,mu=3)
+```
+
+Note that there are four important levels of statistical significane:
+
+p <= 0.001, corresponds to a type-1 error rate (alpha) of 0.001
+
+p <= 0.01, corresponds to a tye-1 error rate (alpha) of 0.01
+
+p <= 0.05, corresponds to a type-1 error rate (alpha) of 0.05
+
+p <= 0.1, corresponds to a type-1 error rate (alpha) of 0.1
+
+A p-value of p < 0.001 implies that a test is significant at all common levels of statistical significance.
+
+How would we compute the confidence interval of a test like the following?
+
+```{r,tidy=TRUE}
+t.test(vec1,vec2)
+```
+
+Let us first get the standard error:
+
+```{r,tidy=TRUE}
+standerr=sqrt(var(vec1)/length(vec1) + var(vec2)/length(vec2))
+standerr
+```
+
+To construct the 95-percent confidence interval get the difference in means and subtract and add the standard error:
+
+```{r,tidy=TRUE}
+(1.754153-3.180158)-(2*standerr) # lower bound
+(1.754153-3.180158)+(2*standerr) # upper bound
+```
