@@ -1,0 +1,288 @@
+---
+title: "Tutorial 7: Dummy Variables and Interactions (II)"
+author: "Jan Vogler (jan.vogler@duke.edu)"
+date: "October 14, 2016"
+output: pdf_document
+---
+
+# Today's Agenda
+
+1. Fixed effects
+2. Interaction terms with interval-level variables
+3. Graphical representation of interactions
+4. Analysis of Variance (ANOVA)
+5. Developing your research proposal
+6. Finding variables that represent theoretical concepts
+
+
+
+## 1. Fixed effects
+
+Last time we ran a (pooled) regression and did not include unit-fixed effects. Fixed effects are dummy variables for units or time periods in our data. In the case of the LDC dataset, we can include country fixed effects (and potentially also year or decade fixed effects).
+
+How would we include fixed effects when we run a regression in R?
+
+```{r,tidy=TRUE}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16')
+library(foreign)
+LDC=read.dta("LDC_IO_replication.dta")
+main_fe=lm(newtar ~ l1polity + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
+summary(main_fe)
+```
+
+How is this different from our old method? How does it affect the regression we estimate?
+
+
+
+# 2. Interaction terms with interval-level variables
+
+In today's session we will build upon the last lab and continue to work on interaction effects.
+
+Last time we looked at interactions with binary variables. This time both our variables will be measured at the interval level.
+
+For this purpose we will again use the dataset by Milner and Kubota (2005).
+
+Let us try to test a hypothesis that combines claims from modernization theory and the literature on FDI.
+
+1. Modernization theory claims that as countries develop economically, societies become more complex and people more educated which leads to a process of democratization (Lipset 1959, Boix & Stokes 2003).
+2. The literature on FDI claims that FDI is an important driver of economic growth. It can increase economic development by allowing for technology transfers from other countries (Jensen 2003, Damijan et al. 2003).
+
+Following these two claims of the political-economic literature, one might argue that there is a positive interaction of GDP and FDI inflows: because FDI means technology transfers---and potentially educational effects---meaning that societies acquire production processes of higher complexity, the effect of economic development on democratization may be magnified.
+
+Let us test this hypothesis through a simple regression model with an interaction term. We use our data on developing countries as there is diversity in terms of all three variables we are interested in: democracy scores, FDI inflows, and GDP per capita.
+
+Let us first specifically look at the values of the variables that we are interested in.
+
+```{R,tidy=TRUE}
+summary(LDC$polityiv_update2)
+summary(LDC$l1gdp_pc)
+summary(LDC$l1fdi)
+```
+
+It might be interesting to see what the extreme outliers are in those cases.
+
+Let us check this with the following commands:
+
+```{R,tidy=TRUE}
+which(LDC$l1gdp_pc > 20000)
+LDC[1472,]
+# It's Kuwait
+
+which(LDC$l1fdi > 50)
+LDC[2847,]
+# It's Equatorial Guinea
+```
+
+Now let us estimate a model with an interaction effect.
+
+```{R,tidy=TRUE}
+# Second: estimate the model
+intmodel=lm(polityiv_update2~l1gdp_pc+l1fdi+l1gdp_pc*l1fdi, data=LDC)
+summary(intmodel)
+```
+
+How would we interpret the interaction of GDP per capita and FDI? Is it problematic that one of the terms is not significant?
+
+Also, what happens if we use the two formulas below?
+
+```{R,tidy=TRUE}
+intmodel2=lm(polityiv_update2~l1gdp_pc*l1fdi, data=LDC)
+summary(intmodel2)
+
+intmodel3=lm(polityiv_update2~l1gdp_pc:l1fdi, data=LDC)
+summary(intmodel3)
+```
+
+Which model would be the better choice?
+
+
+
+# 3. Graphical representation of interactions
+
+There are multiple ways how we can plot interaction terms. If we have the following model:
+
+Y = b0 + b1 x1 + b2 x2 + b3 x1 x2 + u
+
+We can plot the effects of interactions in the following ways:
+
+1. We can plot variation in marginal effects of x1 as x2 changes (and vice versa).
+2. We can plot coefficients and confidence intervals around them.
+3. We can plot predicted values of Y as x1 changes at different values of x2.
+
+How would we plot the marginal effect of GDP per capita at different values of FDI inflows?
+
+Let us first check out the coefficients of our model.
+
+```{r,tidy=TRUE}
+intmodel$coefficients
+```
+
+Now we need to look at possible values of FDI inflows:
+
+```{r,tidy=TRUE}
+summary(LDC$fdignp)
+quantile(LDC$fdignp, probs=c(0.1,0.9), na.rm=T)
+
+fdi_values=seq(0,5,by=0.5)
+
+### Note the marginal effect is for an increase of GDP per Capita by 1 USD
+### In order to make interpretation easier, we will look at increases by 1000 USD
+
+marginal=rep(0.0010063348*1000,11)+0.0001726174*fdi_values*1000
+plot(fdi_values,marginal, type="l", main="Marginal Effects of GDP per Capita on Polity IV Score", xlab="FDI (% of GDP)", ylab="Marginal Effect of GDP per Capita on Y")
+```
+
+How would we interpret this plot?
+
+We can easily make a prettier plot that includes confidence intervals by using the package "interplot": install.packages("interplot")
+
+```{r, tidy=TRUE}
+library(interplot)
+interplot(m = intmodel, var1 = "l1gdp_pc", var2 = "l1fdi") +
+xlab("FDI (% of GDP)") +
+ylab("Marginal Effect of GDP per Capita on Y") +
+ggtitle("Marginal Effects of GDP per Capita on Polity IV Score") +
+theme(plot.title = element_text(face='bold', size=12),
+      axis.title=element_text(size=10,face="bold"),
+      axis.text=element_text(size=8,color="Black"))
+```
+
+How would we interpret this plot?
+
+Alternatively, we can also plot coefficient plots. These plots show us the coefficients with confidence intervals.
+
+For this purpose, we will use the package "coefplot": install.packages("coefplot")
+
+```{r,tidy=TRUE}
+library(coefplot)
+buildModelCI(intmodel)
+coefplot(intmodel, coefficients=c("l1gdp_pc","l1gdp_pc:l1fdi"), point=T) +
+theme(axis.text.x  = element_text(angle=90))
+```
+
+How would we interpret this plot?
+
+In order to graphically represent the effect that GDP per capita has on our dependent variable (democracy measured by the Polity IV score) at different levels of FDI, we create several new dataframes.
+
+```{r,tidy=TRUE}
+quantile(LDC$l1fdi, probs=c(0.25,0.5,0.75), na.rm=TRUE)
+nd1 = data.frame(l1gdp_pc=seq(1000,10000,by=1000), l1fdi=rep(0.0269332,10))
+nd2 = data.frame(l1gdp_pc=seq(1000,10000,by=1000), l1fdi=rep(0.6382053,10))
+nd3 = data.frame(l1gdp_pc=seq(1000,10000,by=1000), l1fdi=rep(1.9903931,10))
+```
+
+Next we use the model we estimated to predict values based on this new dataframe.
+
+```{r,tidy=TRUE}
+pred.p1 = predict(intmodel, type="response", se.fit=TRUE, newdata=nd1)
+pred.p2 = predict(intmodel, type="response", se.fit=TRUE, newdata=nd2)
+pred.p3 = predict(intmodel, type="response", se.fit=TRUE, newdata=nd3)
+
+pred.table1 = cbind(pred.p1$fit, pred.p1$se.fit)
+pred.table2 = cbind(pred.p2$fit, pred.p2$se.fit)
+pred.table3 = cbind(pred.p3$fit, pred.p3$se.fit)
+```
+
+Finally, we create the plot. Let's start by adding the first values.
+
+```{r,tidy=TRUE}
+plot(pred.p1$fit, type="l", ylim=c(-3,10), main="Predicted Values: GDP per capita and Democracy Score", xlab="GDP per Capita (Thousands of USD)", ylab="Polity IV Score", axes=FALSE, col="blue", lwd=2.5)
+axis(1, at=seq(1,10), labels=seq(1,10))
+axis(2, at=seq(-3,10), labels=seq(-3,10))
+
+### Next: we add lines
+
+lines(pred.p2$fit, col="red", lwd=2.5)
+lines(pred.p3$fit, col="green", lwd=2.5)
+
+### Let us add a legend to our plot, so it's more obivous what we did here.
+
+legend("bottomright", c("Low FDI","Median FDI","High FDI"), lty=1, lwd=2, col=c("blue", "red", "green"), bty="n", cex=1.25)
+
+### We can also add confidence intervals to our plot, though this will make it a little less clear.
+
+fit1 = pred.p1$fit
+low1 = pred.p1$fit - 2*pred.p1$se.fit
+high1 = pred.p1$fit + 2*pred.p1$se.fit
+cis1 = cbind(fit1, low1, high1)
+
+fit2 = pred.p2$fit
+low2 = pred.p2$fit - 2*pred.p2$se.fit
+high2 = pred.p2$fit + 2*pred.p2$se.fit
+cis2 = cbind(fit2, low2, high2)
+
+fit3 = pred.p3$fit
+low3 = pred.p3$fit - 2*pred.p3$se.fit
+high3 = pred.p3$fit + 2*pred.p3$se.fit
+cis3 = cbind(fit3, low3, high3)
+
+matlines(cis1[,c(2,3)], lty=2, col="blue")
+matlines(cis2[,c(2,3)], lty=2, col="red")
+matlines(cis3[,c(2,3)], lty=2, col="green")
+```
+
+How would we interpret this plot?
+
+Be very cautious about any causal interpretation here. We probably have several problems associated with causal inference, including omitted variable bias and endogeneity.
+
+Let's naively assume that we don't deal with those problems here. Would the predicted values support our initial hypothesis?
+
+
+
+# 4. Analysis of Variance (ANOVA)
+
+Let us conduct an analysis of variance. We are interested in the level of FDI inflows and we look at two different binary variables:
+
+1. Democracy - coded as 0 and 1
+2. Open Economy - coded as 0 and 1
+
+How would we expect these variables to influence the level of FDI inflows?
+
+```{R,tidy=TRUE}
+hist(LDC$aclpn)
+hist(LDC$dopen_wacz2)
+```
+
+Let us run look at a one-way ANOVA table.
+
+```{R,tidy=TRUE}
+anovamodel1=lm(fdignp ~ aclpn, data=LDC)
+summary(anovamodel1)
+anova(anovamodel1)
+```
+
+How would we interpret these results? Compare to the results of the OLS regression.
+
+Let us look at a two-way ANOVA table.
+
+```{R,tidy=TRUE}
+anovamodel2=lm(fdignp ~ aclpn + dopen_wacz2 + aclpn*dopen_wacz2, data=LDC)
+summary(anovamodel2)
+anova(anovamodel2)
+````
+
+How would we interpret these results? Compare to the results of the OLS regression.
+
+
+
+# 5. Developing your research proposal
+
+1. What is your theory?
+2. How can you turn this theory into a testable hypothesis?
+3. Which data is out there that would allow you to test your hypothesis?
+
+
+
+# 6. Finding variables that represent theoretical concepts
+
+We are interested in finding a measurement for veto players. Veto players can be described as the number of institutions in a political system whose approval is required when changes to the status quo are attempted to be made.
+
+How can we measure this theoretical concept? Which variables might be most useful?
+
+
+
+## In class-exercise: turning a concept into a measurement
+
+
+
+
