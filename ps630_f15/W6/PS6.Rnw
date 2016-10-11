@@ -10,7 +10,7 @@
 
 \author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
 
-\date{Due Date: Tuesday, Oct 6, 2015, 10 AM (Beginning of Class)}
+\date{Due Date: Wednesday, Oct 12, 2016 (Beginning of Class)}
 
 \maketitle
 
@@ -32,7 +32,7 @@ This exercise is not technically hard, just requires you to figure out things on
 
 Download GDP per capita ('NY.GDP.PCAP.CD') and FDI ('BX.KLT.DINV.CD.WD') from WDI, 2007-2009, \verb`extra = FALSE`. What country indicators are there?
 
-Note: There should be 747 rows
+Note: There should be 792 rows
 
 \subsection{Download Polity data}
 

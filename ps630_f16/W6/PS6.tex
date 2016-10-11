@@ -76,13 +76,13 @@ The most common merging task in political science is to merge datasets based on 
 
 This exercise will let you dip your toes in the sea of pain that is merging real world data. You're expected to Google and read help files to figure out two packages: 1) \verb`countrycode`, which converts between different types of country codes, and 2) \verb`psData`, a package that automates the downloading of many common Political Science dataset.
 
-This exercise is not technically hard, just requires you to figure out things on your own.
+Note: In the past \verb`psData` didn't work for some students. Let me know early if you encounter problems you can't solve.
 
 \subsection{Download WDI data}
 
 Download GDP per capita ('NY.GDP.PCAP.CD') and FDI ('BX.KLT.DINV.CD.WD') from WDI, 2007-2009, \verb`extra = FALSE`. What country indicators are there?
 
-Note: There should be 792 rows
+Note: There should be 747 rows
 
 \subsection{Download Polity data}
 
@@ -98,13 +98,13 @@ To merge WDI and Polity data we must first create a common country ID. (We can't
 
 \subsection{Merge}
 
-Merge the WDI and the Polity data based on 'iso3c' and 'year' (Note: There should be 492 rows).
+Merge the WDI and the Polity data based on 'iso3c' and 'year' (Note: There should be 489 rows).
 
 There are two variables showing country names in the merged dataset. Why? Clean them up so we only have 1 country name variable in the merged dataset.
 
 \subsection{Check merged result}
 
-(Optional) Figure out which country years appear in WDI data but not in Polity data. Note: There should be 255 unmatched records.
+(Optional) Figure out which country years appear in WDI data but not in Polity data. Note: There should be 303 unmatched records.
 
 In real research, this is useful to check that you are not throwing away data erroneously. There are more than one way to do this and should require some Googling.
 
@@ -124,13 +124,17 @@ Note: You should know this from the regression result, not from running \verb`me
 
 Regress FDI against \verb`polity2_binary`, gdppc, and their interaction term.
 
-Let's say that I want to plot FDI against gdppc with two lines, one representing democracy, the other representing dictatorship (similar to the last plot in the lab). What would be the intercept and slope of these two lines?
+Let's say that I want to plot FDI against gdppc with two lines, one representing democracy, the other representing dictatorship (similar to the last plot in the lab). What would be the intercept and slope of these two lines? (
+
+Note 1: No need to draw to plot; I'm only interested in the values of the intercept and the slope
+
+Note 2: Don't look at the regression results and calculate the values by hand / calculator. Instead, use R code to extract the regression coefficients and calculate the values in R. We do things this way so that if your model changes (and it always does), all of the calculations change accordingly and you don't have to manually hunt down each calcultation. This leads to better reproducibility.
 
 \subsection{Demonstrating substative meaning of coefficients}
 
-In research, we usually have to demonstrate the substantive meaning of our regression result. A common way to do it is to give the estimated outcome for a ``typical'' country, varying one important factor.
+In research, we usually have to demonstrate the substantive meaning of our regression result. As emphasized in class, when we have an interaction term we can't interpret the size of the coefficients by themselves anymore.
 
-For example, imagine that we have a country with median gdppc. What would be its FDI if it were a 1) dictatorship and 2) democracy, holding gdppc at the median value?
+So what to do? A common solution is to give the estimated outcome for a ``typical'' country, varying one important factor. For example, imagine that we have a country with median gdppc. What would be its FDI if it were a 1) dictatorship and 2) democracy, holding gdppc at the median value?
 
 Hint: You could either calculate using regression formula, or feed \verb`newdata` to \verb`predict`
 
