@@ -1,0 +1,16 @@
+first,last,grade,comment
+,Chen,16,
+,Choi,15.5,Code < 80 characters
+,Fu,16,
+,Hansen,15,"To calculate the RSS, must divide it by n – k – 1, not n – 1"
+Zeren,Li,15,"To calculate the RSS, must divide it by n – k – 1, not n. Code < 80 chars"
+Sichen,Li,16,
+,Mamet,16,
+,Mehling,14,
+,Nolan,16,"All correct, but check grader’s comment for better execution."
+,Saijo,16,
+,Wang,15.5,Check grader’s comment on the degree of freedom
+,Zhao,16,
+Peng,,13,"Code < 80 characters, use results = ‘asis’ instead of manually pasting stargazer result, your TSS is 0 because there’s a typo in d_2015$infant_mortality, causing it to be NULL. Typo is okay, but 0 TSS should have raised eyebrows"
+Jesse,,16,
+Anne,,16,

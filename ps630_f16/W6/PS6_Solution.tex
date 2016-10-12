@@ -117,7 +117,7 @@ Use \verb`PolityGet()` in package \verb`psData` to download Polity data. Downloa
 
 What country indicators are there?
 
-Note: There should be 15811 rows
+Note: There should be 16351 rows
 
 \textbf{Solution}
 
@@ -126,20 +126,17 @@ Note: There should be 15811 rows
 \begin{alltt}
 \hlkwd{library}\hlstd{(psData)}
 \hlstd{d_polity} \hlkwb{<-} \hlkwd{PolityGet}\hlstd{(}\hlkwc{vars} \hlstd{=} \hlstr{'polity2'}\hlstd{,} \hlkwc{OutCountryID} \hlstd{=} \hlstr{'iso3c'}\hlstd{)}
-\end{alltt}
-
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# 577 duplicated values were created when standardising the country ID with iso3c.\\\#\# 749 observations dropped based on missing values of the standardised ID variable.}}\begin{alltt}
 \hlkwd{names}\hlstd{(d_polity)}
 \end{alltt}
 \begin{verbatim}
-## [1] "iso3c"   "country" "year"    "polity2"
+## [1] "iso3c"                "standardized_country" "country"             
+## [4] "year"                 "polity2"
 \end{verbatim}
 \begin{alltt}
 \hlkwd{nrow}\hlstd{(d_polity)}
 \end{alltt}
 \begin{verbatim}
-## [1] 15811
+## [1] 16351
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -156,6 +153,12 @@ To merge WDI and Polity data we must first create a common country ID. (We can't
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{library}\hlstd{(countrycode)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# Attaching package: 'countrycode'}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# The following object is masked from 'package:psData':\\\#\# \\\#\#\ \ \ \  countrycode\_data}}\begin{alltt}
 \hlstd{d_wdi}\hlopt{$}\hlstd{iso3c} \hlkwb{<-} \hlkwd{countrycode}\hlstd{(d_wdi}\hlopt{$}\hlstd{iso2c,}
                            \hlkwc{origin} \hlstd{=} \hlstr{'iso2c'}\hlstd{,} \hlkwc{destination} \hlstd{=} \hlstr{'iso3c'}\hlstd{)}
 \end{alltt}
@@ -176,7 +179,7 @@ There are two variables showing country names in the merged dataset. Why? Clean 
 \hlkwd{nrow}\hlstd{(d_merged)}
 \end{alltt}
 \begin{verbatim}
-## [1] 489
+## [1] 492
 \end{verbatim}
 \begin{alltt}
 \hlkwd{head}\hlstd{(d_merged)}
@@ -189,13 +192,13 @@ There are two variables showing country names in the merged dataset. Why? Clean 
 ## 4   AGO 2007    AO      Angola      3151.0224        -893342152
 ## 5   AGO 2008    AO      Angola      4242.3631        1678971010
 ## 6   AGO 2009    AO      Angola      3678.9477        2205298180
-##     country.y polity2
-## 1 Afghanistan      NA
-## 2 Afghanistan      NA
-## 3 Afghanistan      NA
-## 4      Angola      -2
-## 5      Angola      -2
-## 6      Angola      -2
+##   standardized_country   country.y polity2
+## 1          Afghanistan Afghanistan     NaN
+## 2          Afghanistan Afghanistan     NaN
+## 3          Afghanistan Afghanistan     NaN
+## 4               Angola      Angola      -2
+## 5               Angola      Angola      -2
+## 6               Angola      Angola      -2
 \end{verbatim}
 \begin{alltt}
 \hlcom{# Drop extra country variable and clean up}
@@ -207,7 +210,7 @@ There are two variables showing country names in the merged dataset. Why? Clean 
 
 \subsection{Check merged result}
 
-(Optional) Figure out which country years appear in WDI data but not in Polity data. Note: There should be 255 unmatched records.
+(Optional) Figure out which country years appear in WDI data but not in Polity data. Note: There should be 300 unmatched records.
 
 In real research, this is useful to check that you are not throwing away data erroneously. There are more than one way to do this and should require some Googling.
 
@@ -230,7 +233,7 @@ In real research, this is useful to check that you are not throwing away data er
 \hlkwd{nrow}\hlstd{(d_unmatched)}
 \end{alltt}
 \begin{verbatim}
-## [1] 303
+## [1] 300
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -282,24 +285,24 @@ Note: You should know this from the regression result, not from running \verb`me
 ## 
 ## Residuals:
 ##        Min         1Q     Median         3Q        Max 
-## -4.583e+10 -1.551e+10 -9.231e+09 -4.631e+09  7.179e+11 
+## -4.583e+10 -1.550e+10 -9.131e+09 -4.598e+09  7.179e+11 
 ## 
 ## Coefficients:
 ##                          Estimate Std. Error t value Pr(>|t|)  
-## (Intercept)             6.387e+09  4.104e+09   1.556   0.1203  
-## polity2_binarydemocracy 9.767e+09  4.868e+09   2.007   0.0454 *
+## (Intercept)             6.396e+09  4.047e+09   1.580   0.1147  
+## polity2_binarydemocracy 9.759e+09  4.816e+09   2.026   0.0433 *
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 4.821e+10 on 475 degrees of freedom
+## Residual standard error: 4.806e+10 on 478 degrees of freedom
 ##   (12 observations deleted due to missingness)
-## Multiple R-squared:  0.008405,	Adjusted R-squared:  0.006318 
-## F-statistic: 4.026 on 1 and 475 DF,  p-value: 0.04536
+## Multiple R-squared:  0.008518,	Adjusted R-squared:  0.006443 
+## F-statistic: 4.106 on 1 and 478 DF,  p-value: 0.04328
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 
-The average FDI for dictatorship is \ensuremath{6.386944\times 10^{9}} USD.
+The average FDI for dictatorship is \ensuremath{6.3956174\times 10^{9}} USD.
 
 The average FDI for democracy is \ensuremath{1.6154234\times 10^{10}} USD.
 
@@ -327,29 +330,29 @@ Run regression
 ## 
 ## Residuals:
 ##        Min         1Q     Median         3Q        Max 
-## -1.372e+11 -6.216e+09 -4.268e+09 -2.084e+09  6.804e+11 
+## -1.372e+11 -6.150e+09 -4.277e+09 -2.075e+09  6.804e+11 
 ## 
 ## Coefficients:
 ##                                 Estimate Std. Error t value Pr(>|t|)   
-## (Intercept)                    6.051e+09  4.555e+09   1.329  0.18465   
-## polity2_binarydemocracy       -4.076e+09  5.482e+09  -0.744  0.45755   
-## gdppc                          9.052e+04  2.899e+05   0.312  0.75502   
-## polity2_binarydemocracy:gdppc  9.166e+05  3.152e+05   2.908  0.00382 **
+## (Intercept)                    6.055e+09  4.535e+09   1.335  0.18250   
+## polity2_binarydemocracy       -4.080e+09  5.460e+09  -0.747  0.45534   
+## gdppc                          8.200e+04  2.716e+05   0.302  0.76283   
+## polity2_binarydemocracy:gdppc  9.251e+05  2.983e+05   3.102  0.00204 **
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 4.568e+10 on 462 degrees of freedom
+## Residual standard error: 4.554e+10 on 465 degrees of freedom
 ##   (23 observations deleted due to missingness)
-## Multiple R-squared:  0.1324,	Adjusted R-squared:  0.1267 
-## F-statistic:  23.5 on 3 and 462 DF,  p-value: 3.607e-14
+## Multiple R-squared:  0.1325,	Adjusted R-squared:  0.1269 
+## F-statistic: 23.67 on 3 and 465 DF,  p-value: 2.859e-14
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 
-Intercept of dictatorship line: \ensuremath{6.0509365\times 10^{9}}
+Intercept of dictatorship line: \ensuremath{6.0550101\times 10^{9}}
 Intercept of democracy line: \ensuremath{1.9751839\times 10^{9}}
 
-Slope of dictatorship line: \ensuremath{9.0520835\times 10^{4}}
+Slope of dictatorship line: \ensuremath{8.1996599\times 10^{4}}
 Slope of democracy line: \ensuremath{1.0070961\times 10^{6}}
 
 \subsection{Demonstrating substative meaning of coefficients}
@@ -376,7 +379,7 @@ FDI for democracy with median gdppc
 \end{alltt}
 \begin{verbatim}
 ## (Intercept) 
-##  6039452513
+##  6067766617
 \end{verbatim}
 \begin{alltt}
 \hlcom{# Using predict}
@@ -384,7 +387,7 @@ FDI for democracy with median gdppc
 \end{alltt}
 \begin{verbatim}
 ##          1 
-## 6039452513
+## 6067766617
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -399,7 +402,7 @@ FDI for dictatorship with median gdppc
 \end{alltt}
 \begin{verbatim}
 ##          1 
-## 6416245186
+## 6388223468
 \end{verbatim}
 \end{kframe}
 \end{knitrout}

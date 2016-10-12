@@ -32,7 +32,7 @@ Note: In the past \verb`psData` didn't work for some students. Let me know early
 
 Download GDP per capita ('NY.GDP.PCAP.CD') and FDI ('BX.KLT.DINV.CD.WD') from WDI, 2007-2009, \verb`extra = FALSE`. What country indicators are there?
 
-Note: There should be 747 rows
+Note: There should be 792 rows
 
 \subsection{Download Polity data}
 
@@ -40,7 +40,7 @@ Use \verb`PolityGet()` in package \verb`psData` to download Polity data. Downloa
 
 What country indicators are there?
 
-Note: There should be 15811 rows
+Note: There should be 16351 rows
 
 \subsection{Convert country code}
 
@@ -48,13 +48,13 @@ To merge WDI and Polity data we must first create a common country ID. (We can't
 
 \subsection{Merge}
 
-Merge the WDI and the Polity data based on 'iso3c' and 'year' (Note: There should be 489 rows).
+Merge the WDI and the Polity data based on 'iso3c' and 'year' (Note: There should be 492 rows).
 
 There are two variables showing country names in the merged dataset. Why? Clean them up so we only have 1 country name variable in the merged dataset.
 
 \subsection{Check merged result}
 
-(Optional) Figure out which country years appear in WDI data but not in Polity data. Note: There should be 303 unmatched records.
+(Optional) Figure out which country years appear in WDI data but not in Polity data. Note: There should be 300 unmatched records.
 
 In real research, this is useful to check that you are not throwing away data erroneously. There are more than one way to do this and should require some Googling.
 
