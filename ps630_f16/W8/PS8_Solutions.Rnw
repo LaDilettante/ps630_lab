@@ -1,0 +1,289 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{color}
+\onehalfspacing
+
+
+
+\begin{document}
+
+\title{Pol Sci 630: Problem Set 9 - Data Management and Omitted Variable Bias - Solutions}
+
+\author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
+
+\date{Grading Due Date: Friday, October 30th, 12.00 PM (Beginning of Lab)}
+ 
+\maketitle
+
+
+
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was.}
+
+\bigskip
+
+\textbf{Use the following scheme to assign points: For problems that were solved correctly in their entirety, assign the full point value of 4. For correctly solved bonus problems, add that value to the total score for a problem but do not go above 4 points per problem. If there are mistakes in any problem, subtract points according to the extent of the mistake. If you subtract points, explain why.}
+
+\bigskip
+
+\textbf{In order to make your text bold and red, you need to insert the following line at the beginning of the document:}
+
+\begin{verbatim} \usepackage{color} \end{verbatim}
+
+\textbf{and the following lines above the solution of the specific task:}
+
+\begin{verbatim} \textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points} \end{verbatim}
+
+
+
+\pagebreak
+
+\section*{R Programming}
+
+\subsection*{Problem 1}
+
+<<results='show',tidy=TRUE>>=
+### a
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+library(foreign)
+LDC = read.dta("LDC_IO_replication.dta")
+
+LDC$regime_class=NA
+LDC$regime_class[LDC$polityiv_update2 > 5]="Democracy"
+unique(LDC$regime_class)
+
+LDC$regime_class[LDC$polityiv_update2 >= -5 & LDC$polityiv_update2 <= 5] = "Anocracy"
+unique(LDC$regime_class)
+
+LDC$regime_class[LDC$polityiv_update2 < -5] = "Autocracy"
+unique(LDC$regime_class)
+
+
+### b
+
+LDC$l1polity=LDC$l1polity+10
+LDC$l1polity_squared=(LDC$l1polity)^2
+
+lm_fdi2=lm(fdignp ~ l1polity + l1polity_squared + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
+summary(lm_fdi2)
+
+nd <- data.frame(l1polity=seq(0,20,by=1), l1polity_squared=seq(0,20,by=1)^2, l1signed=rep(0.1511,21), l1office=rep(8.431,21), l1gdp_pc=rep(2888,21), l1lnpop=rep(15.10,21), l1ecris2=rep(0.0641,21), l1bpc1=rep(0.5909,21), l1avnewtar=rep(14.91,21), ctylabel=rep("Angola",21))
+
+pred.p1 <- predict(lm_fdi2, type="response", se.fit=TRUE, newdata=nd)
+pred.table <- cbind(pred.p1$fit, pred.p1$se.fit)
+
+fit <- pred.p1$fit
+low <- pred.p1$fit - 2*pred.p1$se.fit
+high <- pred.p1$fit + 2*pred.p1$se.fit
+cis <- cbind(fit, low, high)
+
+plot(pred.p1$fit, type="l", ylim=c(20,50), main="Polity IV Score and FDI (% GDP) (Angola)", 
+     xlab="Polity IV Score", ylab="FDI (% of GDP)", axes=FALSE)
+axis(1, at=seq(1,21), labels=seq(-10,10,1))
+axis(2, at=seq(20,50), labels=seq(20,50))
+matlines(cis[,c(2,3)], lty=2, col="black")
+@
+
+Note: It is possible to take the mean values from a subset of the dataset that only contains complete cases (with values of all independent variables available). However, the effect of the Polity IV Score will not be affected by different values of the control variables because we keep those values constant in either case. Therefore, it is fine but not necessary to take the mean values from a subset with complete cases.
+
+
+
+\pagebreak
+
+\subsection*{Problem 2}
+
+<<results='show',tidy=TRUE>>=
+### a
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+library(readstata13)
+na_data=read.dta13("na_data.dta")
+summary(na_data)
+
+### b
+na_data$gdpgrowth=NA
+for (i in 2:length(na_data$q_gdp)){
+  if (na_data$countrycode[i] == na_data$countrycode[i-1]){
+      na_data$gdpgrowth[i] = (na_data$q_gdp[i]/na_data$q_gdp[i-1]-1)*100
+    }
+}
+
+summary(na_data$gdpgrowth)
+
+### c
+na_data$date=na_data$year
+
+LDC$countrycode=NA
+LDC$countrycode[LDC$ctylabel == "Turkey"] = "TUR"
+LDC$countrycode[LDC$ctylabel == "SouthAfrica"] = "ZAF"
+LDC$countrycode[LDC$ctylabel == "Mexico"] = "MEX"
+
+merged_data=merge(LDC, na_data, by=c("countrycode","date"))
+
+newmodel=lm(newtar ~ l1polity + gdpgrowth + factor(countrycode)-1, data=merged_data)
+summary(newmodel)
+@
+
+
+
+\subsection*{Problem 3}
+
+\paragraph*{a)} As grader, please make sure that the person who has submitted the homework has answered all questions of this problem. This includes a brief explanation (2-3 sentences) of the student's theory and a reference to both the dependent and key independent variable.
+
+Make sure that the students has done the following things:
+
+\begin{enumerate}
+	\item The student has explained which datasets contain the variables and provided an overview of how the variables are coded there.
+	\item If and only if there were variables that were nominal or ordinal scale or coded as characters, the student has recognized that these variables have to be transformed to be used for a linear regression. Nominal variables have to be introduced as factors (dummies). Ordinal variables have to be either used as factors (dummies) or have to be assigned numerical values. Similarly, variables that are coded as characters have to be either introduced as factors (dummies) or recoded as numerical variables.
+	\item The students has briefly discussed the numbers of units and the time periods covered by the datasets. Note that the discussion does not have to be extensive. (See problem set for an example)
+\end{enumerate}
+
+\paragraph*{b)} As grader, please make sure that the person who has submitted the homework has answered all questions of this problem. This includes a brief theoretical explanation for the importance of at least two control variables that the student suggests to use for the final paper. For all control variables there should be a brief reference to either literature that has explained the theoretical impact of the variable, the concept of omitted variable bias, or both.
+
+Important: when a reference to the concept of omitted variable bias is made (as the justification for the inclusion of a control variable), it is most important that the student has recognized that the \textbf{variable in question must have an influence on both the dependent and the independent variable}. Otherwise we cannot speak of the phenomenon of OVB.
+
+Make sure that the students has done the following things:
+
+\begin{enumerate}
+	\item The student has explained which datasets contain the variables and provided an overview of how the variables are coded there.
+	\item If and only if there were variables that were nominal or ordinal scale or coded as characters, the student has recognized that these variables have to be transformed to be used for a linear regression. Nominal variables have to be introduced as factors (dummies). Ordinal variables have to be either used as factors (dummies) or have to be assigned numerical values. Similarly, variables that are coded as characters have to be either introduced as factors (dummies) or recoded as numerical variables.
+	\item The students has addressed potential differences (if there are any) in the time periods and units covered. For example, data for the control variables may be available only for OECD countries while the data for the dependent variable may only be available for developing countries. Another example would be that data for the control variables may be available on a quarterly basis while data for the dependent variable may be available on an annual basis.
+	\item The students has addressed differences in the coding of time periods and units. For example, the names of countries may be coded as full names in one dataset while another dataset uses 3-letter isocodes to refer to countries. Another example would be that time in one dataset could be coded in the format YYYY-MM (Y = year, M = month) while it could be coded in the format YY-MM in another dataset.
+\end{enumerate}
+
+
+
+\section*{Statistical Theory: Omitted Variable Bias}
+
+\subsection*{Problem 4}
+
+\subparagraph{a)} In this section, each student is expected to write down the mathematical formula of the linear regression that he or she intends to estimate in their final project. For example, the student could be interested in how the regime type of a country influences its military expenditures.
+
+In this case the regression could look like this:
+
+$ Y = \alpha + \beta{_1}X_1 + \beta{_2}X_2 + \beta{_3}X_3 + \beta{_4}X_4 + \beta{_5}X_5 + \epsilon$
+
+\bigskip
+
+Where the variables represent the following concepts:
+
+\begin{center}
+  \begin{tabular}{ | l | r | }
+    \hline
+    $Y$ & Military Expenditures (Percent of GDP) \\ \hline
+    $X_1$ & Regime Type (Polity IV) \\ \hline
+    $X_2$ & External Military Threat \\ \hline
+    $X_3$ & Militaristic Ideology \\ \hline
+    $X_4$ & Size of the Arms Industry \\ \hline
+    $X_5$ & No. of Armed Conflicts in the Last Decade\\
+    \hline
+  \end{tabular}
+\end{center}
+
+\bigskip
+
+Note that you have to include the $\epsilon$ for the error term if you use "Y" in your notation. Alternatively, you can also use $\hat{Y}$ (Y-hat) in your notation. In the latter version, however, you are not allowed to include the error term because the \textit{predicted values of Y} (denoted by $\hat{Y}$) solely depend on the linear combination of the independent variables, not the error term. Recall that the error term is in fact the difference between Y and $\hat{Y}$. So the alternative regression would look like this:
+
+$ \hat{Y} = \alpha + \beta{_1}X_1 + \beta{_2}X_2 + \beta{_3}X_3 + \beta{_4}X_4 + \beta{_5}X_5$
+
+\bigskip
+
+Note that it is also perfectly fine if you write out the variable names instead of using placeholder variables such as $Y$, $X_1$, or $X_2$. If you use placeholder names, it would be necessary to add some explanation like above to make it clear to the reader which real-world measurements/concepts you are referring to.
+
+
+
+\subparagraph{b)} The concept of omitted variable bias requires that the omitted variable is correlated with both the dependent variable and the independent variable of interest. In the case above, for example, one might argue that militaristic ideology has an impact on both military expenditures and regime type. The argument here could be that a high level of militaristic ideology supports authoritarian regimes and thus has a negative effect on regime type measured through the Polity IV Score. Additionally, we would expect that military ideology has a positive effect on military expenditures as percentage of GDP. Mathematically these statements would mean:
+
+\bigskip
+
+$Cov(X_1, X_3) < 0$ and $Cov(Y, X_3) > 0$
+
+\bigskip
+
+What would happen if we omit the variable $X_3$ from the regression? We begin with two regressions:
+
+\begin{enumerate}
+  \item $ Y = \alpha + \beta{_1}X_1 + \beta{_2}X_2 + \beta{_3}X_3 + \beta{_4}X_4 + \beta{_5}X_5 + \epsilon$
+  \item $ Y = \alpha + \lambda{_1}X_1 + \beta{_2}X_2 + \beta{_4}X_4 + \beta{_5}X_5 + \epsilon{_2}$
+\end{enumerate}
+
+\bigskip
+
+Note that the second regression has $X_3$ omitted and that we therefore expect to get a different coefficient for $X_1$, namely  $\lambda{_1}$ instead of $\beta{_1}$.
+
+\bigskip
+
+$\lambda{_1}$ = $\dfrac{Cov(X_1,Y)}{Var(X_1)}$.
+
+\bigskip
+
+Assuming that $X_3$ has some impact on $Y$, we know that $Y$ can be rewritten as a linear function of it (and the other variables that we have in the model). So:
+
+\bigskip
+
+$\lambda{_1}$ = $\dfrac{Cov(X_1,\alpha + \beta{_1}X_1 + \beta{_2}X_2 + \beta{_3}X_3 + \beta{_4}X_4 + \beta{_5}X_5 + \epsilon)}{Var(X_1)}$
+
+\bigskip
+
+We can rewrite this as:
+
+\bigskip
+
+$\lambda{_1}$ = $\beta{_1}*\dfrac{Var(X_1)}{Var(X_1)} + \beta{_2}*\dfrac{Cov(X_1,X_2)}{Var(X_1)} + \beta{_3}*\dfrac{Cov(X_1,X_3)}{Var(X_1)} + \beta{_4}*\dfrac{Cov(X_1,X_4)}{Var(X_1)}  + \beta{_5}*\dfrac{Cov(X_1,X_5)}{Var(X_1)} + \dfrac{Cov(X_1,\epsilon)}{Var(X_1)}$
+
+\bigskip
+
+Recall that the task asks you to assume that there is omitted variable bias for \textbf{one of the control variables only}. In this case, there would not be any correlation between $X_1$ and the other variables, implying that their covariances would be theoretically zero. Note that the covariance between $X_1$ and the error term is also theoretically zero if the condition holds that there is omitted variable bias for only one variable. It then follows that:
+
+\bigskip
+
+$\lambda{_1}$ = $\beta{_1} + \beta{_3}*\dfrac{Cov(X_1,X_3)}{Var(X_1)}$
+
+\bigskip
+
+Notice that the $\beta{_3} > 0$ because $Cov(Y, X_3) > 0$. However, $Cov(X_1, X_3) < 0$, meaning that:
+
+\bigskip
+
+$\lambda{_1}$ = $\beta{_1}$ + Positive Term $* \dfrac{Negative Term}{Var(X_1)}$
+
+\bigskip
+
+Because the variance of any variable is positive as long as there is more than one value, meaning that $Var(X_1) > 0$, the coefficient of $X_1$ would be biased downwards. 
+
+\bigskip
+
+If you are grading someone else's problem set, please note that if we have the following variables:
+
+\begin{center}
+  \begin{tabular}{ | l | r | }
+    \hline
+    $Y$ & Dependent Variable \\ \hline
+    $X_1$ & Key Independent Variable \\ \hline
+    $X_2$ & Potentially Omitted Variable \\
+    \hline
+  \end{tabular}
+\end{center}
+
+\bigskip
+
+The following happens if you leave $X_2$ out of the linear regression:
+
+\bigskip
+
+\begin{center}
+    \begin{tabular}{ | l | c | r |}
+    \hline
+    & $Cov(X1,X2) > 0$ & $Cov(X1,X2) < 0$ \\ \hline
+    $Cov(Y,X2) > 0$ & upward bias of $X_1$ coefficient & downward bias of $X_1$ coefficient \\ \hline
+    $Cov(Y,X2) < 0$ & downward bias of $X_1$ coefficient & upward bias of $X_1$ coefficient \\
+    \hline
+    \end{tabular}
+\end{center}
+
+
+
+\end{document}

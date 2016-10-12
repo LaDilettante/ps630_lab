@@ -1,0 +1,442 @@
+---
+title: "Tutorial 8: Data Management and Two-Stage Least Squares (2SLS) Regression"
+author: "Jan Vogler (jan.vogler@duke.edu)"
+date: "October 21, 2016"
+output: pdf_document
+---
+
+# Today's Agenda
+
+1. Data management I: reading/subsetting data, keeping/deleting variables
+2. Data management II: data transformation
+3. Data management III: creating new variables
+4. Data management IV: useful commands
+5. Two-stage least squares (2SLS) regression
+
+
+
+# 1. Data management I: reading/subsetting data, keeping/deleting variables
+
+R can save its own datafiles. Those will have the format ".Rdata". In order to load such a dataset, you can simply use the load command.
+
+```{r,tidy=TRUE,error=TRUE,results="hide"}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w9/')
+load("filename.Rdata")
+```
+
+R can also read some other file formats, including .csv and .txt files.
+
+```{r,tidy=TRUE,error=TRUE,results="hide"}
+### .csv files
+csvdata = read.csv("filename.csv", stringsAsFactors=FALSE)
+# stringsAsFactors=FALSE is important because otherwise R will load character variables as factors, treating them as numerical under the surfae, which can lead to complications later on
+
+### .txt files
+textdata = read.table("filename.txt", header=TRUE)
+
+# header=TRUE indicates that the first row contains the names of the variables (see later for example)
+```
+
+Additionally, there are many other data formats (SPSS .sav and Stata .dta files). Some of them require the foreign package.
+
+Use the following command to install it:
+
+install.packages("foreign")
+
+```{r,tidy=TRUE,error=TRUE,results="hide"}
+library(foreign)
+spssdata = read.spss("filename.sav", to.data.frame=TRUE)
+
+library(foreign)
+statadata = read.dta("filename.dta")
+```
+
+For data files that were saved by the most recent version of Stata (13), you will need another package called "readstata13". Please use the following command to install it:
+
+install.packages("readstata13")
+
+```{r,tidy=TRUE,error=TRUE,results="hide"}
+library(readstata13)
+read.dta13("filename.dta")
+```
+
+Let us now read our LDC dataset.
+
+```{r,tidy=TRUE}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+LDC=read.dta("LDC_IO_replication.dta")
+```
+
+To delete a variable in a data frame, we simply use the following command:
+
+```{r,tidy=TRUE}
+LDC$ecris2=NULL
+```
+
+We can also only keep the data that we actually need for our analysis:
+
+```{r,tidy=TRUE}
+LDC=LDC[,c("ctylabel","date","polityiv_update2","gdp_pc_95d","newtar","l1polity","l1polity","l1signed","l1office","l1gdp_pc","l1lnpop","l1ecris2","l1bpc1","l1avnewtar","l1fdi")]
+```
+
+The following command allows us to only look at cases on which we have all observations of specific variables.
+
+```{r,tidy=TRUE}
+complete = with(LDC, complete.cases(polityiv_update2,gdp_pc_95d))
+# The "with" command allows you to evaluate a file for certain expressions, such as complete.cases
+LDC=LDC[complete,]
+# Then we subset the file and only take the complete cases
+```
+
+This is often a better solution than na.omit because na.omit will remove all rows with missing values, which can result in the loss of too many values
+
+```{r,tidy=TRUE}
+LDComit=na.omit(LDC)
+# only 383 observations remaining if we use this method
+```
+
+Before doing any analysis, you should inspect your variables closely. Make sure that you are aware of the properties of your most important variables.
+
+```{r,tidy=TRUE}
+summary(LDC$polityiv_update2)
+summary(LDC$gdp_pc_95d)
+summary(LDC$newtar)
+```
+
+You have learned how to merge data in one of the previous tutorials. But what happens if we want to merge data with different numbers of observations?
+
+```{r,tidy=TRUE}
+a=c("Household A", "Household B")
+b=c(2,2)
+data1=data.frame(a,b)
+colnames(data1)=c("Name","Number of people")
+
+data1
+
+c=c("Household A", "Household A", "Household B", "Household B")
+d=c("Individual 1", "Individual 2", "Individual 3", "Individual 4")
+
+data2=data.frame(c,d)
+colnames(data2)=c("Name","Person")
+
+data2
+```
+
+As we can see, the data has different numbers of observations on the household level.
+
+```{r,tidy=TRUE}
+merge(data1,data2,by=("Name"))
+```
+
+As we can see, the data will expand.
+
+Merge has an option that can be helpful. If you have two data frames "x" (here: data1) and "y" (here: data2), you can decide to keep all parts of either data frame or both. This is useful because the merge command normally deletes observations that are not 
+
+```{r,tidy=TRUE,error=TRUE}
+merge(x=data1, y=data2, all=TRUE, all.x=TRUE, all.y=TRUE)
+```
+
+When merging we can think of our data frames as the "master" and "merging" data frame. Often our master data frame contains the crucial variables of our analysis. We then combine it with additional "merging" data frames. If we consider the variables in our master data frame to be most important for the analysis, it often makes sense to keep all entries of this data frame (by using all.x=TRUE). In many cases, one has to be careful when merging data frames because it might be the case that several observations in the merging data frame match an entry in the master data frame, even though the researcher does not want to match one with multiple observations.
+
+Let's assume we are only interested in a subset of the data. For example, we are only interested in the country Angola. How can we subset the data that we have?
+
+```{r,tidy=TRUE}
+LDC2 = subset(LDC, ctylabel=="Angola")
+summary(LDC2)
+# We are left with observations for Angola only.
+# We can also apply this to numerical variables and set conditions for subsetting.
+```
+
+What would you do if you have multiple datafiles that all have a similar name. How can you load this data very efficiently?
+
+**Credit to Brett Gall for this chunk of the code.**
+
+Let's assume we have 1000 different individuals and their files have similar names. How can we load those files without writing 1000 separate commands for loading the data?
+
+```{r,tidy=TRUE}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w9/')
+ind.files = dir(pattern = "ind\\d+.sav")
+# This command allows us to get the names of the datafiles
+# Note that \\d+ is a so-called "regular expression"
+# \\ initiates the regular expression
+# "d" stands for a digit
+# + stands for one or more (digit)
+# Google "regular expressions" to learn how to construct more regular expressions
+
+ind.data = lapply(ind.files, read.spss)
+# This loads the data via the "lapply" command
+# Here we apply the command "read.spss" to each element of our list
+# read.spss requires the foreign package
+
+names(ind.data) = gsub(".sav","",ind.files)
+# Rename list elements, remove ".sav" and replace it with "" (empty)
+
+names(ind.data)
+```
+
+
+
+# 2. Data management II: data transformation and recoding
+
+We can transform variables in a number of ways. One of the most common ways to transform data is to square it to estimate curvilinear relationships. Let us construct a squared version of the Polity IV Score.
+
+In order to make the square meaningful, we first have to add +10 to all Polity Scores (otherwise negative squares would get the same positive values as the positive square).
+
+```{r,tidy=TRUE}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+LDC=read.dta("LDC_IO_replication.dta")
+LDC$polityiv_update2=LDC$polityiv_update2+10
+LDC$l1polity=LDC$l1polity+10
+LDC$polityiv_squared=(LDC$polityiv_update2)^2
+LDC$l1polity_squared=(LDC$l1polity)^2
+```
+
+Let us see whether there is a curvilinear relationship between the Polity IV Score and tariff levels.
+
+```{r,tidy=TRUE,results="hide"}
+main_int=lm(newtar ~ l1polity + l1polity_squared + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
+# summary(main_int)
+```
+
+Interestingly, there appears to be a curvilinear relationship between the two variables! How would we interpret the results of the linear regression? How would we plot this curvilinear relationship?
+
+```{r,tidy=TRUE}
+nd <- data.frame(l1polity=seq(0,20,by=1), l1polity_squared=seq(0,20,by=1)^2, l1signed=rep(0.1511,21), l1office=rep(8.431,21), l1gdp_pc=rep(2888,21), l1lnpop=rep(15.10,21), l1ecris2=rep(0.0641,21), l1bpc1=rep(0.5909,21), l1avnewtar=rep(14.91,21), ctylabel=rep("Algeria",21))
+
+pred.p1 <- predict(main_int, type="response", se.fit=TRUE, newdata=nd)
+pred.table <- cbind(pred.p1$fit, pred.p1$se.fit)
+
+fit <- pred.p1$fit
+low <- pred.p1$fit - 2*pred.p1$se.fit
+high <- pred.p1$fit + 2*pred.p1$se.fit
+cis <- cbind(fit, low, high)
+
+plot(pred.p1$fit, type="l", ylim=c(35,80), main="Polity IV Score and Tariff Level (Algeria)", 
+     xlab="Polity IV Score", ylab="Tariff Level", axes=FALSE)
+axis(1, at=seq(1,21), labels=seq(-10,10,1))
+axis(2, at=seq(35,80), labels=seq(35,80))
+matlines(cis[,c(2,3)], lty=2, col="black")
+```
+
+This relationship looks slightly different than the relationship estimated by Milner and Kubota. How is it different?
+
+Moreover, another frequently used way to transform data is to take the natural logarithm. In many cases, researchers do this because the distribution of the data is skewed to the right. The goal is to reduce the skewness.
+
+```{r,tidy=TRUE}
+hist(LDC$gdp_pc_95d,breaks=21)
+dens = density(LDC$gdp_pc_95d, na.rm=TRUE)
+plot(dens,col="blue")
+
+LDC$log_gdp_pc=log(LDC$gdp_pc_95d)
+
+hist(LDC$log_gdp_pc,breaks=21)
+dens = density(LDC$log_gdp_pc, na.rm=TRUE)
+plot(dens,col="blue")
+
+### We have reduced the skewness and enforced a distribution that is closer to a unimodal distribution
+```
+
+What do we do if the data is not in the format in which we want it to be?
+
+Let us look at a dataset that deals with lotteries in different states.
+
+```{r,tidy=TRUE}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w9/')
+prize=read.csv("Lottery Prize Amounts Awarded.csv", stringsAsFactors=FALSE)
+tickets=read.csv("Lottery Ticket Sales.csv", stringsAsFactors=FALSE)
+
+# Let's look at the datasets
+
+# Let's get rid of missing values
+
+prize=prize[93:103,]
+tickets=tickets[93:103,]
+```
+
+We want to have the data in a format in which we have both the tickets sold and the prizes awarded for each year and state. How do we get there? The "reshape" package is very useful in this respect.
+
+install.packages("reshape")
+
+```{r,tidy=TRUE}
+library(reshape)
+prize <- melt(prize, id=c("Year"))
+prize$Prize=prize$value
+prize$value=NULL
+
+tickets <- melt(tickets, id=c("Year"))
+tickets$TSales=tickets$value
+tickets$value=NULL
+```
+
+Now let's merge the two dataframes.
+
+```{r,tidy=TRUE}
+full=merge(prize,tickets,by=c("Year","variable"))
+View(full)
+```
+
+More information on the reshape package can be found here: http://had.co.nz/reshape/
+
+
+
+# 3. Data management III: creating new variables
+
+Often we can create new variables from existing ones. Let us create three categories for a country's wealth. (1) Low income countries, (2) middle income countries, and (3) high income countries.
+
+```{r,tidy=TRUE,error=TRUE}
+LDC$incomelevel=NA
+LDC$incomelevel[LDC$gdp_pc_95d<=10000]="Low-income country"
+unique(LDC$incomelevel)
+
+LDC$incomelevel[LDC$gdp_pc_95d > 10000 & LDC$gdp_pc_95d <= 20000] = "Middle-income country"
+unique(LDC$incomelevel)
+
+LDC$incomelevel[LDC$gdp_pc_95d > 20000] = "High-income country"
+unique(LDC$incomelevel)
+
+hist(LDC$incomelevel)
+### Does not work because it is not numeric!
+```
+
+If we want a histogram of our data, our argument needs to be numeric. We can do a simple data transformation to turn the variable into a numeric variable.
+
+```{r,tidy=TRUE,error=TRUE}
+LDC$incomelevel[LDC$incomelevel=="Low-income country"]=0
+LDC$incomelevel[LDC$incomelevel=="Middle-income country"]=1
+LDC$incomelevel[LDC$incomelevel=="High-income country"]=2
+
+hist(LDC$incomelevel)
+### Why does this not work? We just assigned numeric values.
+```
+
+We just assigned numeric values to our variable but R still treats this a character variable. What is the reason for this?
+
+In order to change the coding of the variable to numeric, we can use the following command:
+
+```{r,tidy=TRUE}
+LDC$incomelevel=as.numeric(LDC$incomelevel)
+hist(LDC$incomelevel)
+```
+
+As we can see, the vast majority of our sample are low-income countries.
+
+Now let us try to create a new variable that depends on two other variables. We want to have a major economic crises when we have both an economic crisis and a balance-of-payment crisis. How can we do that in R?
+
+```{r,tidy=TRUE}
+LDC$major_crisis=NA
+LDC$major_crisis[LDC$ecris2 == 1 & LDC$bpcris == 0] <- 0
+LDC$major_crisis[LDC$ecris2 == 0 & LDC$bpcris == 1] <- 0
+LDC$major_crisis[LDC$ecris2 == 1 & LDC$bpcris == 1] <- 1
+```
+
+Let's say you want to create a variable that shows you if the Polity IV Score changed in any given year, with 0 indicating no change and 1 indicating a change. How would we do that?
+
+```{r,tidy=TRUE}
+complete = with(LDC, complete.cases(polityiv_update2))
+# Necessary because otherwise we will get NAs
+LDC=LDC[complete,]
+LDC$politychange=NA
+for (i in 2:length(LDC$polityiv_update2)){
+  if (LDC$ctylabel[i] == LDC$ctylabel[i-1]){
+    if (LDC$polityiv_update2[i] != LDC$polityiv_update2[i-1]){
+      LDC$politychange[i]=1
+    } else {
+      LDC$politychange[i]=0
+    }
+  }
+}
+```
+
+
+
+# 4. Data management IV: useful commands
+
+Here are some more useful commands for data management:
+
+```{r,tidy=TRUE}
+unique(LDC$ctylabel)
+# Displays all of the empirically observed unique values
+# Is this useful for continuous variables?
+
+head(LDC$polityiv_update2)
+# Returns the first five values of a vector
+# Also, tail() returns the last five values
+
+names(LDC)
+# Returns the variable names of a data frame
+# colnames() does the same
+
+class(LDC$ctylabel)
+# Show the classification of a variable
+
+char_newtar=as.character(LDC$newtar)
+# Changes a variable to a character variable
+
+val_newtar=as.numeric(LDC$char_newtar)
+# Changes a variable to a numeric variable
+
+quantile(LDC$newtar,p=c(0.1,0.9), na.rm=T)
+# Displays the 10th and 90th percentile of a variable
+```
+
+
+
+# 5. Two-Stage Least Squares (2SLS) Regression
+
+Two-stage least squares regression is an important tool when we believe that there is a high level of endogeneity in our model. Endogeneity refers to a situation in which there is a mutual influence of our dependent and independent variables (feedback loop).
+
+In one of our last sessions, we looked at the influence of economic development on the level of democracy. But what if there is (on average) better economic growth in democratic political systems? This would result in a feedback loop as described above.
+
+Let us use the LDC dataset to illustrate 2SLS regression.
+
+```{r,tidy=TRUE}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+library(foreign)
+LDC = read.dta("LDC_IO_replication.dta")
+model1=lm(polityiv_update2 ~ l1gdp_pc, data=LDC)
+summary(model1)
+```
+
+In this regression we might have the problem of endogeneity.
+
+When we use 2SLS regression, we identify an instrument that we believe to not be correlated with our dependent variable of interest, but to have an influence on our independent variable. With this method, we can isolate the effect that our independent variable has through our instruments.
+
+We will use a package called "Zelig" to estimate a 2SLS regression.
+
+Y = Democracy Level (dependent variable)
+
+X = GDP per capita (explanatory variable)
+
+I = FDI inflows (instrument variable)
+
+Note that these claims contradict the theoretical claims made in tutorial 7. So please just treat this as a demonstration of how to set up such a regression.
+
+install.packages("Zelig")
+
+library(Zelig)
+
+```{r,tidy=TRUE,results="hide",include=FALSE}
+library(Zelig)
+```
+
+```{r,tidy=TRUE}
+formula_inst <- list ("mu1" = polityiv_update2 ~ l1gdp_pc,
+                   "mu2" = l1gdp_pc ~ l1fdi,
+                   "inst" = ~ l1fdi)
+model2 = zelig(formula = formula_inst, model = "twosls", data = LDC)
+summary(model2)
+```
+
+How would we interpret these results? How are they different from the results obtained by OLS?
+
+An alternative approach is using the ivreg function in R. For this we need the AER package.
+
+install.packages("AER")
+
+```{r,tidy=TRUE}
+library(AER)
+model3 = ivreg(polityiv_update2 ~ l1gdp_pc | l1fdi, data=LDC)
+summary(model3)
+```
+
+The instrument here is on the right (l1fdi).
