@@ -5,6 +5,8 @@
 \usepackage{fullpage}
 \usepackage{setspace}
 \usepackage{hyperref}
+\usepackage{color}
+\usepackage{textcomp}
 
 \onehalfspacing
 
@@ -12,7 +14,7 @@
 
 \begin{document}
 
-\title{Pol Sci 630: Problem Set 8 - Data Management and Omitted Variable Bias}
+\title{Pol Sci 630: Problem Set 8 - Data Management, Measurement Error, and Omitted Variable Bias}
 
 \author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
@@ -36,15 +38,17 @@
 
 \paragraph{Do the following in R:}
 
-\subparagraph{a)} Load the \textit{LDC\_IO\_replication} dataset that was introduced in the tutorial. Create a new ordinal-level, character variable that differentiates between democracies, anocracies, and autocracies.
+\subparagraph{a)} Load the \textit{VOTE1} dataset. Please estimate a regression with the incumbent vote share as dependent variable and the party strength of the incumbent and the expenditures of both parties as independent variables. Please add a new variable to the model that allows you to estimate a curvilinear influence of incumbent party expenditures. Then, estimate this model, including the new variable, and display the summary of the regression.
 
-Note: According to the Polity IV classification, a country is a democracy when it has an overall Polity IV score of 6 or higher, an autocracy with an overall score of -6 or lower, and anocracy for all remaining scores.
+Note: If you have the dataset in the same folder as your .Rnw file, you do not need to set a working directory when you compile your PDF.
 
-\subparagraph{b)} Building upon problem set 5, problem number 2, please estimate a regression with a curvilinear relationship between net changes in FDI as percentage of GDP as dependent variable and the Polity IV Score (lagged by 1 year) as independent variable. Include country fixed effects and show the summary of your regression.
+\subparagraph{b)} Show the relationship between incumbent party strength and incumbent vote share graphically, holding all other variables at their mean values.
 
-Note: Make sure that you add +10 to the Polity IV Score to estimate the curvilinear relationship correctly.
+\subparagraph{c)} Load the \textit{LDC\_IO\_replication} dataset that was introduced in the tutorial. Create a new ordinal, character variable that differentiates between democracies, anocracies, and autocracies.
 
-Then, show the relationship between the Polity IV Score (lagged by 1 year) and FDI as percentage of GDP graphically for Algeria.
+Note 1: According to the Polity IV classification, a country is a democracy when it has an overall Polity IV score of 6 or higher, an autocracy with an overall score of -6 or lower, and anocracy for all remaining scores.
+
+Note 2: If you have the dataset in the same folder as your .Rnw file, you do not need to set a working directory when you compile your PDF.
 
 
 
@@ -52,9 +56,9 @@ Then, show the relationship between the Polity IV Score (lagged by 1 year) and F
 
 \paragraph{Do the following in R:}
 
-\subparagraph{a)} Find and download the most recent version of the \textit{National Accounts Data (na\_data) by the Penn World Tables} (Stata format) and its PDF documentation. Copy it into the same folder in which you work on the problem set. Load the dataset into R and display the summary statistics.
+\subparagraph{a)} Download the \textit{National Accounts Data (na\_data) by the Penn World Tables} and its PDF documentation which you can find on the course website under ``Meetings". Copy it into the same folder in which you work on the problem set. Load the dataset into R and display the summary statistics.
 
-Note: If you have the dataset in the same folder as your .Rnw file, you do not need to set a working directory when you compile your PDF. Note that you are not supposed to set a working directory as this might reveal your identity to the grader.
+Note: If you have the dataset in the same folder as your .Rnw file, you do not need to set a working directory when you compile your PDF.
 
 \subparagraph{b)} Create a new variable named \textit{gdpgrowth}. This new variable is meant to represent the real increase in economic output (gross domestic product, GDP) of a country compared to the last year in \textbf{percentage points (not in proportions)}.
 
@@ -66,13 +70,17 @@ Note 2: A proportion of 0.5 is 50 percent. The variable you create is meant to b
 
 
 
-\section*{Final Research Paper: Data Management and OVB}
+\section*{Final Research Paper: Data Management, Measurement Error, and Omitted Variable Bias}
 
 \subsection*{Problem 3 (4 points)}
 
 \paragraph{Please answer the following questions.}
 
-\subparagraph{} The goal of this problem is that you think carefully about the data that is available for your research project, especially how you can merge separate data sets. If data for variables you plan to use in your research is available for different units and time periods, this will create obstacles for your analysis. Additionally, part of this problem is a careful description of potential biases in your model that result from the omission of specific control variables, i.e. omitted variable bias (OVB).
+\subparagraph{} Please note that we will not be able to completely maintain anonymity here.
+
+The goal of this problem is that you think carefully about the data that is available for your final research project, especially how you can merge separate data sets. In general, you should ask yourself the following questions whenever you begin a new research project.
+
+If data for variables you plan to use in your research is available for different units and time periods, this will create obstacles for your analysis. Additionally, part of this problem is a careful description of potential problems with your model and results that are due to measurement error or omitted variable bias (OVB).
 
 \subparagraph{a)} Please state which variables you intend to use as dependent variable and key independent variable in your final paper. Explain briefly (2-3 sentences) how these two variables are linked theoretically from your perspective. Then answer the following questions:
 
@@ -81,9 +89,18 @@ Note 2: A proportion of 0.5 is 50 percent. The variable you create is meant to b
 	\item How many/which units and which time period do the data available cover?
 \end{enumerate}
 
-Note: It is not necessary to list all the units for which the data is covered. It is sufficient to provide an overview. For example, one could write here: "Data is available for the major developing countries, such as India and China, but not the OECD countries. The data covers the period 1970-1999 for most countries but shorer time periods for others."
+Note: It is not necessary to list all the units for which the data is covered. It is sufficient to provide an overview. For example, one could write here: ``Data is available for the major developing countries, such as India and China, but not the OECD countries. The data covers the period 1970-1999 for most countries but shorter time periods for others."
 
-\subparagraph{b)} Then, identify at least two (and up to four) important control variables that are not included in the same dataset as your dependent and/or independent variable. Explain briefly (2-3 sentences for each), with references to the literature that your paper is built upon and (if applicable) the statistical concept of omitted variable bias, why each of these control variables is important for your analysis. Additionally, for each of the control variables, please answer the following questions:
+\subparagraph{b)} Then, explain briefly (2-3 sentences for each) whether there could be measurement error in your data and why. If you believe that there could be measurement error in your variables, please make sure that you also answer the following questions:
+
+\begin{enumerate}
+	\item Is the possible measurement error systematic or stochastic?
+	\item Which consequences can the measurement error have for your results?
+\end{enumerate}
+
+If you do not believe that there could be measurement error in the specific variables that you intend to use, please generally describe the consequences of either a type of systematic or a type of stochastic measurement error.
+
+\subparagraph{c)} Then, identify at least two (and up to four) important control variables (that are potentially not included in the same dataset as your dependent and/or independent variable). Explain briefly (2-3 sentences for each), \textit{with references to the literature} that your paper is built upon and (if applicable) the statistical concept of omitted variable bias, why each of these control variables is important for your analysis. Additionally, for each of the control variables, please answer the following questions:
 
 \begin{enumerate}
 	\item Which dataset(s) contain these variables and how are they coded there? Is there any need to transform or recode the variables for a statistical analysis (linear regression)?
@@ -91,7 +108,9 @@ Note: It is not necessary to list all the units for which the data is covered. I
 	\item Are units and time coded in the same way in your control variable datasets? If not, how are they coded differently?
 \end{enumerate}
 
-Note: It is perfectly fine if you build upon and extend the answer that you gave in \textit{Problem Set 7: Short Research Outline}.
+Note 1: It is perfectly fine if you build upon and extend the answer that you gave in Problem Set 7.
+
+Note 2: If you have a dataset for which you cannot gather additional data, such as a random sample of individuals that cannot be contacted again, please nevertheless think about potentially omitted variables and how the omission might affect your results.
 
 
 
@@ -101,13 +120,32 @@ Note: It is perfectly fine if you build upon and extend the answer that you gave
 
 \paragraph{Please answer the following questions.}
 
-\subparagraph{a)} Write down the formula of your empirical model for your final paper, including your key independent variable and up to four control variables that you identified in the previous section.
+\subparagraph*{}
 
-\subparagraph{b)} Assuming that there is omitted variable bias for \textbf{one} of the control variables, please explain (for this variable only) using mathematical notation: (1) which influence the control variable potentially has on your dependent variable and key independent variable. (2) Which consequence the omission of this variable would therefore have, i.e. upwards or downwards bias on the estimated coefficient of your key independent variable.
+Assume that you want to find out what determines a country's military expenditures. You estimate the following model:
 
-Note 1: For this problem, it does not matter whether or not the control variable has this influence in reality. The purpose of this assignment is to illustrate the effect of omitted variable bias using mathematical notation.
+$ Y = \beta_0 + \beta{_1}X_1 + \beta{_2}X_2 + \beta{_3}X_3 + \beta{_4}X_4 + \beta{_5}X_5 + u$
 
-Note 2: Do not just state whether there is upward or downward bias but also support your statement with a (brief) mathematical explanation.
+\bigskip
+
+Where the variables represent the following concepts:
+
+\begin{center}
+	\begin{tabular}{ | l | r | }
+		\hline
+		$Y$ & Military Expenditures (Percent of GDP) \\ \hline
+		$X_1$ & Regime Type (Polity IV) \\ \hline
+		$X_2$ & External Military Threat \\ \hline
+		$X_3$ & Militaristic Ideology \\ \hline
+		$X_4$ & Size of the Arms Industry \\ \hline
+		$X_5$ & No. of Armed Conflicts in the Last Decade\\
+		\hline
+	\end{tabular}
+\end{center}
+
+\bigskip
+
+It is likely that militaristic ideology has an impact on both regime type and military expenditures. We would expect that it has a negative effect on regime type and a positive effect on military expenditures. If this expectation is true, what would happen if we omit $X_3$ from the regression? How would it affect our estimate of $\beta_1$ specifically? Show mathematically and explain carefully.
 
 
 

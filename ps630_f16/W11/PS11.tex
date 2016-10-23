@@ -1,0 +1,143 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{hyperref}
+\onehalfspacing
+
+
+
+\begin{document}
+
+\title{Pol Sci 630: Problem Set 11 - Imputation of Missing Data, Regression Diagnostics, and Simulations}
+
+\author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
+
+\date{Due Date: Wednesday, November 16th, 2016, 1.25 PM (Beginning of Class)}
+ 
+\maketitle 
+
+
+
+\paragraph{Note 1: It is absolutely essential that you show all your work, including intermediary steps, in your (mathematical) calculations and that you comment on your R code to earn full credit (you can comment on your R code both with the use of \# in the R code and in the \LaTeX \ code). Showing all steps and commenting on code will also be required in future problem sets.}
+
+\paragraph{Note 2: Please submit a PDF file created through knitr containing all your answers to the problem set. knitr allows you to combine R code and \LaTeX \ code in one document, meaning that you can include both the answers to R programming and math problems. Also submit the source code that generates the PDF file (i.e. the .Rnw file).}
+
+\paragraph{Note 3: Make sure that the PDF files you submit do not include any references to your identity. The grading will happen anonymously. You can submit your answer at the following website: \url{http://ps630-f15.herokuapp.com/}}
+
+
+
+\section*{R Programming}
+
+\subsection*{Problem 1 (4 points)}
+
+\paragraph{Do the following in R:}
+
+\subparagraph{} Load the \textit{LDC\_IO\_replication} dataset. Create a subset that contains the following countries only: Brazil, Jamaica, Kuwait, Hong Kong, and the Kyrgyz Republic. Then, keep only the variables in your dataset that you need for the following regression in this problem (problem 1).
+
+\bigskip
+
+Before you impute any missing data, estimate a linear regression with the following characteristics and show the results:
+
+\begin{enumerate}
+	\item Dependent variable: net changes in FDI as percentage of GNP
+	\item Independent variables: tariff Level, GDP per capita, Polity score
+	\item There is no need to use lagged versions of the independent variables or country dummies in this regression.
+\end{enumerate}
+
+\bigskip
+
+Then, load the \textit{Amelia} package and the \textit{Zelig} package. In order to limit the length of the PDF document that we produce as homework PDF file, please hide this part of the code entirely by using the following command:
+\begin{verbatim}
+<<include=FALSE>>=
+\end{verbatim}
+
+Use \textit{Amelia} to impute the missing values of all variables in the dataset. In order to limit the length of the PDF document that we produce as homework PDF file, please hide the output of the code by using the following command:
+\begin{verbatim}
+<<results='hide'>>=
+\end{verbatim}
+
+Once you have imputed the missing values, use \textit{Zelig} to run the a new regression with the same characteristics as above and show the regression summary.
+
+Then, answer the following questions: Has the imputation of data changed the results? Are the results that we obtain from the imputed data more or less accurate (i.e. closer to the truth) than the results that we got in the first regression?
+
+
+
+\subsection*{Problem 2 (4 points)}
+
+\paragraph{Do the following in R:}
+
+\subparagraph{} Load the \textit{LDC\_IO\_replication} dataset again to make sure that you are not limited to a subset like in the previous task.
+
+\bigskip
+
+Estimate a linear regression with the following characteristics and show the results:
+
+\begin{enumerate}
+	\item Dependent variable: net changes in FDI as percentage of GNP
+	\item Independent variables: Polity score, GDP per capita, natural log of population
+	\item Please use lagged versions of the independent variables (lagged by 1 year).
+	\item There is no need to use country dummies in this regression.
+\end{enumerate}
+
+\bigskip
+
+For the regression above, create a component plus residual plot and interpret it.
+
+\bigskip
+
+Then, for the same regression,  conduct a \textit{Ramsey RESET Test for Functional Form Misspecification} with respect to the 2nd and 3rd power of your independent variables and interpret the results.
+
+
+
+\subsection*{Problem 3 (4 points)}
+
+\paragraph{Do the following in R:}
+
+\subparagraph{} Create a subset of the LDC dataset that has complete cases for the variables of the following regression. Then, estimate a linear regression with the following characteristics and show the results:
+
+\begin{enumerate}
+	\item Dependent variable: tariff level
+	\item Independent variables: Polity score, signing of IMF agreements, the number of years a government has been in office, GDP per capita, natural log of population, economic crisis, balance-of-payment crisis
+	\item Please use lagged versions of the independent variables (lagged by 1 year).
+\end{enumerate}
+
+\bigskip
+
+Create 1000 simulations of this model. Before you create the 1000 simulations, please use the following command:
+
+\begin{verbatim}
+set.seed(2015)
+\end{verbatim}
+
+Then, use the model simulations to graphically show the linear effect of the Polity score (lagged by 1 year) on tariff levels under all estimated coefficient values. For all of these graphical representations, hold the other variables of the regression at their mean value.
+
+\bigskip
+
+Note: In the tutorial we held all other variables at the value 0. Here you are explicitly asked to hold them at their mean value.
+
+
+\pagebreak
+
+\subsection*{Problem 4 (4 points)}
+
+\paragraph{Do the following in R:}
+
+\subparagraph{} Continue to use the full LDC dataset and the regression estimated in problem 3 (with lagged independent variables).
+
+The goal of this problem is to compare the substantive effects of two different independent variables using model simulations and averaging over our entire data. Please create a new plot for the average predictive comparison of the effects of the following variables:
+
+\begin{enumerate}
+	\item The Polity score
+	\item GDP per capita
+\end{enumerate}
+
+Please compare the effect that each of the above variables has when it increases from its 25th percentile value to its 75th percentile value.
+
+Please interpret the findings and make a statement about which variable appears to have the larger substantive effect on tariff level.
+
+
+
+\end{document}

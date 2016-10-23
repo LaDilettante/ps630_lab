@@ -37,7 +37,18 @@
 
 \subparagraph{a)} Load the \textit{swiss} dataset in R via the command \textit{data(swiss)}. According to the documentation this is data on ``Standardized fertility measure and socio-economic indicators for each of 47 French-speaking provinces of Switzerland at about 1888". Display the summary statistics for every variable in the dataset.
 
-We are interested in how the level of ``Education" is related to the other variables. For this purpose, use the \textit{lm} (linear model) function to estimate a regression of \textit{Education} on all other variables in the dataset.
+Here is a description of each of the variables:
+
+\begin{enumerate}
+	\item \textit{Fertility}: Ig, ‘common standardized fertility measure’
+	\item \textit{Agriculture}: \% of males involved in agriculture as occupation
+	\item \textit{Examination}: \% draftees receiving highest mark on army examination
+	\item \textit{Education}: \% education beyond primary school for draftees.
+	\item \textit{Catholic}: \% ‘catholic’ (as opposed to ‘protestant’).
+	\item \textit{Infant.Mortality}: live births who live less than 1 year.
+\end{enumerate}
+
+We are interested in how the level of \textit{Education} is related to the other variables. For this purpose, use the \textit{lm} (linear model) function to estimate a regression of \textit{Education} on all other variables in the dataset.
 
 \subparagraph{b)} Produce a table of the results via the R package \textit{stargazer} and include it in your document. Interpret the results for every variable in the linear model. Be specific about marginal effects and the meaning of p-values. State at which levels of significance each estimated coefficient is statistically significant. Then, interpret the $R^2$ statistic and the F-statistic.
 
@@ -50,17 +61,19 @@ We are interested in how the level of ``Education" is related to the other varia
 \subparagraph{a)} Load the \textit{VOTE1} dataset that you can find on the course website under ``meetings". This dataset contains information on elections of the United States House of Representatives. Each election has one incumbent party A and one challenger party B. Display the summary statistics of \textit{all variables} and explicitly describe the summary statistics of the \textit{following variables}:
 
 \begin{enumerate}
-	\item VoteA (the vote share that party A, the incumbent party, gained in the election)
-	\item expendA (the expenditures that party A, the incumbent, had in the election)
-	\item expendB (the expenditures that party B, the challenger, had in the election)
-	\item partystrA (the strength of party A, the incumbent party)
+	\item \textit{voteA}: the vote share that party A, the incumbent party, gained in the election
+	\item \textit{expendA}: the expenditures that party A, the incumbent, had in the election
+	\item \textit{expendB}: the expenditures that party B, the challenger, had in the election
+	\item \textit{prtystrA}: the strength of party A, the incumbent party
 \end{enumerate}
 
 We are interested in the relationship between \textit{the vote share that party A received}, and other variables in the dataset.
 
 Which of the above factors may influence the vote share that party A receives and in which way? Consider all of the above variables. Choose one of them \textit{before} running any model and explain which kind of relationship---positive, negative, or no influence---you would expect. Make a succinct claim and formulate a hypothesis that you can test empirically.
 
-Note: Your claim does not have to be true. Just do your best to make a plausible claim. Your claim itself will not be evaluated, just your empirical test of it.
+Note 1: Your claim does not have to be true. Just do your best to make a plausible claim. Your claim itself will not be evaluated, just your empirical test of it.
+
+Note 2: If you have the dataset in the same folder as your .Rnw file, you do not need to set a working directory when you compile your PDF. Note that you are not supposed to set a working directory as this might reveal your identity to the grader.
 
 \subparagraph{b)} Run a linear regression with the variable you chose as the main predictor variable (independent variable). Include the other variables as control variables.
 

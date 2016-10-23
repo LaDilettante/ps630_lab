@@ -12,21 +12,17 @@
 
 \begin{document}
 
-\title{Pol Sci 630: Problem Set 9 - Data Management and Omitted Variable Bias - Solutions}
+\title{Pol Sci 630: Problem Set 8 - Data Management and Omitted Variable Bias - Solutions}
 
 \author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
-\date{Grading Due Date: Friday, October 30th, 12.00 PM (Beginning of Lab)}
+\date{Grading Due Date: Friday, October 28th, 1.40 PM (Beginning of Lab)}
  
 \maketitle
 
 
 
-\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 4/4 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was.}
-
-\bigskip
-
-\textbf{Use the following scheme to assign points: For problems that were solved correctly in their entirety, assign the full point value of 4. For correctly solved bonus problems, add that value to the total score for a problem but do not go above 4 points per problem. If there are mistakes in any problem, subtract points according to the extent of the mistake. If you subtract points, explain why.}
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: ``GRADER COMMENT: everything is correct!" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
 
 \bigskip
 
@@ -36,7 +32,7 @@
 
 \textbf{and the following lines above the solution of the specific task:}
 
-\begin{verbatim} \textbf{\color{red} GRADER COMMENT: everything is correct! - 4/4 Points} \end{verbatim}
+\begin{verbatim} \textbf{\color{red} GRADER COMMENT: everything is correct!} \end{verbatim}
 
 
 
@@ -48,11 +44,56 @@
 
 <<results='show',tidy=TRUE>>=
 ### a
-setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16/W8')
+
 library(foreign)
+
+vote1 = read.dta("VOTE1.dta")
+
+vote1$expendA_sq = (vote1$expendA)^2
+
+summary(vote1)
+
+lm_vote_curv=lm(voteA ~ expendA + expendA_sq + expendB + prtystrA, data=vote1)
+
+summary(lm_vote_curv)
+
+
+
+### b
+
+nd = data.frame(expendA=seq(min(vote1$expendA),max(vote1$expendA),length.out=11), expendB=rep(mean(vote1$expendB),11), prtystrA=rep(mean(vote1$prtystrA),11), expendA_sq=seq(min(vote1$expendA),max(vote1$expendA),length.out=11)^2)
+
+max(vote1$expendA_sq)
+
+nd
+
+pred.p1 = predict(lm_vote_curv, type="response", se.fit=TRUE, newdata=nd)
+pred.table = cbind(pred.p1$fit, pred.p1$se.fit)
+pred.table
+
+fit = pred.p1$fit
+low = pred.p1$fit - 2*pred.p1$se.fit
+high = pred.p1$fit + 2*pred.p1$se.fit
+cis = cbind(fit, low, high)
+
+plot(pred.p1$fit, type="l", ylim=c(min(cis),max(cis)), main="Incumbent Party Vote Share and Incumbent Expenditures", 
+     xlab="Incumbent Expenditures", ylab="Incumbent Vote Share", axes=FALSE)
+axis(1, at=seq(1,11), labels=round(seq(min(vote1$expendA),max(vote1$expendA),length.out=11)))
+axis(2, at=seq(min(cis),max(cis), by=((max(cis)-min(cis))/11)), labels=round(seq(min(cis),max(cis), by=((max(cis)-min(cis))/11))))
+matlines(cis[,c(2,3)], lty=2, col="black")
+
+
+
+### c
+
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16/')
+
 LDC = read.dta("LDC_IO_replication.dta")
 
 LDC$regime_class=NA
+
 LDC$regime_class[LDC$polityiv_update2 > 5]="Democracy"
 unique(LDC$regime_class)
 
@@ -61,31 +102,6 @@ unique(LDC$regime_class)
 
 LDC$regime_class[LDC$polityiv_update2 < -5] = "Autocracy"
 unique(LDC$regime_class)
-
-
-### b
-
-LDC$l1polity=LDC$l1polity+10
-LDC$l1polity_squared=(LDC$l1polity)^2
-
-lm_fdi2=lm(fdignp ~ l1polity + l1polity_squared + l1signed + l1office + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
-summary(lm_fdi2)
-
-nd <- data.frame(l1polity=seq(0,20,by=1), l1polity_squared=seq(0,20,by=1)^2, l1signed=rep(0.1511,21), l1office=rep(8.431,21), l1gdp_pc=rep(2888,21), l1lnpop=rep(15.10,21), l1ecris2=rep(0.0641,21), l1bpc1=rep(0.5909,21), l1avnewtar=rep(14.91,21), ctylabel=rep("Angola",21))
-
-pred.p1 <- predict(lm_fdi2, type="response", se.fit=TRUE, newdata=nd)
-pred.table <- cbind(pred.p1$fit, pred.p1$se.fit)
-
-fit <- pred.p1$fit
-low <- pred.p1$fit - 2*pred.p1$se.fit
-high <- pred.p1$fit + 2*pred.p1$se.fit
-cis <- cbind(fit, low, high)
-
-plot(pred.p1$fit, type="l", ylim=c(20,50), main="Polity IV Score and FDI (% GDP) (Angola)", 
-     xlab="Polity IV Score", ylab="FDI (% of GDP)", axes=FALSE)
-axis(1, at=seq(1,21), labels=seq(-10,10,1))
-axis(2, at=seq(20,50), labels=seq(20,50))
-matlines(cis[,c(2,3)], lty=2, col="black")
 @
 
 Note: It is possible to take the mean values from a subset of the dataset that only contains complete cases (with values of all independent variables available). However, the effect of the Polity IV Score will not be affected by different values of the control variables because we keep those values constant in either case. Therefore, it is fine but not necessary to take the mean values from a subset with complete cases.
@@ -98,7 +114,7 @@ Note: It is possible to take the mean values from a subset of the dataset that o
 
 <<results='show',tidy=TRUE>>=
 ### a
-setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16/')
 library(readstata13)
 na_data=read.dta13("na_data.dta")
 summary(na_data)
@@ -141,7 +157,17 @@ Make sure that the students has done the following things:
 	\item The students has briefly discussed the numbers of units and the time periods covered by the datasets. Note that the discussion does not have to be extensive. (See problem set for an example)
 \end{enumerate}
 
-\paragraph*{b)} As grader, please make sure that the person who has submitted the homework has answered all questions of this problem. This includes a brief theoretical explanation for the importance of at least two control variables that the student suggests to use for the final paper. For all control variables there should be a brief reference to either literature that has explained the theoretical impact of the variable, the concept of omitted variable bias, or both.
+\paragraph*{b)} As grader, please make sure that the person who has submitted the homework has answered all questions of this problem. This includes a brief explanation of whether or not there could be measurement error in the data. If the student believes that there is no measurement error, a justification has to be given. If the student believes that there is measurement error, make sure that the students has done the following things:
+
+\begin{enumerate}
+  \item The student has explained whether there is systematic or stochastic measurement error.
+  \item If the student believes that there is systematic error, the student has further elaborated on whether this bias occurs with respect to the constant or a variable, and what the specific consequences are (shifts in intercepts and descriptive stats or bias in the regression line respectively).
+  \item If the student believes that there is stochastic error, the student has further elaborated on whether this bias occurs with respect to the dependent or independent variable and what the specific consequences are (higher levels of uncertainty caused by higher absolute error values and attenuation bias respectively).
+\end{enumerate}
+
+Please generally make sure that the student has described the consequences of one type of error, even if the student believes that there is no measurement error (as is asked for in the task itself).
+
+\paragraph*{c)} As grader, please make sure that the person who has submitted the homework has answered all questions of this problem. This includes a brief theoretical explanation for the importance of at least two control variables that the student suggests to use for the final paper. For all control variables there should be a brief reference to either literature that has explained the theoretical impact of the variable, the concept of omitted variable bias, or both.
 
 Important: when a reference to the concept of omitted variable bias is made (as the justification for the inclusion of a control variable), it is most important that the student has recognized that the \textbf{variable in question must have an influence on both the dependent and the independent variable}. Otherwise we cannot speak of the phenomenon of OVB.
 
@@ -154,17 +180,16 @@ Make sure that the students has done the following things:
 	\item The students has addressed differences in the coding of time periods and units. For example, the names of countries may be coded as full names in one dataset while another dataset uses 3-letter isocodes to refer to countries. Another example would be that time in one dataset could be coded in the format YYYY-MM (Y = year, M = month) while it could be coded in the format YY-MM in another dataset.
 \end{enumerate}
 
+Please note that, in accordance with the task, if the student has a dataset for which no additional data can be gathered (such as individuals that were randomly selected and cannto be identified again), it is sufficient to carefully considerpotential omitted variables and how their absence might influence the results. In this case, no other datasets have to be discussed.
 
 
 \section*{Statistical Theory: Omitted Variable Bias}
 
 \subsection*{Problem 4}
 
-\subparagraph{a)} In this section, each student is expected to write down the mathematical formula of the linear regression that he or she intends to estimate in their final project. For example, the student could be interested in how the regime type of a country influences its military expenditures.
+\subparagraph{} Please recall that our regression was given as:
 
-In this case the regression could look like this:
-
-$ Y = \alpha + \beta{_1}X_1 + \beta{_2}X_2 + \beta{_3}X_3 + \beta{_4}X_4 + \beta{_5}X_5 + \epsilon$
+$Y = \alpha + \beta{_1}X_1 + \beta{_2}X_2 + \beta{_3}X_3 + \beta{_4}X_4 + \beta{_5}X_5 + \epsilon$
 
 \bigskip
 
@@ -185,17 +210,7 @@ Where the variables represent the following concepts:
 
 \bigskip
 
-Note that you have to include the $\epsilon$ for the error term if you use "Y" in your notation. Alternatively, you can also use $\hat{Y}$ (Y-hat) in your notation. In the latter version, however, you are not allowed to include the error term because the \textit{predicted values of Y} (denoted by $\hat{Y}$) solely depend on the linear combination of the independent variables, not the error term. Recall that the error term is in fact the difference between Y and $\hat{Y}$. So the alternative regression would look like this:
-
-$ \hat{Y} = \alpha + \beta{_1}X_1 + \beta{_2}X_2 + \beta{_3}X_3 + \beta{_4}X_4 + \beta{_5}X_5$
-
-\bigskip
-
-Note that it is also perfectly fine if you write out the variable names instead of using placeholder variables such as $Y$, $X_1$, or $X_2$. If you use placeholder names, it would be necessary to add some explanation like above to make it clear to the reader which real-world measurements/concepts you are referring to.
-
-
-
-\subparagraph{b)} The concept of omitted variable bias requires that the omitted variable is correlated with both the dependent variable and the independent variable of interest. In the case above, for example, one might argue that militaristic ideology has an impact on both military expenditures and regime type. The argument here could be that a high level of militaristic ideology supports authoritarian regimes and thus has a negative effect on regime type measured through the Polity IV Score. Additionally, we would expect that military ideology has a positive effect on military expenditures as percentage of GDP. Mathematically these statements would mean:
+We expect that militaristic ideology is negatively correlated with democracy. Additionally, we expect that military ideology has a positive effect on military expenditures. Mathematically these statements would mean:
 
 \bigskip
 
@@ -248,7 +263,7 @@ Notice that the $\beta{_3} > 0$ because $Cov(Y, X_3) > 0$. However, $Cov(X_1, X_
 
 \bigskip
 
-$\lambda{_1}$ = $\beta{_1}$ + Positive Term $* \dfrac{Negative Term}{Var(X_1)}$
+$\lambda{_1}$ = $\beta{_1}$ + Positive Term $* \dfrac{Negative \ Term}{Var(X_1)}$
 
 \bigskip
 
@@ -256,7 +271,7 @@ Because the variance of any variable is positive as long as there is more than o
 
 \bigskip
 
-If you are grading someone else's problem set, please note that if we have the following variables:
+Please recall that, generally, if we have the following variables:
 
 \begin{center}
   \begin{tabular}{ | l | r | }

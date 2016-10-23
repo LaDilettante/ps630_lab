@@ -1,5 +1,5 @@
 ---
-title: "Tutorial 8: Data Management and Two-Stage Least Squares (2SLS) Regression"
+title: "Tutorial 8: Data Management and Measurement Error"
 author: "Jan Vogler (jan.vogler@duke.edu)"
 date: "October 21, 2016"
 output: pdf_document
@@ -11,7 +11,7 @@ output: pdf_document
 2. Data management II: data transformation
 3. Data management III: creating new variables
 4. Data management IV: useful commands
-5. Two-stage least squares (2SLS) regression
+5. Measurement error
 
 
 
@@ -20,7 +20,7 @@ output: pdf_document
 R can save its own datafiles. Those will have the format ".Rdata". In order to load such a dataset, you can simply use the load command.
 
 ```{r,tidy=TRUE,error=TRUE,results="hide"}
-setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w9/')
+setwd("C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16/W8/")
 load("filename.Rdata")
 ```
 
@@ -51,7 +51,7 @@ library(foreign)
 statadata = read.dta("filename.dta")
 ```
 
-For data files that were saved by the most recent version of Stata (13), you will need another package called "readstata13". Please use the following command to install it:
+For data files that were saved by the more recent versions of Stata (13 and above), you will need another package called "readstata13". Please use the following command to install it:
 
 install.packages("readstata13")
 
@@ -60,10 +60,10 @@ library(readstata13)
 read.dta13("filename.dta")
 ```
 
-Let us now read our LDC dataset.
+Let us now read the LDC dataset.
 
 ```{r,tidy=TRUE}
-setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+setwd("C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16/")
 LDC=read.dta("LDC_IO_replication.dta")
 ```
 
@@ -154,7 +154,7 @@ What would you do if you have multiple datafiles that all have a similar name. H
 Let's assume we have 1000 different individuals and their files have similar names. How can we load those files without writing 1000 separate commands for loading the data?
 
 ```{r,tidy=TRUE}
-setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w9/')
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16/W8/')
 ind.files = dir(pattern = "ind\\d+.sav")
 # This command allows us to get the names of the datafiles
 # Note that \\d+ is a so-called "regular expression"
@@ -183,7 +183,7 @@ We can transform variables in a number of ways. One of the most common ways to t
 In order to make the square meaningful, we first have to add +10 to all Polity Scores (otherwise negative squares would get the same positive values as the positive square).
 
 ```{r,tidy=TRUE}
-setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16/')
 LDC=read.dta("LDC_IO_replication.dta")
 LDC$polityiv_update2=LDC$polityiv_update2+10
 LDC$l1polity=LDC$l1polity+10
@@ -241,7 +241,7 @@ What do we do if the data is not in the format in which we want it to be?
 Let us look at a dataset that deals with lotteries in different states.
 
 ```{r,tidy=TRUE}
-setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w9/')
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16/W8/')
 prize=read.csv("Lottery Prize Amounts Awarded.csv", stringsAsFactors=FALSE)
 tickets=read.csv("Lottery Ticket Sales.csv", stringsAsFactors=FALSE)
 
@@ -351,6 +351,25 @@ for (i in 2:length(LDC$polityiv_update2)){
 
 # 4. Data management IV: useful commands
 
+The following command allows you to aggregate data.
+
+We will aggregate the maximum (FUN = max) of FDI by country (l1fdi ~ ctylabel).
+
+```{r}
+FDImax=aggregate(formula = l1fdi ~ ctylabel, data = LDC, FUN = max)
+FDImax
+```
+
+We can also use other functions, such as "min" or "mean".
+
+```{r}
+FDImin=aggregate(formula = l1fdi ~ ctylabel, data = LDC, FUN = min)
+FDImin
+
+FDImean=aggregate(formula = l1fdi ~ ctylabel, data = LDC, FUN = mean)
+FDImean
+```
+
 Here are some more useful commands for data management:
 
 ```{r,tidy=TRUE}
@@ -381,62 +400,22 @@ quantile(LDC$newtar,p=c(0.1,0.9), na.rm=T)
 
 
 
-# 5. Two-Stage Least Squares (2SLS) Regression
+# 5. Measurement error
 
-Two-stage least squares regression is an important tool when we believe that there is a high level of endogeneity in our model. Endogeneity refers to a situation in which there is a mutual influence of our dependent and independent variables (feedback loop).
+Let us discuss measurement error and how it can influence our research results.
 
-In one of our last sessions, we looked at the influence of economic development on the level of democracy. But what if there is (on average) better economic growth in democratic political systems? This would result in a feedback loop as described above.
+In order to do this we will use a dataset that contains teaching ratings of professors.
 
-Let us use the LDC dataset to illustrate 2SLS regression.
+Description: "TeachingRatings contains data on course evaluations, course characteristics, and professor characteristics for 463 courses for the academic years 2000-2002 at the University of Texas at Austin."
+
+Let us look at some of the variables and think about what kind of measurement error we could observe here.
 
 ```{r,tidy=TRUE}
-setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/')
 library(foreign)
-LDC = read.dta("LDC_IO_replication.dta")
-model1=lm(polityiv_update2 ~ l1gdp_pc, data=LDC)
-summary(model1)
+tr=read.dta("TeachingRatings.dta")
+summary(tr)
 ```
 
-In this regression we might have the problem of endogeneity.
+What problems related to measurement error can you think of?
 
-When we use 2SLS regression, we identify an instrument that we believe to not be correlated with our dependent variable of interest, but to have an influence on our independent variable. With this method, we can isolate the effect that our independent variable has through our instruments.
-
-We will use a package called "Zelig" to estimate a 2SLS regression.
-
-Y = Democracy Level (dependent variable)
-
-X = GDP per capita (explanatory variable)
-
-I = FDI inflows (instrument variable)
-
-Note that these claims contradict the theoretical claims made in tutorial 7. So please just treat this as a demonstration of how to set up such a regression.
-
-install.packages("Zelig")
-
-library(Zelig)
-
-```{r,tidy=TRUE,results="hide",include=FALSE}
-library(Zelig)
-```
-
-```{r,tidy=TRUE}
-formula_inst <- list ("mu1" = polityiv_update2 ~ l1gdp_pc,
-                   "mu2" = l1gdp_pc ~ l1fdi,
-                   "inst" = ~ l1fdi)
-model2 = zelig(formula = formula_inst, model = "twosls", data = LDC)
-summary(model2)
-```
-
-How would we interpret these results? How are they different from the results obtained by OLS?
-
-An alternative approach is using the ivreg function in R. For this we need the AER package.
-
-install.packages("AER")
-
-```{r,tidy=TRUE}
-library(AER)
-model3 = ivreg(polityiv_update2 ~ l1gdp_pc | l1fdi, data=LDC)
-summary(model3)
-```
-
-The instrument here is on the right (l1fdi).
+What are other examples of measurement error that you can think of?

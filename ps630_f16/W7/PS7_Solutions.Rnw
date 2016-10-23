@@ -16,8 +16,8 @@
 
 \author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
-\date{Grading Due Date: Friday, October 7th, 1.40 PM (Beginning of Lab)}
- 
+\date{Grading Due Date: Friday, October 21st, 1.40 PM (Beginning of Lab)}
+
 \maketitle
 
 
@@ -30,7 +30,9 @@
 
 \begin{verbatim} \usepackage{color} \end{verbatim}
 
-\\ \textbf{and the following lines above the solution of the specific task:}
+\bigskip
+
+\textbf{and the following lines above the solution of the specific task:}
 
 \begin{verbatim} \textbf{\color{red} GRADER COMMENT: everything is correct!} \end{verbatim}
 
@@ -42,180 +44,187 @@
 
 \subsection*{Problem 1}
 
-
-\paragraph{a)} In this task you have to formulate a hypothesis regarding the relationship of one variable and the vote share of party A. For example, you could claim that a higher level of expenditures of party A lead to a higher vote share because with more resources at its disposal, party A can air more advertisements, reach more voters, and mobilize more of its supporters.
-
-Hypothesis: For an increase in the expenditures of party A, we expect an increase in the vote share of party A. (Regardless of which variable you choose, your hypothesis should look similar to this one.)
-
-\paragraph{b)} 
+\paragraph{a)}
 
 <<results='show',tidy=TRUE>>=
-### b
 library(foreign)
 vote1=read.dta("VOTE1.dta")
 summary(vote1)
 
-lm_vote=lm(voteA ~ expendA + expendB + prtystrA + factor(state)-1, data = vote1)
+# Regular model
+
+lm_vote=lm(voteA ~ expendA + expendB + prtystrA, data = vote1)
 
 summary(lm_vote)
 
-lm_vote=lm(voteA ~ expendA + expendB + prtystrA + prtystrA*expendA, data = vote1)
+# Regular model
+
+lm_vote_fe=lm(voteA ~ expendA + expendB + prtystrA + factor(state)-1, data = vote1)
+
+summary(lm_vote_fe)
 @
 
-Let us interpret our findings for the hypothesis above:
+\paragraph{b)} 
 
-\textit{expendA}: For a 1-point increase in the expenditures of party A, we expect a 0.0349 (0.03) increase in the the vote share of party of party A, holding all other variables constant. The associated p-value of $p < 0.001$ means that this relationship is statistically significant at all common levels of statistical significance. This means that there is strong support  for the hypothesis that increases in the expenditures of A increase its vote share.
+There are clear differences between the regular model and the model that uses fixed effects. While the direction of all coefficients stays the same, meaning that it is positive for incumbent expenditures, negative for challenger expenditures, and positive for party strength, we observe differences in both their absolute value and their statistical significance.
 
-The $R^2$ statistic shows us that our model explains 56.87 percent (multiple $R^2$) or 56.1 percent (adjusted $R^2$) of the variation in the dependent variable. The adjusted $R^2$ is smaller because we are penalized for every variable that is introduced into our model.
+While the coefficients of all three variables are significant at all common levels in the regular model, in the fixed effects the coefficient of incumbent expenditures is significant only at $\alpha < 0.1$ and the coefficient of challenger expenditures is significant at $\alpha < 0.05$. However, the coefficient of incumbent party strength remains significant at all common levels ($\alpha < 0.001$).
 
-The F-statistic shows us that the joint statistical significance of the variables in our model when predicting levels of FDI inflows is high. With a p-value of $p < 0.001$, our model has an overall predictive capability that is significant at all common levels of statistical significance.
+The introduction of fixed effects means that we control for the state in which the election takes place. This has two important consequences. The first one is that  we compare elections within states to each other by introducing a state-specific average. The second is that we introduce a number of dummy variables to our model that each represent one state.
 
-\paragraph{c)} 
 
-\begin{table}[!htbp] \centering 
-  \caption{} 
-  \label{} 
-\begin{tabular}{@{\extracolsep{5pt}}lc} 
-\\[-1.8ex]\hline 
-\hline \\[-1.8ex] 
- & \multicolumn{1}{c}{\textit{Dependent variable:}} \\ 
-\cline{2-2} 
-\\[-1.8ex] & voteA \\ 
-\hline \\[-1.8ex] 
- expendA & 0.035$^{***}$ \\ 
-  & (0.003) \\ 
-  & \\ 
- expendB & $-$0.035$^{***}$ \\ 
-  & (0.003) \\ 
-  & \\ 
- prtystrA & 0.343$^{***}$ \\ 
-  & (0.088) \\ 
-  & \\ 
- Constant & 33.267$^{***}$ \\ 
-  & (4.417) \\ 
-  & \\ 
-\hline \\[-1.8ex] 
-Observations & 173 \\ 
-R$^{2}$ & 0.569 \\ 
-Adjusted R$^{2}$ & 0.561 \\ 
-Residual Std. Error & 11.121 (df = 169) \\ 
-F Statistic & 74.267$^{***}$ (df = 3; 169) \\ 
-\hline 
-\hline \\[-1.8ex] 
-\textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
-\end{tabular} 
-\end{table} 
+
+\subsection*{Problem 2}
+
+\paragraph{a)}
+
+<<results='show',tidy=TRUE>>=
+lm_vote_int=lm(voteA ~ expendA + expendB + prtystrA + prtystrA*expendA, data = vote1)
+
+summary(lm_vote_int)
+@
+
+\paragraph{b)}
+
+Please note:
+
+\begin{enumerate}
+  \item IVS = incumbent vote share
+  \item IPS = incumbent party strength
+  \item IPE = incumbent party expenditures
+  \item CPE = challenger party expenditures
+\end{enumerate}
+
+When IPS is at a value of 0, for a 1-unit increase in IPE, we would expect a 9.071-unit increase in IVS. The base term of IPE is statistically significant at all common levels ($\alpha < 0.001).
+
+Generally, for a 1-unit increase in IPE, we would expect a $9.071 - 0.002 * IPS$ increase in IVS. The interaction term of IPE and IPS is statistically significant at all common levels ($\alpha < 0.001).
+
+For a 1-unit increase in CPE, we would expect a 0.034 decrease in IVS. This relationship is statistically significant at all common levels ($\alpha < 0.001$).
+
+When IPS is at a value of 0, for a 1-unit increase in IPE, we would expect a 0.823 unit increase in IVS. The base term of IPE is statistically significant at all common levels ($\alpha < 0.001).
+
+Generally, for a 1-unit increase in IPS, we would expect a $0.823 - 0.002 * IPE$ increase in IVS. The interaction term of IPE and IPS is statistically significant at all common levels ($\alpha < 0.001).
+
+
+
+\paragraph{c)}
+
+<<results='show',tidy=TRUE>>=
+library(interplot)
+interplot(m = lm_vote_int, var1 = "expendA", var2 = "prtystrA") +
+xlab("Incumbent Party Strength") +
+ylab("Marginal Effect of Incumbent Expenditures") +
+ggtitle("Marginal Effects of Incumbent Expenditures") +
+theme(plot.title = element_text(face='bold', size=12),
+      axis.title=element_text(size=10,face="bold"),
+      axis.text=element_text(size=8,color="Black"))
+
+library(interplot)
+interplot(m = lm_vote_int, var1 = "prtystrA", var2 = "expendA") +
+xlab("Incumbent Expenditures") +
+ylab("Marginal Effect of Incumbent Party Strength") +
+ggtitle("Marginal Effects of Incumbent Party Strength") +
+theme(plot.title = element_text(face='bold', size=12),
+      axis.title=element_text(size=10,face="bold"),
+      axis.text=element_text(size=8,color="Black"))
+
+library(coefplot)
+buildModelCI(lm_vote_int)
+coefplot(lm_vote_int, coefficients=c("expendA","prtystrA","expendA:prtystrA"), point=T) +
+  theme(axis.text.x  = element_text(angle=90))
+
+coefplot(lm_vote_int, coefficients=c("expendA:prtystrA"), point=T) +
+  theme(axis.text.x  = element_text(angle=90))
+
+quantile(vote1$expendA, probs=c(0.05,0.95), na.rm=TRUE)
+nd1 = data.frame(prtystrA=seq(min(vote1$prtystrA), max(vote1$prtystrA),length.out=10), expendA=rep(8.1354,10), expendB=rep(mean(vote1$expendB),10))
+nd2 = data.frame(prtystrA=seq(min(vote1$prtystrA), max(vote1$prtystrA),length.out=10), expendA=rep(816.2566,10), expendB=rep(mean(vote1$expendB),10))
+
+pred.p1 = predict(lm_vote_int, type="response", se.fit=TRUE, newdata=nd1)
+pred.p2 = predict(lm_vote_int, type="response", se.fit=TRUE, newdata=nd2)
+
+pred.table1 = cbind(pred.p1$fit, pred.p1$se.fit)
+pred.table2 = cbind(pred.p2$fit, pred.p2$se.fit)
+
+max(pred.table1)
+max(pred.table2)
+
+min(pred.table1)
+min(pred.table2)
+
+plot(pred.p1$fit, type="l", ylim=c(0,100), main="Predicted Values: Incumbent Vote Share", xlab="Incumbent Party Strength", ylab="Incumbent Vote Share", axes=FALSE, col="blue", lwd=2.5)
+axis(1, at=seq(1,10), labels=round(seq(min(vote1$prtystrA), max(vote1$prtystrA),length.out=10), digits=2))
+axis(2, at=seq(0,100,by=10), labels=seq(0,100,by=10))
+
+# Add lines
+
+lines(pred.p1$fit, col="blue", lwd=2.5)
+lines(pred.p2$fit, col="red", lwd=2.5)
+
+# Add legend
+
+legend("bottomright", c("Low Incumbent Expenditures","High Incumbent Expenditures"), lty=1, lwd=2, col=c("blue", "red"), bty="n", cex=1.25)
+
+# Add confidence intervals
+
+fit1 = pred.p1$fit
+low1 = pred.p1$fit - 2*pred.p1$se.fit
+high1 = pred.p1$fit + 2*pred.p1$se.fit
+cis1 = cbind(fit1, low1, high1)
+
+fit2 = pred.p2$fit
+low2 = pred.p2$fit - 2*pred.p2$se.fit
+high2 = pred.p2$fit + 2*pred.p2$se.fit
+cis2 = cbind(fit2, low2, high2)
+
+matlines(cis1[,c(2,3)], lty=2, col="blue")
+matlines(cis2[,c(2,3)], lty=2, col="red")
+@
 
 \paragraph{d)}
 
-Finally, we show the effect graphically:
-
-<<results='show',tidy=TRUE>>=
-### We create a new dataframe with the average values for every variable and vary Polity IV
-nd <- data.frame(expendA=seq(min(vote1$expendA),max(vote1$expendA),length.out=11), expendB=rep(mean(vote1$expendB),11), prtystrA=rep(mean(vote1$prtystrA),11))
-
-pred.p1 <- predict(lm_vote, type="response", se.fit=TRUE, newdata=nd)
-
-pred.table <- cbind(pred.p1$fit, pred.p1$se.fit)
-
-fit <- pred.p1$fit
-low <- pred.p1$fit - 2*pred.p1$se.fit
-high <- pred.p1$fit + 2*pred.p1$se.fit
-cis <- cbind(fit, low, high)
-
-cis ### To extract the values
-
-plot(pred.p1$fit, type="l", ylim=c(35,100), main="Incumbent expenditures and vote share", 
-     xlab="Incumbent expenditures", ylab="Vote share", axes=FALSE)
-axis(1, at=seq(1,11), labels=round(seq(min(vote1$expendA),max(vote1$expendA),length.out=11)))
-axis(2, at=seq(35,100,by=5), labels=seq(35,100,by=5))
-matlines(cis[,c(2,3)], lty=2, col="black")
-@
+\begin{enumerate}
+  \item A lower level of incumbent party strength is associated with a more positive effect of incumbent party expenditures. This is so because, due to the negative coefficient of the interaction term, for decreases in incumbent party strength, we will see an increase in the marginal effect of incumbent party expenditures.
+  \item A higher level of incumbent party expenditures is associated with a more negative effect of incumbent party strength. This is so because, due to the negative coefficient of the interaction term, for increases in incumbent party expenditures, we will see a decrease in the marginal effect of incumbent party strength.
+\end{enumerate}
 
 
 
-\section*{Linear Regression Models Interpretation Questions}
+\section*{Interactions: Math and Interpretation}
 
 \subsection*{Problem 3}
 
-\paragraph*{a)} If we do not include polynomials of higher order, OLS regression can adequately model only \textbf{linear} relationships between one dependent variable (response variable) and one or multiple independent variables (predictor variables).
+\paragraph*{a)}
 
-The reason for why we can only model linear relationships is that our model assumes that for every independent variable there is only a single slope coefficient that is constant for all values of that independent variable. In other words, it assumes direct proportionality. The additional inclusion of polynomials of higher order would allow us to have different slopes at different values of the independent variable.
+\begin{displaymath}
 
-\paragraph*{b)} OLS regression does not per se tell us anything about causality. OLS regression primarily measures linear relationships between two variables and can give us an answer to the question how to variables are correlated with each other. However, without a strong theory, OLS does not allow us to make statements regarding causality.
-
-There are several reasons for this. First, there could be reverse causality, meaning that the response variable in our model has a causal effect on the predictor variable. Second, there could be endogeneity, meaning that there is mutual causal influence of response and predictor variables. Third, there could be omitted variable bias, meaning that a third variable influences both the predictor and the response variable. Fourth, there could be ``parallel trends", meaning that although two variables have no relationship to each other, they only move simultaneously. For example, two variables could both increase over time for completeley different reasons, potentially giving the wrong impression that they are causally connected. These are the four main reasons why we should not per se view the results of a linear regression as reflecting causality.
-
-\paragraph*{c)} The Residual Sum of Squares (RSS) can be found through the following calculation involving the Root Mean Squared Error (RMSE):
+\dfrac{\partial Y}{\partial X_1} = 5 + X_2
 
 \bigskip
 
-RSS = $(RMSE^2)*(Degrees\ of \ Freedom)$
+\dfrac{\partial Y}{\partial X_2} = 2 + X_1
 
-\bigskip
+\end{displaymath}
 
-Furthermore, given that we know $R^2$, once we know the RSS, we can use the fact that $R^2 = 1 - \dfrac{RSS}{TSS}$ to find that:
+\paragraph*{b)}
 
-\bigskip
+<<results='show',tidy=TRUE>>=
+x2=seq(-10,10)
 
-$\dfrac{1 - R^2}{RSS} = \dfrac{1}{TSS}$ \rightarrow $\dfrac{RSS}{1 - R^2} = TSS$
+marginal_effect_x1=rep(5,21)+x2
 
-\bigskip
+plot(x2, marginal_effect_x1,
+     main="Marginal Effect of X1",
+     xlab="X2",
+     ylab="Marginal Effect of X1")
+@
 
-Once we know both the TSS and the RSS, we can easily calculate the RegSS, since the $RegSS = TSS - RSS$.
+\paragraph*{c)} When $X_2$ is at a value of 0, for a 1-unit increase in $X_1$, we would expect a 5 unit increase in Y.
 
+Generally, for a 1-unit increase in $X_1$, we would expect a $5 + X_2$ increase in Y.
 
+\paragraph*{d)}
 
-\section*{Statistical Theory: Linear Regression Models}
-
-\subsection*{Problem 4}
-
-\subparagraph{a)} The definition of $\beta_1$ is $\dfrac{Cov(X,Y)}{Var(X)}$. The definition of $\beta_1'$ is $\dfrac{Cov(Y,X)}{Var(Y)}.
-
-The formula for variance is $\dfrac{\sum{(x_i - \bar{x})}}{n-1}$. Assuming that the variables X and Y have two or more different values, their variances are always positive. Therefore, the denominator in both equations is positive.
-
-If the variance is always positive, then the sign of the covariance (+, -, or 0) determines the sign of $\beta_1$ and $\beta_1'$. In the following equations, + stands for a positive number, - for a negative number, and 0 for zero.
-
-$\beta_1 = \dfrac{Cov(X,Y)}{+}$ and $\beta_1' = \dfrac{Cov(Y,X)}{+}$
-
-Since $Cov(X,Y) = Cov(Y,X)$, the following is true:
-
-If $Cov(X,Y) > 0$, then $\beta_1 = \dfrac{+}{+}$ and $\beta_1' = \dfrac{+}{+}$, meaning that both are positive.
-
-\bigskip
-
-If $Cov(X,Y) < 0$, then $\beta_1 = \dfrac{-}{+}$ and $\beta_1' = \dfrac{-}{+}$, meaning that both are negative.
-
-\bigskip
-
-If $Cov(X,Y) = 0$, then $\beta_1 = \dfrac{0}{+}$ and $\beta_1' = \dfrac{0}{+}$, meaning that both are zero.
-
-\bigskip
-
-It follows that $\beta_1$ and $\beta_1'$ always have the same sign.
-
-\subparagraph{b)} The intercepts, $\beta_0$ and $\beta_0'$, do not always have the same sign as we can show with a simple counter example (proof by contradiction).
-
-Assume that the variables X and Y have the following values:
-
-\begin{center}
- \begin{tabular}{||c c||} 
- \hline
- X & Y \\ [0.5ex] 
- \hline\hline
- 0 & 2 \\ 
- \hline
- 1 & 3 \\
- \hline
- 2 & 4 \\
- \hline
- 3 & 5 \\
-  \hline
-\end{tabular}
-\end{center}
-
-Note that in this case $Y = 2 + X$ and $X = -2 + Y$, so $\beta_0$ = 2 and $\beta_0'$ = -2. In this case $\beta_0$ and $\beta_0'$ have different signs, meaning that the statement is not true.
-
-
+If an interaction exists in reality and we omit the interaction term from our model, we will introduce a bias to our coefficients. The reason for this is that situations in which a high value in Y is caused by jointly high values in $X_1$ and $X_2$ will not be correctly captured by the model. Instead, high values in Y will incorrectly be attributed to either $X_1$ or $X_2$, but not to their interaction.
 
 \end{document}

@@ -95,6 +95,29 @@ summary(intmodel3)
 
 Which model would be the better choice?
 
+Note that the interpretation of the main coefficient when there is an interaction term is: when there is a 1-unit increase in x1, we expect a b1-unit increase in y if x2 is at 0. But sometimes the value 0 is not meaningful for x2. How can we solve this issue?
+
+The answer is: through re-centering. Re-centering means that we simply subtract the mean of x2 from x2.
+
+In order to do this, we will first create a new variable:
+
+```{R,tidy=TRUE}
+LDC$l1gdp_pc_cent=LDC$l1gdp_pc-mean(LDC$l1gdp_pc, na.rm=T)
+LDC$l1fdi_cent=LDC$l1fdi-mean(LDC$l1fdi, na.rm=T)
+
+summary(LDC$l1gdp_pc_cent)
+summary(LDC$l1fdi_cent)
+```
+
+Nowe we can run a new regression with this variable.
+
+```{R,tidy=TRUE}
+intmodel4=lm(polityiv_update2~l1gdp_pc_cent + l1fdi_cent + l1gdp_pc_cent*l1fdi_cent, data=LDC)
+summary(intmodel4)
+```
+
+How would we interpret this?
+
 
 
 # 3. Graphical representation of interactions
@@ -148,6 +171,8 @@ theme(plot.title = element_text(face='bold', size=12),
 ```
 
 How would we interpret this plot?
+
+What might we want to do with the data before we run the regression?
 
 Alternatively, we can also plot coefficient plots. These plots show us the coefficients with confidence intervals.
 
@@ -231,35 +256,35 @@ Let's naively assume that we don't deal with those problems here. Would the pred
 
 # 4. Analysis of Variance (ANOVA)
 
-Let us conduct an analysis of variance. We are interested in the level of FDI inflows and we look at two different binary variables:
+Let us conduct an analysis of variance. We are interested in the level of FDI inflows and we look at one variable:
 
-1. Democracy - coded as 0 and 1
-2. Open Economy - coded as 0 and 1
+Type of Dictatorship (dictator1) - coded as values from 1 (personal regime) to 8 (democracy)
 
-How would we expect these variables to influence the level of FDI inflows?
+Based on Milner & Kubota (2005), how would we expect this variable to influence the level of FDI inflows?
 
 ```{R,tidy=TRUE}
-hist(LDC$aclpn)
-hist(LDC$dopen_wacz2)
+hist(LDC$dictator1)
 ```
 
-Let us run look at a one-way ANOVA table.
+Let us look at a plot of means with the package gplots: install.packages("gplots")
 
-```{R,tidy=TRUE}
-anovamodel1=lm(fdignp ~ aclpn, data=LDC)
-summary(anovamodel1)
-anova(anovamodel1)
+```{R}
+library(gplots)
+plotmeans(fdignp ~ dictator1, data=LDC)
+summary(LDC)
 ```
 
-How would we interpret these results? Compare to the results of the OLS regression.
-
-Let us look at a two-way ANOVA table.
+Let us look at the ANOVA results of this variable.
 
 ```{R,tidy=TRUE}
-anovamodel2=lm(fdignp ~ aclpn + dopen_wacz2 + aclpn*dopen_wacz2, data=LDC)
-summary(anovamodel2)
-anova(anovamodel2)
-````
+anovamodel=lm(fdignp ~ factor(dictator1), data=LDC)
+summary(anovamodel)
+anova(anovamodel)
+aov_fdi=aov(fdignp ~ factor(dictator1), data=LDC)
+summary(aov_fdi)
+tukey=TukeyHSD(aov_fdi)
+tukey
+```
 
 How would we interpret these results? Compare to the results of the OLS regression.
 
@@ -283,6 +308,10 @@ How can we measure this theoretical concept? Which variables might be most usefu
 
 ## In class-exercise: turning a concept into a measurement
 
-
-
+1. Find the raw data and the codebook of the Polity IV Score.
+2. Download both.
+3. Answer the following questions:
+a. Which component of the Polity IV Score best represents the theoretical concept of the number and importance of veto players?
+b. What are the values that the Polity IV Score can take?
+c. Find Afghanistan's Polity IV Score in 1993. What is the meaning of this score?
 

@@ -39,7 +39,16 @@ The intercept is the expected value of Y when X is at a value of 0.
 
 Let's load another R dataset that can illustrate the interpretation of marginal effects. The "airquality" dataset. According to the documentation, this is "Daily air quality measurements in New York, May to September 1973."
 
-More details can be found here: 
+Here is a short description of each of the variables:
+
+1. Ozone: numeric Ozone (ppb)
+2. Solar.R: numeric Solar R (lang)
+3. Wind: numeric Wind (mph)
+4. Temp: numeric Temperature (degrees F)
+5. Month: numeric Month (1-12)
+6. Day: numeric Day of month (1-31)
+
+More details can be found here: https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/airquality.html
 
 ```{r,tidy=TRUE}
 data(airquality)
