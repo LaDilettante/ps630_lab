@@ -1,0 +1,193 @@
+---
+title: 'Tutorial 9: Heteroskedasticity'
+author: "Anh Le"
+output: pdf_document
+---
+
+2. Test of heteroskedasticity (graphical and White test)
+3. Standard error robust to heteroskedasticity
+7. Tips and tricks
+- R project
+
+# Heteroskedasticity test
+
+## Generate heteroskedastic data
+
+For example, we have the following data generating process (DGP):
+
+\begin{align}
+y &= 2 X + u \\
+X &= N(0, 1) \\
+u &\sim N(0, |x|) \qquad \text{Note how $V(u) = |x|$, instead of being constant}
+\end{align}
+
+I implement that DGP in R as follows:
+
+```{r}
+set.seed(1)
+x <- rnorm(500)
+u <- rnorm(500, sd = sqrt(abs(x)))
+y <- 0.01 * x + u
+```
+
+## Test for Heteroskedasticity:
+
+### Visual test
+
+```{r}
+m_het <- lm(y ~ x)
+plot(resid(m_het) ~ predict(m_het))
+```
+
+### Breush-Pagan and White test
+
+```{r, message = FALSE}
+library(AER) # For the tests
+```
+
+BP test
+```{r}
+bptest(m_het, varformula = ~ x)
+```
+
+White test
+```{r}
+yhat <- predict(m_het)
+bptest(m_het, varformula = ~ yhat + I(yhat^2))
+```
+
+Note how the BP test doesn't pick up the heteroskedasticity, but the White test does. 
+
+> The default Breusch-Pagan test is a test for linear forms of heteroskedasticity, e.g. as $\hat y$ goes up, the error variancesgo up. In this default form, the test does not work well for non-linear forms of heteroskedasticity, such as the hourglass shape we saw before (where error variances got larger as X got more  extreme in either direction). The default test also has problems when the errors are not normally distributed 
+
+> Part of the reason the White test is more general is because it adds a lot of terms to test for more types of heteroskedasticity. For example, adding the squares of regressors helps to detect nonlinearities such as the hourglass shape. In a large data set with many explanatory variables, this may make the test difficult to calculate. Also, the addition of all these terms may make the test less powerful in those situations when a simpler test like the default Breusch-Pagan would be appropriate, i.e. adding a bunch of extraneous terms may make the test less likely to produce a significant result than a less general test would.
+([Source](https://www3.nd.edu/~rwilliam/stats2/l25.pdf))
+
+### BP and White test by hand
+
+Recall that our Null hypothesis is thatwe have homoskedasticity
+
+*BP test (Wooldridge "Introductory", Testing for heteroskedasticity)*
+
+1. Estimate the model `y ~ x1 + x2 + ... + xk` by OLS, as usual. Obtain the squared OLS residuals, $\hat u^2$ one for each observation.
+
+2. Run the regression $\hat u^2 = \delta_0 + \delta_1 x_1 + \delta_2 x_2 + \dots + \delta_k x_k$. Keep the R-squared from this regrsesion, $R^2_{\hat u^2}$.
+
+3. Form either the $F$ statistic or the $LM$ statistic and compute the p-value (using the $F_{k,n-k-1}$ distribution in the former case and the $\chi_k^2$ distribution in the latter case)
+
+\[
+F = \frac{R^2_{\hat u_i^2} / k}{(1 - R^2_{\hat u_i^2}) / (n - k - 1)}; 
+LM = n \times R^2_{\hat u_i^2}
+\]
+
+```{r}
+m_bp <- lm(y ~ x)
+squared_residuals <- resid(m_bp) ** 2
+m_bp_stage2 <- lm(squared_residuals ~ x)
+R_squared <- summary(m_bp_stage2)$r.squared
+
+n <- length(y) ; k <- 1 # k = 1 because we only have 1 x
+(F_statistic <- (R_squared / k) / ((1 - R_squared) / (n - k - 1)))
+```
+
+Is this F-statistic large or small?
+```{r}
+plot(density(rf(1000, df1 = k , df2 = n - k - 1)),
+     main = "F distribution, df1=k, df2=n-k-1") ; abline(v = F_statistic, col = 'red')
+```
+
+Given this F-statistic, what's the p-value?
+```{r}
+1 - pf(F_statistic, df1 = k, df2 = n - k - 1)
+```
+
+```{r}
+(t_bp <- bptest(m_het, varformula = ~ x))
+```
+
+
+*White test (Wooldridge "Introductory", Testing for heteroskedasticity)* **will be in homework**
+
+1. Estimate the model `y ~ x_1 + x_2 + ... + x_k` by OLS, as usual. Obtain the OLS residual $\hat u$ and the fitted values $\hat y$. Compute $\hat u^2$ and $\hat y^2$.
+
+2. Run the regression $\hat u^2 = \delta_0 + \delta_1 \hat y + \delta_2 \hat y^2$.
+
+3. Form either the F or LM statistic and compute the p-value (using the $F_{2,n-3}$ distribution in the former case and the $\chi_2^2$ distribution in the latter case).
+
+```{r}
+m_white <- lm(y ~ x)
+uhat <- resid(m_white) ; yhat <- predict(m_white)
+m_white_stage2 <- lm(uhat ** 2 ~ yhat + yhat ** 2)
+R_squared <- summary(m_white_stage2)$r.squared
+
+n <- length(y) ; k <- 2 # k = 1 because we have 2 regressors, yhat and yhat squared
+(F_statistic <- (R_squared / k) / ((1 - R_squared) / (n - k - 1)))
+pf(F_statistic, df1 = 2, df2 = n - 3)
+bptest(m_het, varformula = ~ predict(m_het) + predict(m_het) ** 2)
+```
+
+
+
+## Get the correct standard error
+
+White HC standard errors (sandwich standard error)
+```{r}
+vcovHC(m_het, type = "HC") # from package sandwich, loaded by AER
+```
+
+Hypothesis test with White standard error (more precisely, with the heteroskedasticity-consistent
+estimation of the cov matrix, calculated above). Notice how the coefficients are basically the same as regular OLS. Only the standard error is different.
+
+```{r}
+coeftest(m_het, vcov = vcovHC(m_het, type = "HC"))
+summary(m_het)
+```
+
+**Foonote:** Etymology of the "sandwich" estimator of the standard error
+
+Formula for standard error is:
+\[
+V(\hat \beta_{OLS}|X) = (X'X)^{-1}X'V(\epsilon | X) X(X'X)^{-1}
+\]
+, which reduces to $\sigma^2 (X'X)^{-1}$ only in the case of homoskedasticity.
+
+When there's heteroskedasticity, the estimate is (as done in Stata) (notice the "bread" ($(X'X)^{-1}$) and the "meat" ($X'V(\epsilon|X)X$) of the sandwich):
+\begin{align}
+V(\hat \beta_{OLS}|X) &= (X'X)^{-1} X'V(\epsilon | X) X(X'X)^{-1} \\
+\hat V (\hat \beta_{OLS}|X) &= (X'X)^{-1} X' 
+\left(\begin{matrix} 
+\hat \epsilon^2_1 & 0 & \dots & 0 \\
+0 & \hat \epsilon^2_2 & \dots & 0 \\
+\vdots & \vdots & \dots & \vdots \\
+0 & 0 & \dots & \hat \epsilon^2_n
+\end{matrix}\right) X (X'X)^{-1} \\
+\hat V (\hat \beta_{OLS}|X) &= \frac{N}{N-K} (X'X)^{-1} \sum_{i=1}^N \{ X_i X_i' \hat \epsilon_i^2\} (X'X)^{-1} \qquad \text{The matrix version of slide 36 of your lectures notes}
+\end{align}
+
+The constant is added since we are estimating the sample variance of the error. In practice, $N >> K$, so it doesn't matter.
+
+## Get the correct standard error by hand
+
+From slide 36 of your lectures notes, also Wooldrige "Introductory" - Heteroskedasticity robust inference after OLS estimation
+
+\[
+\hat{Var} (\hat \beta_j) = \frac{\sum_{i=1}^{n} \hat r^2_{ij}\hat u_i^2}{SSR_j^2}
+\]
+
+where $\hat r^2_{ij}$ is the ith residual from regressing $x_j$ on all other independent variables, and $SSR_j$ is the sum of squared residuals from this regression
+
+```{r}
+m_robust1 <- lm(x ~ 1)
+numerator <- sum((resid(m_robust1)**2) * (resid(m_het)**2))
+SSR <- sum(resid(m_robust1)**2) ** 2
+
+(var_beta_x <- numerator / SSR)
+```
+We see that we get exactly the same $\hat Var(\hat \beta_x)$ as output by R.
+
+```{r}
+vcovHC(m_het, type = "HC")
+```
+
+
+
