@@ -1,0 +1,163 @@
+\documentclass{article}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{Pol Sci 630:  Problem Set 9 Solutions: Heteroskedasticity}
+
+\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+
+\maketitle
+
+<<message = FALSE>>=
+rm(list = ls())
+library(ggplot2)
+@
+
+
+\section{Heteroskedasticity}
+
+This exercise nudges you to think about heteroskedasticity as a theoretical / social science problem, not a mechanical / statistical issue to be blindly fixed.
+
+One common cause of heteroskedasticity is that our model does not take into account heterogenous effect across sub-populations. For example, we have a model of spending (dependent var) as a function of income (independent var), and the propensity to spend differs across ethnic groups. Formally,
+
+\begin{align}
+spending &= \beta_{ethnic} income + \epsilon
+\end{align}
+
+where $\beta_{ethnic}$ takes a different value for white, black, and asian. If we don't know about this heterogeneity of propensity to spend across ethnic groups, the graph will show heteroskedasticity:
+
+<<echo = FALSE, fig.height=3, fig.width=4>>=
+# Propensity to spend of different groups
+
+income_w <- runif(100, min = 0, max = 1000)
+income_b <- runif(100, min = 0, max = 1000)
+income_a <- runif(100, min = 0, max = 1000)
+
+f_spending <- function(income, propensity) {
+  propensity * income + rnorm(length(income), sd = 100)
+}
+
+beta_w <- 0.01 ; beta_b <- 0.5 ; beta_a <- 1
+d <- data.frame(income = c(income_w, income_b, income_a),
+                   spending = c(f_spending(income_w, beta_w),
+                                f_spending(income_b, beta_b),
+                                f_spending(income_a, beta_a)),
+                   group = rep(c("w", "b", "a"), each = 100))
+
+ggplot(data = d, aes(x = income, y = spending)) +
+  geom_point()
+@
+
+Buf if we are smart researcher, we'll realize the underlying cause of the heterogeneity, as shown in the following plot:
+
+<<fig.height=3, fig.width=4.5, echo=FALSE>>=
+ggplot(data = d, aes(x = income, y = spending)) +
+  geom_point(aes(col = group))
+@
+
+The take-home point is that heteroskedasticity could be a signal of underlying model specification, and we should think hard about the cause of heteroskedasticity instead of applying a quick fix.
+
+\subsection{Simulating}
+
+Simulate the spending and income pattern for three ethnic groups as described above. Re-create the two plots above. The numbers don't have to be the same -- just make sure that your data has heteroskedasticity due to underlying heterogenous effect across ethnic groups as described in the example above. Note: Don't look at my code.
+
+\subsection{Diagnostics: Visual}
+
+Using the simulated data above, regress spending on income, plot the residual against the predicted value.
+
+\textbf{Solution}
+
+<<fig.width=3.5, fig.height=3>>=
+m_het <- lm(spending ~ income, data = d)
+plot(predict(m_het), resid(m_het))
+@
+
+\subsection{Diagonistics: Hypothesis test}
+
+Conduct BP test and White test. Why do the tests reach the same conclusion here, unlike in the lab tutorial?
+
+\textbf{Solution}
+
+<<message = FALSE>>=
+library(AER)
+bptest(m_het, varformula = ~ income, data = d)
+bptest(m_het, varformula = ~ income + I(income^2), data = d)
+@
+
+The test reaches the same conclusion because the variance of the error terms is a linear function of $income$ (not of $income^2$, for example), so both the BP and the White tests are able to detect this.
+
+\subsection{Diagnostics: Repeat the White's test manually}
+
+Here's the instruction. Compare the result you get doing it by hand vs using R.
+
+\textit{White test (Wooldridge "Introductory", Testing for heteroskedasticity)}
+
+1. Estimate the model \verb`y ~ x_1 + x_2 + ... + x_k` by OLS, as usual. Obtain the OLS residual $\hat u$ and the fitted values $\hat y$. Compute $\hat u^2$ and $\hat y^2$.
+
+2. Run the regression $\hat u^2 = \delta_0 + \delta_1 \hat y + \delta_2 \hat y^2$. Keep the R square.
+
+3. \textbf{I want you to use the LM for this problem} Form either the F or LM statistic and compute the p-value (using the $F_{2,n-3}$ distribution in the former case and the $\chi_2^2$ distribution in the latter case).
+
+\textbf{Solution}
+
+<<>>=
+uhat <- resid(m_het) ; yhat <- predict(m_het)
+m_white_stage2 <- lm(I(uhat^2) ~ yhat + I(yhat^2))
+R_squared <- summary(m_white_stage2)$r.squared
+
+n <- nrow(d) ; k <- 2 # k = 1 because we have 2 regressors, yhat and yhat squared
+(LM_stat <- n * R_squared)
+1 - (pvalue <- pchisq(LM_stat, df = k))
+
+bptest(m_het, varformula = ~ yhat + I(yhat^2), data = d)
+@
+
+The LM statistic and the p value are the same.
+
+\subsection{Fixing: robust standard error}
+
+Run hypothesis test without and with robust standard error. What's the conclusion?
+
+\textbf{Solution}
+
+<<>>=
+summary(m_het)
+coeftest(m_het, vcov = vcovHC(m_het, type = "HC"))
+@
+
+Both regressions show that income has a positive and significant impact on spending
+
+\subsection{Fixing: robust standard error by hand}
+
+\textbf{Solution}
+
+<<>>=
+m_robust1 <- lm(income ~ 1, data = d)
+numerator <- sum((resid(m_robust1)**2) * (resid(m_het)**2))
+SSR <- sum(resid(m_robust1)**2) ** 2
+
+# Compare the two methods
+(var_beta_x <- numerator / SSR)
+vcovHC(m_het, type = "HC")
+@
+
+We see that the manual method and R's \verb`vcovHC` gives the same robust standard error.
+
+\subsection{Fixing: Provide a correct model}
+
+Specify a regression model that takes into account heterogenous effect of income on spending across ethnic groups. Show that there's no longer heteroskedasticity.
+
+\textbf{Solution}
+
+<<fig.width = 3.5, fig.height=3>>=
+m_group <- lm(spending ~ income + group + income:group, data = d)
+plot(resid(m_group) ~ predict(m_group))
+@
+
+As shown in the diagnostics plot, there's no longer heteroskedasticity
+
+\end{document}
