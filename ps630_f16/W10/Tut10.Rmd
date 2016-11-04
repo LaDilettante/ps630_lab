@@ -1,0 +1,153 @@
+---
+title: "Tut10: Ramsey RESET, Endogeneity"
+author: "Anh Le"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Ramsey RESET test
+
+What's the null hypothesis of the RESET test?
+
+```{r message=FALSE}
+library(lmtest)
+x <- c(1:30)
+y1 <- 1 + x + x^2 + rnorm(30)
+y2 <- 1 + x + rnorm(30)
+resettest(y1 ~ x , power=2, type="fitted")
+resettest(y2 ~ x , power=2, type="fitted")
+```
+
+# Endogeneity
+
+The boogeyman for social scientists. But what exactly does endogeneity mean?
+
+Good seminar manner is not to just say you have an endogeneity problem, but spell out what kind it is and what is causing it.
+
+We'll examine different causes of endogeneity below.
+
+## Reverse causality / Simultaneity bias
+
+$$
+\begin{aligned}
+police &= \alpha_0 + \alpha_1 * crime + u \\
+crime &= \beta_0 + \beta_1 * police + v
+\end{aligned}
+$$
+We plug in the function for `crime` into the first equation
+
+$$
+\begin{aligned}
+police &= \alpha_0 + \alpha_1 * (\beta_0 + \beta_1 * police + v) + u \\
+&= \alpha_0 + \alpha_1\beta_0 + \alpha_1\beta_1police + \alpha_1v + u \\
+(1 - \alpha_1\beta_1)police &= (\alpha_0 + \alpha_1\beta_0) + (\alpha_1v + u) \\
+police &= \frac{\alpha_0 + \alpha_1\beta_0}{1 - \alpha_1\beta_1} + \frac{\alpha_1v + u}{1 - \alpha_1\beta_1}
+\end{aligned}
+$$
+
+As we can see, $police$ is correated with $v$. That's endogeneity.
+
+```{r}
+a0 <- 1 ; a1 <- 1; b0 <- 2; b1 <- -2
+u <- rnorm(1000)
+v <- rnorm(1000)
+
+police <- (a0 + a1 * b0 + a1 * v + u) / (1 - a1 * b1)
+crime <- b0 + b1 * police + v
+
+lm(crime ~ police)
+```
+
+Real examples:
+- Development and Institution. Solution: settler mortality (Acemoglu, Johnson, Robinson 2001), Vietnam's / Peru's boundary (Melissa Dell)
+- Supply and Demand. Solution: storm that affects shrimp supply
+- Employment rate and minimum wage. Solution: compare McDonals across states' line with different mimimum wage, everything else the same (Card and Krueger)
+
+## Omitted variable bias
+
+If $x$ is correlated with $z$, that's endogeneity.
+
+$$
+\begin{aligned}
+y &= \beta_0 + \beta_1x + (\beta_2z + u)
+\end{aligned}
+$$
+
+Real example:
+- Corruption and culture. Omitted: Law. Solution: UN workers parking tickets in NYC (Fisman, Miguel)
+- Income and army experience. Omitted: Background, Income expectation. Solution: Vietnam draft lottery (Angrist)
+
+## A note on sample selection bias vs selection bias
+
+These two are different!
+
+- Sample selection bias: when you only observe a non-representative sample of the population (i.e. your sample is biased). Ex: We want to study the effect of civil war on GDP. But war torn countries can't collect GDP data, so you only observe non-war-torn countries. Thus your sample is biased.
+
+Sample selection bias is a bias because your coefficient estimate is only true for your sample and different from the true parameter value of the population. But it's NOT endogeneity!
+
+- Selection bias: your sample is representative of the population (i.e. it's different from sample selection bias). Instead, the problem is that your units self-select into the treatment for some unobserved and thus uncontrolled reasons.
+
+Ex: Continuing the example above, let's say that you manage to collect GDP for all countries (again, so it's NOT a sample selection bias). But the problem is that countries "self-select" into wars if they have interethnic conflict, which we don't observe and control for. In this case, GDP is outcome, war is treatment, interethnic conflict is the omitted variable.
+
+# Power calculation
+
+$$
+\begin{aligned}
+x &\sim N(0, sd = 1) \\
+y &= 2x + N(1, sd = 10)
+\end{aligned}
+$$
+
+```{r}
+x <- rnorm(50)
+y <- 2 * x + rnorm(50, mean = 1, sd = 10)
+summary(lm(y ~ x))
+```
+
+
+```{r}
+number_of_simulations <- 1000
+pvalues <- rep(NA, number_of_simulations)
+for (i in 1:number_of_simulations) {
+  n <- 100
+  x <- rnorm(n)
+  y <- 2 * x + rnorm(n, mean = 1, sd = 10)
+  pvalues[i] <- coef(summary(lm(y ~ x)))[2, 4]  
+}
+mean(pvalues < 0.05)
+```
+
+```{r}
+pvalues <- rep(NA, number_of_simulations)
+for (i in 1:number_of_simulations) {
+  n <- 200
+  x <- rnorm(n)
+  y <- 2 * x + rnorm(n, mean = 1, sd = 10)
+  pvalues[i] <- coef(summary(lm(y ~ x)))[2, 4]  
+}
+mean(pvalues < 0.05)
+```
+
+# Balance table
+
+Basically t-tests for all covariates. 
+
+```{r}
+mtcars$treatment <- sample(x = c(0, 1), size = nrow(mtcars), prob = c(0.5, 0.5),
+                           replace = TRUE)
+
+t.test(mpg ~ treatment, data = mtcars)
+t.test(cyl ~ treatment, data = mtcars)
+```
+
+I don't think there's a package to automate this into a table yet. The closest is `MatchBalance`, whose results then need to be extracted and put into a table.
+
+```{r message = FALSE}
+library("Matching")
+MatchBalance(treatment ~ mpg + cyl + disp + I(mpg^2), data = mtcars)
+```
+
+

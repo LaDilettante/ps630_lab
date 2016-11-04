@@ -1,0 +1,185 @@
+\documentclass{article}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{Pol Sci 630:  Problem Set 10: Functional Form, Endogeneity, Power}
+
+\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+
+\date{Due Date: Nov 9 (Beginning of Class)}
+
+\maketitle
+
+\section{Functional specification}
+
+There's a famous dataset called the Anscombe quartet. You load it in R like so:
+
+<<>>=
+head(anscombe)
+@
+
+\subsection{Explore Anscombe}
+
+There are 4 pairs of $x$ and $y$. Run 4 regressions of y on x. Check out the regression result. A bit late for Halloween, but what spooky thing do you notice?
+
+Then plot the data.
+
+\textbf{Solution}
+
+<<fig.width=6, fig.height=6, align='center'>>=
+(m1 <- lm(y1 ~ x1, data = anscombe))
+(m2 <- lm(y2 ~ x2, data = anscombe))
+(m3 <- lm(y3 ~ x3, data = anscombe))
+(m4 <- lm(y4 ~ x4, data = anscombe))
+
+par(mfrow=c(2,2))
+plot(y1 ~ x1, data = anscombe)
+plot(y2 ~ x2, data = anscombe)
+plot(y3 ~ x3, data = anscombe)
+plot(y4 ~ x4, data = anscombe)
+par(mfrow=c(1,1))
+@
+
+The four regression models have exactly the same coefficients, standard errors, p-value, R-square (!). But the pattern of the data looks very different. A good lesson about why we visualize data and don't run regression blindly.
+
+\subsection{Ramsey RESET}
+
+Use Ramsey RESET on the 4 models to check. Which kind of functional misclassification can it catch?
+
+\textbf{Solution}
+
+<<>>=
+library(lmtest)
+resettest(m1, power = 2, type = "fitted")
+resettest(m2, power = 2, type = "fitted")
+resettest(m3, power = 2, type = "fitted")
+resettest(m4, power = 2, type = "fitted")
+@
+
+The RESET test can only catch the second case, where there is a curvillinear relationship. This is because RESET simply adds squared terms and check whether they are important. Even though it's problematic to say the 3rd and 4th models are a good fit, RESET can't catch it.
+
+This is to show what a test can and cannot do.
+
+\section{Endogeneity -- Omitted Variable Bias}
+
+\subsection{Sign the bias -- math}
+
+Given the following data generating process (DGP)
+
+\begin{align}
+x_2 &= \delta_0 + \delta_1 x_1 + v \\
+y &= \beta_0 + \beta_1 x_1 + \beta_2 x_2 + w
+\end{align}
+
+The following equation (lecture 09/26) shows what happens when we regress $y$ on $x_1$, omitting $x_2$. \textbf{Prove this equation}.
+
+$$
+y = (\beta_0 + \beta_2 \delta_0) + (\beta_1 + \beta_2 \delta_1) x_1 + (\beta_2 v + w)
+$$
+
+
+
+\textbf{Solution}
+
+\begin{align}
+y &= \beta_0 + \beta_1 x_1 + \beta_2 x_2 + w \\
+&= \beta_0 + \beta_1 x_1 + \beta_2 (\delta_0 + \delta_1 x_1 + v) + w \\
+&= (\beta_0 + \beta_2 \delta_0) + (\beta_1 + \beta_2 \delta_1) x_1 + (\beta_2 v + w)
+\end{align}
+
+\subsection{Sign the bias - simulation}
+
+In the equation you proved above, the estimated coefficient for $x_1$ is $\beta_1 + \beta_2 \delta_1$, different from its true value $\beta_1$. The bias is $\beta_2\delta_1$. The sign of the bias thus depends on $\beta_2$ and $\delta_1$, as discussed in the lecture and reproduced in Table 1.
+
+\begin{table}[]
+\centering
+\caption{Signing the bias}
+\label{my-label}
+\begin{tabular}{|l|l|l|}
+\hline
+               & $\beta_2 > 0$ & $\beta_2 < 0$ \\ \hline
+$\delta_1 > 0$ &               &               \\ \hline
+$\delta_1 < 0$ &               &               \\ \hline
+\end{tabular}
+\end{table}
+
+Conduct 4 simulations with appropriate values of $\beta_2$ and $\delta_1$ corresponding to the 4 cells in the table. Show that the sign of the bias is as we learned in class.
+
+\textbf{Solution}
+
+We create a function that calculates the bias depending on the values of $\beta_2$ and $\delta_1$.
+<<>>=
+delta1 <- 1 ; beta2 <- 3 # These 2 are keys
+
+bias_simulation <- function(beta2, delta1) {
+  beta0 <- 1 ; beta1 <- 2 ; delta0 <- 1 # These don't matters for bias sign
+  x2 <- rnorm(100)
+  x1 <- delta1 * x2 + rnorm(100)
+  y <- beta0 + beta1 * x1 + beta2 * x2 + rnorm(100)
+
+  estimated_beta1 <- coef(lm(y ~ x1))["x1"]
+  bias <- estimated_beta1 - beta1
+  return(bias)
+}
+@
+
+We use this function to show the sign of the bias in each of the 4 cells
+
+<<>>=
+bias_simulation(beta2 = 1, delta1 = 1)
+bias_simulation(beta2 = 1, delta1 = -1)
+bias_simulation(beta2 = -1, delta1 = -1)
+bias_simulation(beta2 = -1, delta1 = 1)
+@
+
+We confirm that whenever $\beta_2$ and $\delta_1$ are of opposite sign, we have negative bias.
+
+\section{Power calculation}
+
+In this exercise we practice power calculation for the simplest experiment setup.
+
+Assume that our binary treatment has an effect size of 2 on the outcome, as follows:
+
+$$
+\begin{aligned}
+y &= 1 + 2 \times \text{Treatment} + u \\
+u &\sim Normal(mean = 1, sd = 10) \\
+\end{aligned}
+$$
+
+In our experiment, we randomly assigned $n$ experimental units into 2 groups, treated and control, i.e. treatment = 1 and treatment = 0. Calculate the power of our experiment (i.e. the probability that we can reject the null of zero treatment effect) for different values of the sample size $n$.
+
+The end product I want to see is a graph with $n$ on the x-axis and power on the y-axis. How big must your sample size be to get a power of 0.8?
+
+\textbf{Solution}
+
+We first create a function that takes a value of n and calculate the power.
+<<>>=
+power_sim <- function(n) {
+  number_of_simulations <- 100
+  pvalues <- rep(NA, number_of_simulations)
+  for (i in 1:number_of_simulations) {
+    treatment <- sample(c(0, 1), size = n, replace = TRUE)
+    y <- 1 + 2 * treatment + rnorm(n, mean = 1, sd = 10)
+    pvalues[i] <- coef(summary(lm(y ~ treatment)))[2, 4]
+  }
+  mean(pvalues < 0.05)
+}
+@
+
+We then apply this function to a range of n values to get the corresponding power.
+<<fig.height=5, fig.width=5, align='center'>>=
+set.seed(1)
+ns <- seq(from = 10, to = 1000, by = 50)
+powers <- sapply(ns, power_sim)
+plot(powers ~ ns, ylab = "Power", xlab = "Sample size (n)")
+abline(h = 0.8)
+@
+
+The plot shows that we need about 700 units to reach the commonly accepted power level of 0.8.
+
+\end{document}
