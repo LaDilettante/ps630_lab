@@ -180,6 +180,6 @@ plot(powers ~ ns, ylab = "Power", xlab = "Sample size (n)")
 abline(h = 0.8)
 @
 
-The plot shows that we need about 700 units to reach the commonly accepted power level of 0.8.
+The plot shows that we need about 700-800 units to reach the commonly accepted power level of 0.8.
 
 \end{document}
