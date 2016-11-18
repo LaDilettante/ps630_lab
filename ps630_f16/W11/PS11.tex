@@ -11,7 +11,7 @@
 
 \begin{document}
 
-\title{Pol Sci 630: Problem Set 11 - Imputation of Missing Data, Regression Diagnostics, and Simulations}
+\title{Pol Sci 630: Problem Set 11 - Causal Inference Techniques - Differences-in-differences}
 
 \author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
 
@@ -31,112 +31,59 @@
 
 \section*{R Programming}
 
-\subsection*{Problem 1 (4 points)}
+\subsection*{Problem 1: Descriptive Summary Statistics (4 points)}
 
 \paragraph{Do the following in R:}
 
-\subparagraph{} Load the \textit{LDC\_IO\_replication} dataset. Create a subset that contains the following countries only: Brazil, Jamaica, Kuwait, Hong Kong, and the Kyrgyz Republic. Then, keep only the variables in your dataset that you need for the following regression in this problem (problem 1).
+\subparagraph{a)} Load the \textit{VOTE1} dataset that was used in previous problem sets.
 
-\bigskip
+\subparagraph{b)} Create a table of summary statistics for \LaTeX \ that includes all interval-level variables in the dataset. Include this table in the document you submit.
 
-Before you impute any missing data, estimate a linear regression with the following characteristics and show the results:
-
-\begin{enumerate}
-	\item Dependent variable: net changes in FDI as percentage of GNP
-	\item Independent variables: tariff Level, GDP per capita, Polity score
-	\item There is no need to use lagged versions of the independent variables or country dummies in this regression.
-\end{enumerate}
-
-\bigskip
-
-Then, load the \textit{Amelia} package and the \textit{Zelig} package. In order to limit the length of the PDF document that we produce as homework PDF file, please hide this part of the code entirely by using the following command:
-\begin{verbatim}
-<<include=FALSE>>=
-\end{verbatim}
-
-Use \textit{Amelia} to impute the missing values of all variables in the dataset. In order to limit the length of the PDF document that we produce as homework PDF file, please hide the output of the code by using the following command:
-\begin{verbatim}
-<<results='hide'>>=
-\end{verbatim}
-
-Once you have imputed the missing values, use \textit{Zelig} to run the a new regression with the same characteristics as above and show the regression summary.
-
-Then, answer the following questions: Has the imputation of data changed the results? Are the results that we obtain from the imputed data more or less accurate (i.e. closer to the truth) than the results that we got in the first regression?
+Note: If you have the dataset in the same folder as your .Rnw file, you do not need to set a working directory when you compile your PDF.
 
 
 
-\subsection*{Problem 2 (4 points)}
+\subsection*{Problem 2: Differences-in-differences (8 points)}
 
 \paragraph{Do the following in R:}
 
-\subparagraph{} Load the \textit{LDC\_IO\_replication} dataset again to make sure that you are not limited to a subset like in the previous task.
+\subparagraph{} The government of country Z is interested in the effect that tax reductions have on the private expenditures of the owners of small businesses. In the year 2016, a tax reduction for restaurant owners was introduced in country Z. Restaurant owners are a subset of the small business owner population.
 
-\bigskip
+The government would like to estimate the effect that the introduction of the tax reduction had on this particular group and, knowing your awesome statistical skills, hires you for this task. The government provides you with two datasets, one with information from the year 2015 and one with information from the year 2016. Both datasets include information on the private expenditures of small business owners. You can find those datasets on the course website under "Meetings".
 
-Estimate a linear regression with the following characteristics and show the results:
+The two datasets have the following variables:
 
 \begin{enumerate}
-	\item Dependent variable: net changes in FDI as percentage of GNP
-	\item Independent variables: Polity score, GDP per capita, natural log of population
-	\item Please use lagged versions of the independent variables (lagged by 1 year).
-	\item There is no need to use country dummies in this regression.
+	\item Year: Year in which the private expenditures were made
+	\item PrivExp: The level of private expenditures in the local currency (Z-Dollars)
+	\item RestOwn: Equals ``1" if the person is a restaurant owner, equals ``0" if the person is not a restaurant owner
 \end{enumerate}
 
-\bigskip
+Assuming that there are parallel trends in the private expenditures of all small business owners, use the two datasets above to estimate the effect that the tax reductions had on the private expenditures of restaurant owners through a linear regression model. Make sure to interpret the results in your own words, including the statistical significance of the estimate. Based on your results, make a recommendation to the government regarding whether or not they should introduce tax reductions to achieve higher private expenditures of small business owners.
 
-For the regression above, create a component plus residual plot and interpret it.
+Note: Before you conduct this task, think carefully about how the data has to be structured to conduct a differences-in-differences analysis. When you know the structure that the data needs to have, combine the above datasets and introduce appropriate variables to achieve the structure needed.
 
-\bigskip
-
-Then, for the same regression,  conduct a \textit{Ramsey RESET Test for Functional Form Misspecification} with respect to the 2nd and 3rd power of your independent variables and interpret the results.
+Note: If you have the dataset in the same folder as your .Rnw file, you do not need to set a working directory when you compile your PDF.
 
 
+
+\section*{Statistical Theory: Differences-in-differences}
 
 \subsection*{Problem 3 (4 points)}
 
-\paragraph{Do the following in R:}
+\paragraph{Answer the following questions:}
 
-\subparagraph{} Create a subset of the LDC dataset that has complete cases for the variables of the following regression. Then, estimate a linear regression with the following characteristics and show the results:
+\subparagraph*{a)} In the tutorial it was shown that a simple differences-in-differences estimate using four groups is the following:
 
-\begin{enumerate}
-	\item Dependent variable: tariff level
-	\item Independent variables: Polity score, signing of IMF agreements, the number of years a government has been in office, GDP per capita, natural log of population, economic crisis, balance-of-payment crisis
-	\item Please use lagged versions of the independent variables (lagged by 1 year).
-\end{enumerate}
+$$ \delta = (\bar{x} _{t2} - \bar{x} _{t1}) - (\bar{y} _{t2} - \bar{y} _{t1}) $$
 
-\bigskip
+Where $x$ is the treatment group and $y$ is the control group and $t1$ and $t2$ indicate time points 1 and 2 respectively, with the treatment occurring in-between.
 
-Create 1000 simulations of this model. Before you create the 1000 simulations, please use the following command:
+Assuming that the parallel trends assumption is valid, how does the above calculation allow us to make a causal inference about the effect of the treatment on $x$? Explain carefully.
 
-\begin{verbatim}
-set.seed(2015)
-\end{verbatim}
+\subparagraph*{b)} What happens if the parallel trends assumption is violated? Explain carefully.
 
-Then, use the model simulations to graphically show the linear effect of the Polity score (lagged by 1 year) on tariff levels under all estimated coefficient values. For all of these graphical representations, hold the other variables of the regression at their mean value.
-
-\bigskip
-
-Note: In the tutorial we held all other variables at the value 0. Here you are explicitly asked to hold them at their mean value.
-
-
-\pagebreak
-
-\subsection*{Problem 4 (4 points)}
-
-\paragraph{Do the following in R:}
-
-\subparagraph{} Continue to use the full LDC dataset and the regression estimated in problem 3 (with lagged independent variables).
-
-The goal of this problem is to compare the substantive effects of two different independent variables using model simulations and averaging over our entire data. Please create a new plot for the average predictive comparison of the effects of the following variables:
-
-\begin{enumerate}
-	\item The Polity score
-	\item GDP per capita
-\end{enumerate}
-
-Please compare the effect that each of the above variables has when it increases from its 25th percentile value to its 75th percentile value.
-
-Please interpret the findings and make a statement about which variable appears to have the larger substantive effect on tariff level.
+\subparagraph*{c)} Describe one way how the parallel trends assumption can be relaxed. What needs to be true to relax it?
 
 
 

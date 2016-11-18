@@ -1,0 +1,109 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{setspace}
+\usepackage{hyperref}
+\onehalfspacing
+
+
+
+\begin{document}
+
+\title{Pol Sci 630: Problem Set 11 - Causal Inference Techniques - DiD and RDD}
+
+\author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
+
+\date{Due Date: Wednesday, November 16th, 2016, 1.25 PM (Beginning of Class)}
+ 
+\maketitle 
+
+
+
+\paragraph{Note 1: It is absolutely essential that you show all your work, including intermediary steps, in your (mathematical) calculations and that you comment on your R code to earn full credit (you can comment on your R code both with the use of \# in the R code and in the \LaTeX \ code). Showing all steps and commenting on code will also be required in future problem sets.}
+
+\paragraph{Note 2: Please submit a PDF file created through knitr containing all your answers to the problem set. knitr allows you to combine R code and \LaTeX \ code in one document, meaning that you can include both the answers to R programming and math problems. Also submit the source code that generates the PDF file (i.e. the .Rnw file).}
+
+\paragraph{Note 3: Make sure that the PDF files you submit do not include any references to your identity. The grading will happen anonymously. You can submit your answer at the following website: \url{http://ps630-f15.herokuapp.com/}}
+
+
+
+\section*{R Programming}
+
+\subsection*{Problem 1: Descriptive Summary Statistics (2 points)}
+
+\paragraph{Do the following in R:}
+
+\subparagraph{a)} Load the \textit{VOTE1} dataset that was used in previous problem sets.
+
+\subparagraph{b)} Create a table of summary statistics for \LaTeX \ that includes all numerical variables in the dataset.
+
+
+
+\subsection*{Problem 2: Differences-in-differences (5 points)}
+
+\paragraph{Do the following in R:}
+
+\subparagraph{} The government of country Z is interested in the effect that tax reductions have on the private expenditures of the owners of small businesses. In the year 2016, a tax reduction for restaurant owners was introduced in country Z. Restaurant owners are a subset of the small business owner population.
+
+The government would like to estimate the effect that the introduction of the tax reduction had on this particular group and, knowing your awesome statistical skills, hires you for this task. The government provides you with two datasets, one with information from the year 2015 and one with information from the year 2016. Both datasets include information on the private expenditures of small business owners.
+
+The two datasets have the following variables:
+
+\begin{enumerate}
+	\item Year: Year in which the private expenditures were made
+	\item PrivExp: The level of private expenditures in the local currency (Z-Dollars)
+	\item RestOwn: Equals ``1" if the person is a restaurant owner, equals ``0" if the person is not a restaurant owner
+\end{enumerate}
+
+Assuming that there are parallel trends in the private expenditures of all small business owners, use the two datasets above to estimate the effect that the tax reductions had on the private expenditures of restaurant owners. Make sure to interpret the results in your own words. Based on your results, make a recommendation to the government regarding whether or not they should introduce tax reductions to achieve higher private expenditures of small business owners.
+
+Note: Before you conduct this task, think carefully about how the data has to be structured to conduct a differences-in-differences analysis. When you know the structure that the data needs to have, combine the above datasets and introduce appropriate variables to achieve the structure needed.
+
+
+
+\subsection*{Problem 3: Regression Discontinuity Designs (5 points)}
+
+\paragraph{Do the following in R:}
+
+\subparagraph{a)} Load the \textit{SocialSecurity} data that is available on the course website and display the summary statistics.
+
+This artificial dataset contains observations of two variables, namely the vote share that the ``liberal party" has received and expenditures for social security.\footnote{Assume that each data point represents one election period in one state.} The liberal party is in a two-party system (with the other party being the ``conservative party") in which gaining 50\% of the vote share means election victory. The goal of the analysis is to estimate the effect of liberal-party election victories on social security expenditures via RDD.
+
+\subparagraph{b)} Turn the data frame into a regression discontinuity object and display the average values of social security expenditures for different bins of liberal party vote shares.
+
+\subparagraph{c)} Estimate two parametric regressions of the effects of liberal-party election victory on social security expenditures. One regression should be a regular OLS expression without higher-order polynomials. The second regression should include polynomials of up to the 3rd order. Choose a bandwidth of 15. Interpret the results of your regressions --- is there a discontinuity in the data at a vote share of 50\%?
+
+\subparagraph{d)} Estimate a nonparametric regression of the effects of liberal-party election victory on social security expenditures. Use the IK procedure introduced in the tutorial to estimate the optimal bandwidth.
+
+\subparagraph{e)} For the non-parametric regression, show a regression sensitivity plot (for bandwidths of 5 to 20) and interpret it.
+
+\subparagraph{f)} For the non-parametric regression, conduct a Placebo test and interpret the results.
+
+\subparagraph{g)} For the non-parametric regression, conduct a McCrary density test and interpret the results.
+
+
+
+
+\section*{Statistical Theory: Differences-in-differences}
+
+\subsection*{Problem 4 (4 points)}
+
+\paragraph{Answer the following questions:}
+
+\subparagraph*{a)} In the tutorial it was shown that a simple differences-in-differences estimate using four groups is the following:
+
+$$ \delta = (\bar{x} _{t2} - \bar{y} _{t2}) - (\bar{x} _{t1} - \bar{y} _{t1}) $$
+
+Where $x$ is the treatment group and $y$ is the control group and $t1$ and $t2$ indicate time points 1 and 2 respectively.
+
+Assuming that the parallel trends assumption is valid, how does the above calculation allow us to make a causal inference about the effect of the treatment of $x$? Explain carefully.
+
+\subparagraph*{b)} What happens if the parallel trends assumption is violated? Explain carefully.
+
+\subparagraph*{c)} Describe one way how the parallel trends assumption can be relaxed. What needs to be true to relax it?
+
+
+
+\end{document}

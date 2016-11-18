@@ -1,4 +1,54 @@
-\documentclass[12pt]{article}
+\documentclass[12pt]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
@@ -7,9 +57,7 @@
 \usepackage{hyperref}
 \usepackage{color}
 \onehalfspacing
-
-
-
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
 \title{Pol Sci 630: Problem Set 11 - Causal Inference Techniques - Differences-in-differences}
@@ -42,18 +90,27 @@
 
 \subsection*{Problem 1}
 
-<<results='hide',tidy=TRUE>>=
-setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16/W5/')
-library(foreign)
-vote1=read.dta("VOTE1.dta")
-summary(vote1)
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{setwd}\hlstd{(}\hlstr{"C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16/W5/"}\hlstd{)}
+\hlkwd{library}\hlstd{(foreign)}
+\hlstd{vote1} \hlkwb{=} \hlkwd{read.dta}\hlstd{(}\hlstr{"VOTE1.dta"}\hlstd{)}
+\hlkwd{summary}\hlstd{(vote1)}
 
-library(reporttools)
+\hlkwd{library}\hlstd{(reporttools)}
+\end{alltt}
 
-varsVote <- vote1[, c("voteA","expendA","expendB","prtystrA","lexpendA","lexpendB","shareA")]
-capVote <- "Descriptive Statistics: Vote Dataset"
-tableContinuous(vars = varsVote, cap = capVote, lab = "tab: cont1", longtable = F, prec=2)
-@
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: xtable}}\begin{alltt}
+\hlstd{varsVote} \hlkwb{<-} \hlstd{vote1[,} \hlkwd{c}\hlstd{(}\hlstr{"voteA"}\hlstd{,} \hlstr{"expendA"}\hlstd{,} \hlstr{"expendB"}\hlstd{,} \hlstr{"prtystrA"}\hlstd{,} \hlstr{"lexpendA"}\hlstd{,}
+    \hlstr{"lexpendB"}\hlstd{,} \hlstr{"shareA"}\hlstd{)]}
+\hlstd{capVote} \hlkwb{<-} \hlstr{"Descriptive Statistics: Vote Dataset"}
+\hlkwd{tableContinuous}\hlstd{(}\hlkwc{vars} \hlstd{= varsVote,} \hlkwc{cap} \hlstd{= capVote,} \hlkwc{lab} \hlstd{=} \hlstr{"tab: cont1"}\hlstd{,} \hlkwc{longtable} \hlstd{= F,}
+    \hlkwc{prec} \hlstd{=} \hlnum{2}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 \begin{table}[ht]
 \centering
@@ -78,35 +135,72 @@ voteA & 173 & 16.00 & 36.00 &  50.00 &  50.50 &  65.00 &   84.00 &  16.78 &  29.
 
 \subsection*{Problem 2}
 
-<<results='show',tidy=TRUE>>=
-setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16/W11/')
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{setwd}\hlstd{(}\hlstr{"C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16/W11/"}\hlstd{)}
 
-load("Data2015.Rdata")
-load("Data2016.Rdata")
+\hlkwd{load}\hlstd{(}\hlstr{"Data2015.Rdata"}\hlstd{)}
+\hlkwd{load}\hlstd{(}\hlstr{"Data2016.Rdata"}\hlstd{)}
 
-# We need to append the second dataset to the first one
-# In order to do this, we first need to 
+\hlcom{# We need to append the second dataset to the first one In order to do this,}
+\hlcom{# we first need to}
 
-YearComplete=c(Data2015$Year,Data2016$Year)
-RestOwnComplete=c(Data2015$RestOwn,Data2016$RestOwn)
-PrivExpComplete=c(Data2015$PrivExp,Data2016$PrivExp)
+\hlstd{YearComplete} \hlkwb{=} \hlkwd{c}\hlstd{(Data2015}\hlopt{$}\hlstd{Year, Data2016}\hlopt{$}\hlstd{Year)}
+\hlstd{RestOwnComplete} \hlkwb{=} \hlkwd{c}\hlstd{(Data2015}\hlopt{$}\hlstd{RestOwn, Data2016}\hlopt{$}\hlstd{RestOwn)}
+\hlstd{PrivExpComplete} \hlkwb{=} \hlkwd{c}\hlstd{(Data2015}\hlopt{$}\hlstd{PrivExp, Data2016}\hlopt{$}\hlstd{PrivExp)}
 
-complete=cbind(YearComplete,RestOwnComplete,PrivExpComplete)
-complete=as.data.frame(complete)
-colnames(complete)=c("Year","RestOwn","PrivExp")
+\hlstd{complete} \hlkwb{=} \hlkwd{cbind}\hlstd{(YearComplete, RestOwnComplete, PrivExpComplete)}
+\hlstd{complete} \hlkwb{=} \hlkwd{as.data.frame}\hlstd{(complete)}
+\hlkwd{colnames}\hlstd{(complete)} \hlkwb{=} \hlkwd{c}\hlstd{(}\hlstr{"Year"}\hlstd{,} \hlstr{"RestOwn"}\hlstd{,} \hlstr{"PrivExp"}\hlstd{)}
 
-# Create a new variable that shows if there have been tax reductions
+\hlcom{# Create a new variable that shows if there have been tax reductions}
 
-complete$TaxReduc=NA
-complete$TaxReduc[complete$Year==2015]=0
-complete$TaxReduc[complete$Year==2016]=1
+\hlstd{complete}\hlopt{$}\hlstd{TaxReduc} \hlkwb{=} \hlnum{NA}
+\hlstd{complete}\hlopt{$}\hlstd{TaxReduc[complete}\hlopt{$}\hlstd{Year} \hlopt{==} \hlnum{2015}\hlstd{]} \hlkwb{=} \hlnum{0}
+\hlstd{complete}\hlopt{$}\hlstd{TaxReduc[complete}\hlopt{$}\hlstd{Year} \hlopt{==} \hlnum{2016}\hlstd{]} \hlkwb{=} \hlnum{1}
 
-summary(complete)
+\hlkwd{summary}\hlstd{(complete)}
+\end{alltt}
+\begin{verbatim}
+##       Year         RestOwn       PrivExp         TaxReduc  
+##  Min.   :2015   Min.   :0.0   Min.   : 7511   Min.   :0.0  
+##  1st Qu.:2015   1st Qu.:0.0   1st Qu.:22954   1st Qu.:0.0  
+##  Median :2016   Median :0.5   Median :26655   Median :0.5  
+##  Mean   :2016   Mean   :0.5   Mean   :26628   Mean   :0.5  
+##  3rd Qu.:2016   3rd Qu.:1.0   3rd Qu.:30326   3rd Qu.:1.0  
+##  Max.   :2016   Max.   :1.0   Max.   :44663   Max.   :1.0
+\end{verbatim}
+\begin{alltt}
+\hlstd{did_model} \hlkwb{=} \hlkwd{lm}\hlstd{(PrivExp} \hlopt{~} \hlstd{RestOwn} \hlopt{+} \hlstd{TaxReduc} \hlopt{+} \hlstd{RestOwn} \hlopt{*} \hlstd{TaxReduc,} \hlkwc{data} \hlstd{= complete)}
 
-did_model=lm(PrivExp ~ RestOwn + TaxReduc + RestOwn*TaxReduc, data=complete)
-
-summary(did_model)
-@
+\hlkwd{summary}\hlstd{(did_model)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = PrivExp ~ RestOwn + TaxReduc + RestOwn * TaxReduc, 
+##     data = complete)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -17160  -3509    132   3397  16744 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)       24689.3      219.4 112.521  < 2e-16 ***
+## RestOwn             -18.0      316.7  -0.057    0.955    
+## TaxReduc           2759.2      316.7   8.712  < 2e-16 ***
+## RestOwn:TaxReduc   2185.3      447.9   4.879 1.15e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 5004 on 1996 degrees of freedom
+## Multiple R-squared:  0.1491,	Adjusted R-squared:  0.1478 
+## F-statistic: 116.6 on 3 and 1996 DF,  p-value: < 2.2e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 Interpretation: the regression model we used to estimate the differences-in-differences shows that---if the parallel trends assumption holds---there is a difference of 2185.3 Z-Dollars in the private expenditures of restaurant owners versus all other small business owners. Given that the only exogenous change we are aware of is the change in tax policy, we would attribute this difference to the change in tax policy. The difference is statistically significant at a level of $p < 0.001$ and thus at all common levels of statistical significance.
 
