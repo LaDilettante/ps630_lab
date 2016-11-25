@@ -1,149 +1,219 @@
 ---
-title: "Tutorial 11: Imputation of Missing Data, Regression Diagnostics, and Simulations"
+title: "Tutorial 13: Autocorrelation, Error Correction, and Model Simulations"
 author: "Jan Vogler (jan.vogler@duke.edu)"
-date: "November 11, 2016"
+date: "December 2, 2016"
 output: pdf_document
 ---
 
 # Today's Agenda
 
-1. Descriptive Summary Statistics
-2. Imputation of missing data with Amelia
-3. Diagnostic techniques: CPR plots and the Ramsey RESET test
+1. Autocorrelation
+2. Panel-corrected standard errors
+3. Clustered standard errors
 4. Model simulations
 5. Using model simulations to estimate substantive effects
+6. Learning R - what to do next?
 
 
 
+# 1. Autocorrelation
 
-
-
-
-# 2. Imputation of missing data with Amelia
-
-We often deal with missing data, meaning that some variable values for some observations are missing. This is problematic for many reasons and data that is missing systematically and not arbitrarily can challenge the validity of our regression results. Insofar, the accuracy of our model profits from the completeness of data.
-
-Imputation allows us to make statistical inferences about missing data values. Our imputed values are based on the data that we have for other observations and for other variables of the unit that has missing values. The most sophisticated imputation techniques compute multiple alternative datasets based on the existing dataset and then make an inference based on those datasets to estimate the final imputed value for the missing values of any given variable (therefore "multiple imputation").
-
-Let us first look at our LDC dataset and how many missing values it has for different variables.
+Let us first load the LDC dataset.
 
 ```{r,tidy=TRUE}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16')
+library(foreign)
+LDC=read.dta("LDC_IO_replication.dta")
+```
+
+We use a regression that we have already seen in the past to illustrate the phenomenon of autocorrelation. This is our standard regression in which we analyze the impact of democratization on tariff levels.
+
+```{r,tidy=TRUE}
+lm_basic=lm(newtar ~ l1polity + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
+# summary(lm_main)
+```
+
+There might be autocorrelation in our model because our units at time t and our units at time t-1 are likely to have similar values for the dependent and independent variables. Let us regress the residuals of our models on the residuals at time t-1:
+
+```{r,tidy=TRUE}
+res_t0=lm_basic$resid
+res_t1=c(lm_basic$resid[2:length(lm_basic$resid)],NA)
+res_data=as.data.frame(cbind(res_t1,res_t0))
+head(res_data)
+lm_res=lm(res_t1 ~ res_t0, data=res_data)
+summary(lm_res)
+```
+
+What we can see from this simple regression is that there is a high level of autocorrelation in our errors. Note that this code can easily be extended to include multiple lags of our residuals, which you might want to do to check for autocorrelation for several observations.
+
+To address this problem, if we have enough datapoints available, we can create lags of our dependent variable (and other variables) and then include them in a new regression. The *DataCombine* package is designed for data management, especially time series and panel data. It allows us to easily generate lags of our dependent variable.
+
+install.packages("DataCombine")
+
+```{r,tidy=TRUE}
+library(DataCombine)
+
 # summary(LDC)
 ```
 
-As you can see, we have quite a few NAs in this dataset. Let's impute some of the missing values. For the imputation of missing data, we will use a package by Gary King et al. called *Amelia*. (Interestingly, the guide to the package uses the same dataset that we have been using throughout the semester to illustrate the imputation of missing data.) For the tutorial, we will demonstrate the imputation of missing data with only a small subset of three countries with a small number of variables (due to time constraints).
+We first define which variables we want to lag and we create a vector that includes prefixes for our lagged variables so that we can easily distinguish them from the non-lagged variables.
 
 ```{r,tidy=TRUE}
-LDCs=subset(LDC, ctylabel=="SouthAfrica" | ctylabel=="Turkey" | ctylabel=="Indonesia")
+# Choose the variables you want to lag
+toLag = c("newtar","polityiv_update2")
 
-# Let us reduce our dataset to some variables that we might be most interested in
+# Define vector with the lag numbers
+numberLag = c("lag1_","lag2_","lag3_")
 
-keep = c("ctylabel","date","newtar","fdignp","gdp_pc_95d","polityiv_update2","usheg","lnpop")
-LDCs=LDCs[,keep]
+# For loop to lag the data
+for (i in 1:3){
+  for (lagVar in toLag){
+    LDC=slide(LDC, Var=lagVar, # Specify variable to lag
+                 TimeVar="date", # Specificy time variable
+                 GroupVar="ctylabel", # Unit variable
+                 NewVar=paste0(numberLag[i],lagVar), # Name of new variable
+                 slideBy = -i, # Lag by how many units, minus -> past
+                 keepInvalid = FALSE, # Keep observations for which no lag can be created
+                 reminder = TRUE) # Remind you to order the data by group variable
+  }
+}
 ```
 
-Two things that you should be aware of when you use Amelia to impute data yourself:
-
-1. The imputation of missing values in large datasets can take a lot of time.
-2. Amelia has problems with variables that are perfectly correlated to other variables.
-
-**The content below is based on the Amelia guide. A link is provided at the end.**
-
-Now let us do the imputation. We will create only 5 imputed datasets (m=5).
-
-install.packages("Amelia")
+Let us now create a new model that contains three lags of the dependent variable.
 
 ```{r,tidy=TRUE}
-library(Amelia)
-a.out <- amelia(LDCs, m = 5, ts = "date", cs = "ctylabel")
-# It is very important to include ts as the time variable and cs as the unit variable. Otherwise Amelia would treat all observations as independent
+lm_lag_dv=lm(newtar ~ lag1_newtar + lag2_newtar + lag3_newtar + l1polity + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + factor(ctylabel)-1, data = LDC)
+
+# summary(lm_lag_dv)
 ```
 
-Let us have a look at the imputed values of the first three datasets that were generated.
+How can we interpret the results of this model?
+
+Also, there might be a time trend. Tariff levels might be moving up or down over time. If we can capture such a time trend with our model, it might reduce the autocorrelation in our errors.
 
 ```{r,tidy=TRUE}
-hist(a.out$imputations[[1]]$fdignp, col="grey", border="white")
-hist(a.out$imputations[[2]]$fdignp, col="grey", border="white")
-hist(a.out$imputations[[3]]$fdignp, col="grey", border="white")
+lmTime=lm(newtar ~ lag1_newtar + lag2_newtar + lag3_newtar + l1polity + l1gdp_pc + l1lnpop + l1ecris2 + l1bpc1 + l1avnewtar + date + factor(ctylabel)-1, data = LDC)
+
+# summary(lmTime)
 ```
 
-We can save those datasets either as a single large dataset or as multiple datasets containing each imputation.
+How would we interpret the results of our regression?
+
+
+
+# 2. Panel-Corrected Standard Errors
+
+When we deal with variables that are correlated over time, i.e. variables that are "sticky" and exhibit little change from year to year, we have to account for this corrrelation somehow. In panel data (cross-sectional, time-series), a standard option is to use panel-corrected standard errors (PCSE).
+
+Let us use a new dataset to illustrate panel-corrected standard errors. This dataset was downloaded from: http://people.stern.nyu.edu/wgreene/Econometrics/PanelDataSets.htm
+
+According to the website it is from the dissertation of Y. Grunfeld (Univ. of Chicago, 1958).
+
+The variables have the following meaning:
+
+Firm = Firm ID, 1,...,10
+
+Year = 1935,...,1954
+
+I = Investment
+
+F = Real Value of the Firm
+
+C = Real Value of the Firm's Capital Stock
 
 ```{r,tidy=TRUE}
-setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w11/')
-save(a.out, file = "imputations.RData")
-write.amelia(obj=a.out, file.stem = "LDCs", format = "csv")
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16/w13')
+grunfeld=read.csv("grunfeld.csv")
 ```
 
-We can now run an analysis with our imputed dataset. The Amelia package is integrated with the Zelig package (both are by Gary King), so we will use this package to estimate a new regression with the imputed data.
-
-install.packages("Zelig")
-
-```{r,tidy=TRUE,results="hide",include=FALSE}
-library(Zelig)
-```
-
-library(Zelig)
+Let us first load the "pcse" package: install.packages("pcse")
 
 ```{r,tidy=TRUE}
-z.out.imp <- zelig(polityiv_update2 ~ gdp_pc_95d + fdignp, data = a.out$imputations, model = "ls")
-summary(z.out.imp)
+library(pcse)
 ```
 
-Amelia has a graphical interface that *might* make it easier for you to use it. When I tried to use the graphical interface, however, my R session crashed multiple times and I had to restart it completely. So be cautious and save your work before you use the following command.
+Now let us run a regression that includes panel-corrected standard errors.
+
+We might think that the investment a firm makes is driven by the real value of the firm and the real value of its capital stock. We first have to run the regular regression.
+
+```{r,tidy=TRUE,error=TRUE}
+reg1=lm(I ~ F + C, data = grunfeld)
+summary(reg1)
+```
+
+As we can see, both are positive and highly significant. However, we have not considered the possibility that observations are correlated over time within the same units. That is why we need panel-data error correction.
+
+Let us apply this.
+
+```{r,tidy=TRUE,error=TRUE}
+reg1pcse=pcse(reg1, groupN = grunfeld$FIRM, groupT = grunfeld$YEAR, pairwise=T)
+```
+
+Now let us obtain a new summary.
 
 ```{r,tidy=TRUE}
-# AmeliaView()
+summary(reg1pcse)
 ```
 
-For more information on how to use the package (for your own research) see the very helpful introduction:
+Does this differ from the regular regression? What are your conclusions?
 
-https://cran.r-project.org/web/packages/Amelia/vignettes/amelia.pdf
-
-
-
-# 3. Diagnostic techniques: CPR plots and the Ramsey RESET test
-
-Diagnostic techniques are important tools to assess the accuracy and robustness of our regression. In the last tutorial, outlier plots were introduced. Those plots help us to find out whether or not our results are driven by just a few units, which is bad.
-
-Let us look at a regression that is related to the model that we have used in tutorial 5 on interpretation. (This is a shortened version though)
+By the way, here is how you obtain the corrected variance-covariance matrix. This might be useful for some applications.
 
 ```{r,tidy=TRUE}
-lm_newtar=lm(newtar ~ l1polity + l1fdi + l1usheg + factor(ctylabel)-1, data = LDC)
-# summary(lm_newtar)
+vcov_pcse=vcovPC(reg1, groupN=grunfeld$FIRM, groupT=grunfeld$YEAR, pairwise=TRUE)
 ```
 
-The car package ("Companion to Applied Regression") includes commands for many diagnostic techniques. You should always apply these techniques to your own regression results to make sure that they are robust.
-
-install.packages("car")
-
-Let us first focus on the component plus residual plots that were introduced in the lecture.
+Compare this to the regular one.
 
 ```{r,tidy=TRUE}
-library(car)
-crPlots(lm_newtar)
+vcov_reg=vcov(reg1)
+
+vcov_pcse
+vcov_reg
 ```
 
-What can we tell from these regressions? What can we say about each of our independent variables?
 
-Let us move on to the Ramsey RESET Test for Functional Form Misspecification. For this test we use the "lmtest" package.
 
+# 3. Clustered Standard Errors
+
+We use clustered standard errors to correct for correlation among all observations of a specific subgroup of the data.
+
+For example, we might want to use clustered standard errors, when we run regressions on the vote1 dataset that we have used in previous problem sets.
+
+```{r,tidy=TRUE}
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16/w13')
+
+library(foreign)
+vote1=read.dta("VOTE1.dta")
+summary(vote1)
+
+lm_vote=lm(voteA ~ expendA + expendB + prtystrA, data = vote1)
+summary(lm_vote)
+```
+
+In order to use clustered standard errors, we first have to install multiple packages.
+
+install.packages("plm")
 install.packages("lmtest")
+install.packages("multiwayvcov")
 
 ```{r,tidy=TRUE}
+library(plm)
 library(lmtest)
-
-# For the second power
-resettest(lm_newtar, power = 2, type="regressor", data = LDC)
-
-# For the third power
-resettest(lm_newtar, power = 3, type="regressor", data = LDC)
-
-# For both
-resettest(lm_newtar, power = 2:3, type="regressor", data = LDC)
+library(multiwayvcov)
 ```
 
-How would we interpret this output?
+Now we have to obtain the corrected variance-covariance matrix.
+
+```{r,tidy=TRUE}
+lm_vote.vcovCL=cluster.vcov(lm_vote, vote1$state)
+
+lm_vote_CSE=coeftest(lm_vote, lm_vote.vcovCL)
+
+lm_vote_CSE
+```
+
+Have our results changed? How would you interpret these new findings?
 
 
 
@@ -154,7 +224,7 @@ How would we interpret this output?
 We will look at new data that we have not used previously: data on attitudes toward the United States Supreme Court. This is a topic that students of political behavior and identities might be interested in.
 
 ```{r,tidy=TRUE}
-setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/w11/')
+setwd('C:/Users/Jan/OneDrive/Documents/GitHub/ps630_lab/ps630_f16/w13')
 courtdata <- read.table("courtdata.txt", header=TRUE)
 # summary(courtdata)
 ```
@@ -258,7 +328,7 @@ m.ideo <- array(NA, 1000)
 
 Now we run a for loop. In this for loop we go through each of the 1000 simulations of the model that we have generated based on the variance-covariance matrix. An in each of the 1000 iterations, we also go through the data in its entirety. In each of these iterations, we subtract the effect of holding our ideology at the minimum from holding it at the maximum. This will give us an idea of what the effect is across many possible models and all of the empirical data that is available to us - a so-called "average prediction" of the effect.
 
-Please note that the following code applies to all kinds of models, including such that have non-linear link functions. For linear functions, such as linear regression, we can reduce and simplify this code. The full code is provided to ensure that you can also use it with respect to other types of models.
+*Please note that the following code applies to all kinds of models, including such that have non-linear link functions. For linear functions, such as linear regression, we can reduce and simplify this code. The full code is provided to ensure that you can also use it with respect to other types of models, especially logit and probit models, where variables generally do not have effects that are directly proportional.*
 
 ```{r,tidy=TRUE}
 # Remember our model was: sclaw ~ ruling + ideo + soph + age + male + black + hisp + college + income
@@ -324,7 +394,7 @@ Which variable has the greater substantive effect? What can we say about the ave
 
 
 
-# 3. Learning R - what to do next?
+# 6. Learning R - what to do next?
 
 Here are some pieces of advice on how to proceed from here.
 
