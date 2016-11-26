@@ -101,7 +101,7 @@ How would we interpret the results of our regression?
 
 
 
-# 2. Panel-Corrected Standard Errors
+# 2. Panel-corrected standard errors
 
 When we deal with variables that are correlated over time, i.e. variables that are "sticky" and exhibit little change from year to year, we have to account for this corrrelation somehow. In panel data (cross-sectional, time-series), a standard option is to use panel-corrected standard errors (PCSE).
 
@@ -174,7 +174,7 @@ vcov_reg
 
 
 
-# 3. Clustered Standard Errors
+# 3. Clustered standard errors
 
 We use clustered standard errors to correct for correlation among all observations of a specific subgroup of the data.
 
@@ -328,7 +328,7 @@ m.ideo <- array(NA, 1000)
 
 Now we run a for loop. In this for loop we go through each of the 1000 simulations of the model that we have generated based on the variance-covariance matrix. An in each of the 1000 iterations, we also go through the data in its entirety. In each of these iterations, we subtract the effect of holding our ideology at the minimum from holding it at the maximum. This will give us an idea of what the effect is across many possible models and all of the empirical data that is available to us - a so-called "average prediction" of the effect.
 
-*Please note that the following code applies to all kinds of models, including such that have non-linear link functions. For linear functions, such as linear regression, we can reduce and simplify this code. The full code is provided to ensure that you can also use it with respect to other types of models, especially logit and probit models, where variables generally do not have effects that are directly proportional.*
+**Please note that the following code applies to all kinds of models, including such that have non-linear link functions. For linear functions, such as linear regression, we can reduce and simplify this code. The full code is provided to ensure that you can also use it with respect to other types of models, especially logit and probit models, where variables generally do not have effects that are directly proportional.**
 
 ```{r,tidy=TRUE}
 # Remember our model was: sclaw ~ ruling + ideo + soph + age + male + black + hisp + college + income
