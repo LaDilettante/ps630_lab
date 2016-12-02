@@ -1,143 +1,136 @@
-\documentclass[12pt]{article}
-\usepackage{amsmath}
-\usepackage{amssymb}
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage{amsmath, amssymb}
 \usepackage{graphicx}
-\usepackage{fullpage}
-\usepackage{setspace}
 \usepackage{hyperref}
-\onehalfspacing
-
-
-
+\usepackage{listings}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
-\title{Pol Sci 630: Problem Set 11 - Imputation of Missing Data, Regression Diagnostics, and Simulations}
+\title{Pol Sci 630:  Problem Set 13: Autocorrelation, Clustered SE}
+\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+\maketitle
 
-\author{Prepared by: Jan Vogler (\href{mailto:jan.vogler@duke.edu}{jan.vogler@duke.edu})}
+\section{Diagnosing autocorrelation}
 
-\date{Due Date: Wednesday, November 16th, 2016, 1.25 PM (Beginning of Class)}
- 
-\maketitle 
+\subsection{Generating autocorrelated data}
 
+Generate data (i.e. e, X, Y) that follow an AR(2) process, described below. It's an AutoRegressive(2) process because the error term is correlated with itself up to two periods, i.e. $e(t) = a_1e(t-1) + a_2 e(t-2) + v(t)$. (This is also described in slide 4 of your lecture note).
 
+\begin{align}
+v(t) &\sim N(0, 1) \\
+e(t) &= a_1e(t-1) + a_2 e(t-2) + v(t) \qquad \text{Important: $a_1 + a_2 < 1$} \\
+Y(t) &= X(t) + e(t)
+\end{align}
 
-\paragraph{Note 1: It is absolutely essential that you show all your work, including intermediary steps, in your (mathematical) calculations and that you comment on your R code to earn full credit (you can comment on your R code both with the use of \# in the R code and in the \LaTeX \ code). Showing all steps and commenting on code will also be required in future problem sets.}
+Let arbitrarily pick $a_1 = 0.4$, $a_2 = 0.2$, and $T$, the number of time periods, $= 100$
 
-\paragraph{Note 2: Please submit a PDF file created through knitr containing all your answers to the problem set. knitr allows you to combine R code and \LaTeX \ code in one document, meaning that you can include both the answers to R programming and math problems. Also submit the source code that generates the PDF file (i.e. the .Rnw file).}
+Hint: How do we simulate the vector $e(t)$? Start with $e(1) = rnorm(1), e(2) = a_1 * e(1) + rnorm(1)$, then calculate $e(3), e(4), \dots, e(100)$ according to the DGP above. You may want to use a loop for this.
 
-\paragraph{Note 3: Make sure that the PDF files you submit do not include any references to your identity. The grading will happen anonymously. You can submit your answer at the following website: \url{http://ps630-f15.herokuapp.com/}}
+\subsection{Diagnostics: Visual}
 
+Plot residual against time and against lagged , up to 4 lags (e.g. residual ~ lag-1 residual, residual ~ lag-2 residual, etc. up to 4 plots) How does the correlation look across the four plots?
 
+Hint: to create a lagged vector, you can use \verb`lag` in package \verb`dplyr`. In other cases, i.e. generating lags in a data frame / panel, probably best to use \verb`DataCombine` like in the lab tutorial.
 
-\section*{R Programming}
+\subsection{Diagnostics: Hypothesis testing}
 
-\subsection*{Problem 1 (4 points)}
+Regress residuals against X and lag1 and lag2 residuals, and then doing an F test for joint significance in the lagged residuals. (This is described in slide 4 of your lecture note).
 
-\paragraph{Do the following in R:}
+Hint: You can use \verb`linearHypothesis` function in package \verb`car` to conduct a joint F test.
 
-\subparagraph{} Load the \textit{LDC\_IO\_replication} dataset. Create a subset that contains the following countries only: Brazil, Jamaica, Kuwait, Hong Kong, and the Kyrgyz Republic. Then, keep only the variables in your dataset that you need for the following regression in this problem (problem 1).
+\section{Clustered errors}
 
-\bigskip
+\subsection{Conceptual: Why is it a problem?}
 
-Before you impute any missing data, estimate a linear regression with the following characteristics and show the results:
+Note: Just me explaining here, nothing for you to do.
 
-\begin{enumerate}
-	\item Dependent variable: net changes in FDI as percentage of GNP
-	\item Independent variables: tariff Level, GDP per capita, Polity score
-	\item There is no need to use lagged versions of the independent variables or country dummies in this regression.
-\end{enumerate}
+Among the \href{https://en.wikipedia.org/wiki/Ordinary_least_squares#Assumptions}{5 assumptions of classical linear regression}, which one was violated by clustered standard errors?
 
-\bigskip
+Clustered errors violate the Spherical Error assumption, specifically the No Autocorrelation part, i.e. $E[\epsilon_i\epsilon_j|X] = 0$ for $i \neq j$. Indeed, clustered errors mean that two observations within the same clusters have correlated error. In other words, $E[\epsilon_i\epsilon_j|X] \neq 0$ if $i, j$ are in the same cluster.
 
-Then, load the \textit{Amelia} package and the \textit{Zelig} package. In order to limit the length of the PDF document that we produce as homework PDF file, please hide this part of the code entirely by using the following command:
-\begin{verbatim}
-<<include=FALSE>>=
-\end{verbatim}
+This violation leads to higher standard errors, i.e. higher uncertainty in our model estimates. Intuitively, if clustered errors are present, units within a cluster are correlated. Thus, each unit does not present a 100\% new piece of information. In this case, we have less information to estimate our model, and we are less certain about our estimate.
 
-Use \textit{Amelia} to impute the missing values of all variables in the dataset. In order to limit the length of the PDF document that we produce as homework PDF file, please hide the output of the code by using the following command:
-\begin{verbatim}
-<<results='hide'>>=
-\end{verbatim}
+For example, our cluster is a classroom, and our unit is a student. Imagine the extreme case when every student is a clone of one person. The correlation between units within a classroom is 1 (its maximum). Even if we may have 100-student classroom, there is in fact only one person, one piece of information.
 
-Once you have imputed the missing values, use \textit{Zelig} to run the a new regression with the same characteristics as above and show the regression summary.
+(Side note: be precise in using the word error and standard errors. Error is the unobserved part in our DGP. Standard error is the standard deviation of our coefficient estimates. Clustered error is the fact that units in the same cluster have correlated error. Clustered standard error is a techique to adjust our standard error, reflecting our decreased certainty in our estimate in the face of clustered error.)
 
-Then, answer the following questions: Has the imputation of data changed the results? Are the results that we obtain from the imputed data more or less accurate (i.e. closer to the truth) than the results that we got in the first regression?
+\subsection{Clustered errors and diff-in-diff design}
 
+Describe a diff-in-diff design (briefly, an equation + a few sentences should be enough). Explain why clustered errors is a problem for diff-in-diff.
 
+\subsection{Dealing with clustered errors}
 
-\subsection*{Problem 2 (4 points)}
+Given the discussion above, it's now common practice to use clustered standard errors with a diff-in-diff design. Indeed, Eddy does in his own work, ``The Impact of Recentralization on Public Services: A Difference-in-Differences Analysis of the Abolition of Elected Councils in Vietnam.'' We'll replicate the first 2 columns in table 2, his main findings.
 
-\paragraph{Do the following in R:}
+\textbf{Put results in a stargazer table, including BOTH non-clustered and clustered SE. The final table should have 4 columns. How do clustered errors change the size of the coefficient and the SEs?}
 
-\subparagraph{} Load the \textit{LDC\_IO\_replication} dataset again to make sure that you are not limited to a subset like in the previous task.
+How to do it? You have two choices:
 
-\bigskip
+1. ``We do these things not because they are easy but because they are hard.'' \href{https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/IUG2C4}{Here} is the link to Eddy's replication data and code. Figure out yourself how to replicate.
 
-Estimate a linear regression with the following characteristics and show the results:
-
-\begin{enumerate}
-	\item Dependent variable: net changes in FDI as percentage of GNP
-	\item Independent variables: Polity score, GDP per capita, natural log of population
-	\item Please use lagged versions of the independent variables (lagged by 1 year).
-	\item There is no need to use country dummies in this regression.
-\end{enumerate}
-
-\bigskip
-
-For the regression above, create a component plus residual plot and interpret it.
-
-\bigskip
-
-Then, for the same regression,  conduct a \textit{Ramsey RESET Test for Functional Form Misspecification} with respect to the 2nd and 3rd power of your independent variables and interpret the results.
-
-
-
-\subsection*{Problem 3 (4 points)}
-
-\paragraph{Do the following in R:}
-
-\subparagraph{} Create a subset of the LDC dataset that has complete cases for the variables of the following regression. Then, estimate a linear regression with the following characteristics and show the results:
-
-\begin{enumerate}
-	\item Dependent variable: tariff level
-	\item Independent variables: Polity score, signing of IMF agreements, the number of years a government has been in office, GDP per capita, natural log of population, economic crisis, balance-of-payment crisis
-	\item Please use lagged versions of the independent variables (lagged by 1 year).
-\end{enumerate}
-
-\bigskip
-
-Create 1000 simulations of this model. Before you create the 1000 simulations, please use the following command:
-
-\begin{verbatim}
-set.seed(2015)
-\end{verbatim}
-
-Then, use the model simulations to graphically show the linear effect of the Polity score (lagged by 1 year) on tariff levels under all estimated coefficient values. For all of these graphical representations, hold the other variables of the regression at their mean value.
-
-\bigskip
-
-Note: In the tutorial we held all other variables at the value 0. Here you are explicitly asked to hold them at their mean value.
-
+Easier choice after the break. Resist the easier choice.
 
 \pagebreak
 
-\subsection*{Problem 4 (4 points)}
+2. You can follow these steps. The main findings code is in \verb`APSR_30indicators_0810.do`
 
-\paragraph{Do the following in R:}
-
-\subparagraph{} Continue to use the full LDC dataset and the regression estimated in problem 3 (with lagged independent variables).
-
-The goal of this problem is to compare the substantive effects of two different independent variables using model simulations and averaging over our entire data. Please create a new plot for the average predictive comparison of the effects of the following variables:
-
-\begin{enumerate}
-	\item The Polity score
-	\item GDP per capita
-\end{enumerate}
-
-Please compare the effect that each of the above variables has when it increases from its 25th percentile value to its 75th percentile value.
-
-Please interpret the findings and make a statement about which variable appears to have the larger substantive effect on tariff level.
-
-
+\begin{itemize}
+\item Load data \verb`panel_commune_2008_2010.dta`
+\item Drop Vietnam's Central Highland (\verb`reg8 == 6`) from dataset
+\item Create a city dummy, which equals 1 if \verb`tinh==1 | tinh==31 | tinh==48 | tinh==92 | tinh==79`
+\item Run regression. Dependent vars: goodroadv, transport. Ind vars: time + treatment + time:treatment + lnarea + lnpopden + city + regional fixed effects. (reg8 is the region ID).
+\item Calculate clustered standard errors with multivcov and coeftest. Note that Eddy clustered both by tinh and huyen at the same time. (Tinh and Huyen are province and district in VNese).
+\end{itemize}
 
 \end{document}

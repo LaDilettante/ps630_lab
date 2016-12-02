@@ -1,0 +1,37 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{hyperref}
+
+
+\title{Meeting 4}
+\author{Anh Le}
+
+\begin{document}
+
+\maketitle
+
+\section{Readings}
+
+\begin{itemize}
+\item Re-read week 1 chapters on vectors
+\item If you can't do our vectors exercise after reading the chapter, do the Introduction and/or Vector chapter on \url{www.datacamp.com}, which is a Codeacademy-type site for R
+\end{itemize}
+
+\section{In-class excercises}
+
+I will re-do Week 1 exercises on the board. Please take this chance to ask ANY question you may have.
+
+If you could do Week 1 exercises by yourself, you really should belong to the self-study group. Note that I still reserve half an hour each week to answer questions to both groups, so the self-study group is not alone!
+
+\section{Other announcements}
+
+\begin{itemize}
+\item You now have the option to re-grade someone's homework in case you made a mistake in grading the first time
+\item You are REQUIRED to submit your work in .pdf and .Rnw (using \verb`knitr` and \verb`LaTeX`). Reproducible research is part of our training. Tell me if you need help in this regard.
+
+I could code the website so that your assignment wouldn't be accepted otherwise -- but that's too harsh, so for now the penalty comes through grading.
+\end{itemize}
+\end{document}

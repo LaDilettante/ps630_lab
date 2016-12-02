@@ -1,0 +1,336 @@
+---
+title: "RDD, Instrumental Variable, ggplot2"
+author: "Anh Le"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width = 5, fig.height = 3)
+```
+
+# 2SLS
+
+Let's simulate the following data generating process (DGP).
+
+- Y is outcome, X is the independent variable, O is the omitted variable. X and O are correlated, so we have an omitted variable bias, which is an endogeneity problem. 
+- Z is the instrument for X (we can have multiple Z's as well).
+
+Example: Y is `grade`, X is `attendance`, O is `time spent studying`. X and O are often correlated -- hard-working students attend class more and also spend more time studying. The Z's are instruments for `attendance` (What could Z be?)
+
+```{r, message = FALSE}
+library(AER) # for ivreg
+library(mvtnorm) # to generate multivariate normal
+
+data <- rmvnorm(100, mean = c(0, 0, 0, 0), 
+                sigma = matrix(c(1, 0.5, 0.5, 0.5, 
+                                 0.5, 1, 0.5, 0, 
+                                 0.5, 0.5, 1, 0, 
+                                 0.5, 0, 0, 1), ncol = 4))
+colnames(data) <- c("X", "Z1", "Z2", "O")
+
+
+# Notice the correlation structure of the data
+cor(data)
+
+# Just creating new variables for ease of exposition, nothing conceptual here
+X <- data[, 1] ; Z1 <- data[, 2] ; Z2 <- data[, 3] ; O <- data[, 4]
+
+# Generate Y
+Y <- 2 * X + 3 * O + rnorm(100)
+
+# Run normal regression
+summary(lm(Y ~ X))
+
+# Run IV regression
+# recall that true value of beta X is 2
+summary(ivreg(Y ~ X | Z1 + Z2),
+        diagnostics = TRUE)
+
+# Weak instrument: F-test of the first stage. Null hypothesis = instruments are not correlated with X
+# Wu-Hausman: check the endogeneity of X. Null hypothesis = X is not endogenous
+# Sargan test: over-identification test, only runnable when there are more instruments than endogenous variable. Null hypothesis: instruments are exogenous
+```
+
+```{r}
+# Run IV regression by hand
+m_1ststage <- lm(X ~ Z1 + Z2)
+xhat <- predict(m_1ststage)
+m_2ndstage <- lm(Y ~ xhat)
+summary(m_2ndstage)
+```
+
+Notice that running IV using package and by hand give the same coefficient estimate, but different standard error. It's because if we run the second stage like above, we don't take into account the uncertainty in estimating $\hat x$ (Notice how we just plug in $\hat x$, paying no attention to the standard error in the first stage.)
+
+So, in real research, just use a package.
+
+# RDD
+
+## Concepts
+
+*Sherlock Holmes* How often have I said to you that when you have eliminated the impossible, whatever remains, however improbable, must be the truth?
+
+1. Prove that there is a difference in outcome at the discontinuity
+
+Regression with a subset of observations near the cut-off. What choices do we have to make?
+
+- How flexible the regression line is (i.e. the polynomial order)
+- How large is the bandwidth?
+
+2. Prove that this difference cannot be caused by anything else besides the discontinuity
+
+The key issue that invalidates RDD is if people can bargain their ways into either side of the cut-off. If yes, the difference in outcome may be explained by this (unobserved) ability to bargain. To some extent, we can control for this ability to bargain (e.g. controling for the person's wealth or connection). However, if people choose one side of the cut-off because they have private information about why they would benefit more on that side, then we fundamentally cannot control for this *private* information.
+
+How to check?
+
+- Density test: are there the same number of obs on both sides of the cut-off? If there is a difference, it must mean that people see one side is more beneficial, and they force their way into it.
+
+- Placebo test / Balance check: are obs on both sides of the cut-off the same? If not, it must mean that people can force their way into one side using, say, their wealth and connections.
+
+## Implementation
+
+Taken from [this excellent guide on best RDD practices (Skovron & Titiunik)](http://www-personal.umich.edu/~titiunik/papers/SkovronTitiunik2015.pdf). Our RDD is close election in the US. The forcing variable is Democratic vote share advantage (i.e. the discontinuity happens at 0, when Dem and Rep got the same vote share).
+
+1. We estimate the treatment effect
+
+```{r message=FALSE}
+library(dplyr) ; library(ggplot2) ; library(foreign)
+library(rdrobust)
+
+# Download these scripts from https://sites.google.com/site/rdpackages/rddensity/R
+# Documentation at https://sites.google.com/site/rdpackages/rddensity
+# Hopefully they put these scripts into a package soon
+source("rddensity_fun.R")
+source("rdbwdensity.R")
+source("rddensity.R")
+
+dat = read.dta('fouirnaies_hall_financial_incumbency_advantage.dta')
+dat = filter(dat, statelevel==1) # For this replication, only use state level legislature
+
+# Outcome variable
+rdplot(dat$dv_money, dat$rv, x.lim = c(-10,10),
+       x.lab="Democratic margin of victory at t",
+       y.lab="Democratic share of contributions at t+1", title = "")
+
+# RDD estimate
+rdrobust(dat$dv_money,dat$rv,all=TRUE)
+```
+
+2. We make sure that the treatment effect is truly due to the discontinuity
+
+```{r cache=TRUE}
+# Density test (graphical)
+
+ggplot(dat,aes(x=rv, fill =factor(dat$rv>0)))+
+  geom_histogram(binwidth=0.5) + xlim(-25,25) + 
+  geom_vline(xintercept = 0) + xlab("Democratic vote share at t") +
+  scale_colour_manual(values = c("red","blue")) + theme_bw() + 
+  theme(legend.position='none')
+
+# Density test
+rddensity(X = dat$rv, vce="jackknife")
+```
+
+```{r}
+# Placebo test (graphical)
+rdplot(dat$total_race_money,dat$rv,x.lim = c(-10,10),y.lim = c(0,400000),
+       x.lab="Democratic margin of victory at t",
+       y.lab="Total money in race at t+1", title = "")
+rdplot(dat$total_votes,dat$rv,x.lim = c(-10,10),y.lim = c(0,50000),
+       x.lab="Democratic margin of victory at t",
+       y.lab="Total votes in race at t+1", title = "")
+
+# Placebo test
+rdrobust(dat$total_race_money,dat$rv,all=TRUE)
+rdrobust(dat$total_votes,dat$rv,all=TRUE)
+```
+
+
+# Using IV in fuzzy RDD
+
+Recall the [Hidalgo & Nichter's paper](http://www.mit.edu/~dhidalgo/papers/Voter_Buying.pdf). If a district has more than 80% of population as the electorate, it *may* be audited. What's the forcing variable and the treatment here?
+
+
+# ggplot2 (from last year)
+
+# Introduction 
+
+```{r}
+f_install_and_load <- function(packagename) {
+  if (!packagename %in% rownames(installed.packages())) {
+    install.packages(packagename)
+  }
+  library(packagename, character.only = TRUE)
+}
+packs <- c("ggplot2", "gridExtra")
+lapply(packs, f_install_and_load)
+```
+
+This tutorial aims to teach you not only about the `ggplot2` syntax but also a new way of thinking about graphics. What's revolutionary about `ggplot2` is really this "Grammar of Graphics" thinking (i.e. what `gg-` stands for).
+
+# Deconstructing a Scatterplot (learning about **Aesthetics**)
+
+Below is a simple scatterplot. How exactly is data represented in a scatterplot? Each observation is represented by a point, whose x- and y- coordinate represent the values of the two variables. Along with the coordinates, each point can also have size, color, and shape. 
+
+These attribute are called **aesthetics**, and are the properties that can be perceived on the graphic. Each aesthetic can be mapped to a variable, or set to a constant value.
+
+**Q (conceptual):** Without looking at the code, in this plot, what are the aesthetics, and what variables are they mapped to?
+
+**Q (ggplot syntax):** Now look at the code. How did I specify the mapping?
+
+**Q (comparison with base R):** How would you create the color plot in base R? Do you see how `ggplot2` is less ad-hoc and more expressive?
+
+```{r, fig.height=8, fig.width = 5, fig.align='center'}
+data("mpg")
+
+p1 <-  ggplot(data = mpg, aes(x = displ, y = hwy)) + 
+  geom_point() +
+  labs(y = "Mile per gallon", x = "Engine size")
+
+p2 <- ggplot(data = mpg, aes(x = displ, y = hwy, color = factor(cyl))) + 
+  geom_point() +
+  labs(y = "Mile per gallon", x = "Engine size")
+
+p3 <- ggplot(data = mpg, aes(x = displ, y = hwy, shape = factor(cyl))) + 
+  geom_point() +
+  labs(y = "Mile per gallon", x = "Engine size")
+
+grid.arrange(p1, p2, p3, nrow = 3)
+```
+
+Note that the **aesthetics** is all we need to map the data to the graphics. In the plot above, I use **points** as the **geometric** form (hence `geom_point`), but it doesn't have to be. I can also use other **geometric** form, such as **line**, or **bar** (`geom_line`, `geom_bar`). Notice how the geomtric form changes, but the fundamental mapping of data to graphics does not change.
+
+This is what we means by "grammar of graphics". The line plot and bar plot are grammatically correct, even though it makes little sense.
+
+```{r, fig.height=8, fig.width = 5}
+p_point <- ggplot(data = mpg, aes(x = displ, y = hwy)) + 
+  geom_point() +
+  labs(y = "Mile per gallon", x = "Engine size")
+
+p_line <- ggplot(data = mpg, aes(x = displ, y = hwy)) + 
+  geom_line() +
+  labs(y = "Mile per gallon", x = "Engine size")
+
+p_bar <- ggplot(data = mpg, aes(x = displ, y = hwy)) + 
+  geom_bar(stat = 'identity', position = "identity", color = 'red') +
+  labs(y = "Mile per gallon", x = "Engine size")
+
+grid.arrange(p_point, p_line, p_bar, nrow=3)
+```
+
+# Setting aesthetics to a constant
+
+Sometimes I want to simply use a different color for my geoms, which is different from mapping the color to a variable. See:
+
+```{r, fig.height = 6}
+p1 <- ggplot(data = mpg, aes(x = displ, y = hwy)) + 
+  geom_point(color = 'red')
+
+p2 <- ggplot(data = mpg, aes(x = displ, y = hwy)) + 
+  geom_point(aes(color = factor(cyl)))
+
+grid.arrange(p1, p2, nrow = 2)
+```
+
+# Grouping
+
+**Q**: Without looking at the code, what **aes** are specified in this plot?
+
+```{r, echo=FALSE}
+data(Oxboys, package="nlme")
+ggplot(Oxboys, aes(age, height, group = Subject)) + 
+  geom_line() +
+  labs(title = "Height and Age of Oxford boys")
+```
+
+The code that produces the line plot is below (notice the **group** aesthetics). What would be consequence of not specifying this aesthetics?
+
+```
+ggplot(Oxboys, aes(age, height, group = Subject)) + 
+  geom_line() +
+  labs(title = "Height and Age of Oxford boys")
+```
+
+```{r}
+ggplot(Oxboys, aes(age, height)) + 
+  geom_line() +
+  labs(title = "Height and Age of Oxford boys")
+```
+
+```{r, echo = FALSE, fig.height = 9}
+p1 <- ggplot(Oxboys, aes(age, height, group = Subject)) + 
+  geom_line() +
+  labs(title = "Height and Age of Oxford boys")
+
+p2 <- ggplot(Oxboys, aes(age, height)) + 
+  geom_line() +
+  labs(title = "Height and Age of Oxford boys")
+
+p3 <- ggplot(Oxboys, aes(age, height)) + 
+  geom_point() +
+  labs(title = "Height and Age of Oxford boys")
+
+grid.arrange(p3, p2, p1, nrow = 3)
+```
+
+
+# More about geoms
+
+There are many **geom** built into ggplot2 [see this doc](http://sape.inf.usi.ch/quick-reference/ggplot2/geom). With this wide variety of selection, you can build all the common plot types.
+
+**Q (common plot):** Think about how different **geom** can be useful:
+
+- `geom_text` [example](http://docs.ggplot2.org/current/geom_text.html)
+- `geom_vline` [example](http://stackoverflow.com/questions/5388832/how-to-get-a-vertical-geom-vline-to-an-x-axis-of-class-date)
+- `geom_errorbar` [example](http://docs.ggplot2.org/0.9.3.1/geom_errorbar.html)
+- `geom_polygon` [example](http://zevross.com/blog/2014/07/16/mapping-in-r-using-the-ggplot2-package/)
+
+But the magic is really in building any custom plot that you want, mixing and matching different **geoms**.
+
+```{r}
+ggplot(data = mpg, aes(displ, hwy, color = factor(cyl))) +
+  geom_point() +
+  geom_smooth(data= subset(mpg, cyl != 5), method="lm")
+```
+
+# Building a plot layer by layer
+
+As you may have noticed, the last plot has two geoms. In fact, we can add as many geoms as we want. This is thought of as building the plot layer by layer.
+
+```{r}
+# First I add geom_point as the first layer
+ggplot(data = mpg, aes(displ, hwy, color = factor(cyl))) +
+  geom_point()
+
+# Then I add geom_smooth as the second layer
+ggplot(data = mpg, aes(displ, hwy, color = factor(cyl))) +
+  geom_point() +
+  geom_smooth(data= subset(mpg, cyl != 5), method="lm")
+
+```
+
+A rather extreme example of layering:
+
+![Here's a rather extreme example of layering.](http://i.stack.imgur.com/KGjaw.png)
+
+# Overriding default aesthetics mapping
+
+Now that we know how to build the plot layer by layer, sometimes the situation demands that we have different aesthetics mapping for each layer.
+
+For example, consider the Oxford boy dataset. This is panel dataset, and I want to build 2 layers: a boxplot layer for each occasion (i.e. variation across boys at each time point), and a line layer for each boy (i.e. variation over time of each boy).
+
+```{r}
+ggplot(data = Oxboys, aes(Occasion, height)) +
+  geom_boxplot()
+
+ggplot(data = Oxboys, aes(Occasion, height, group = Subject)) +
+  geom_line()
+```
+
+I can specify an aesthetic mapping specific to each layer as follows
+
+```{r}
+ggplot(data = Oxboys, mapping = aes(Occasion, height)) +
+  geom_boxplot() +
+  geom_line(aes(group = Subject), color = 'blue')
+```
+

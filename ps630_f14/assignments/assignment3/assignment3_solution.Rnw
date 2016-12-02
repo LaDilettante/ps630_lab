@@ -1,0 +1,104 @@
+\documentclass{article}
+
+\usepackage{amsmath, amsthm, amsfonts}
+\usepackage{enumerate}
+\usepackage{hyperref}
+
+\title{Assignment 2}
+\author{Anh Le}
+
+\begin{document}
+
+\maketitle
+
+<<>>=
+## knitr configuration: http://yihui.name/knitr/options#chunk_options
+opts_chunk$set(error= TRUE, warning = FALSE, message = FALSE,
+               tidy = FALSE, cache = F, echo = T,
+               fig.width = 4, fig.height = 4, fig.align="center")
+library(DAAG)
+@
+
+\section{Question 1: Problem 1.2 in book}
+The \verb!orings! data frame gives data on the damage that had
+occurred in US space shuttle launches prior to the disastrous
+Challenger launch of January 28, 1986. Only the observations in rows
+1, 2, 4, 11, 13, and 18 were included in the pre-launch charts used in
+deciding whether to proceed with the launch.
+
+Create a new data frame by extracting these rows from \verb!orings!,
+and plot \verb!total! incidents against \verb!temperature! for this
+new data frame.  Obtain a similar plot for the full data set.
+
+\textbf{Solution}
+
+Use the following to extract rows that hold the data that were presented in
+the pre-launch charts:
+<<fig.width=8, fig.height=4>>=
+orings86 <- orings[c(1,2,4,11,13,18), ]
+par(mfrow=c(1, 2))
+with(orings86, plot(Temperature, Total))
+with(orings, plot(Temperature, Total))
+par(mfrow=c(1, 1))
+@
+
+\section{Question 2: Problem 1.11 in book}
+
+Explain the output from the final \verb!table(gender)!.
+
+<<>>=
+gender <- factor(c(rep("female", 91), rep("male", 92)))
+table(gender)
+gender <- factor(gender, levels=c("male", "female"))
+@
+<<>>=
+table(gender)
+gender <- factor(gender, levels=c("Male", "female"))
+table(gender)
+rm(gender)                  # Remove gender
+@
+
+\textbf{Solution}
+
+Notice that before the final \verb`table(gender)`, we make a typo, specifying \verb`levels=c("Male", "female")` instead of \verb`levels=c("male", "female")`. Since there is no \verb`"Male"` in \verb`gender`, R correctly says that there is 0 \verb`"Male"`.
+
+The moral of this problem is that you should avoid specifying the \verb`levels` by yourself. In most cases, R is smart enough to rely on.
+
+\section{Question 3: Endogeneity}
+\begin{enumerate}
+\item When do we have a problem with endogeneity?
+
+When our independent variable is correlated with the error term. In that case, OLS regression estimate is biased.
+
+\item Show why reverse causality leads to endogeneity.
+
+We have:
+\begin{align}
+y &= \beta_1 x + u \label{eq:y} \\
+x &= \beta_2 y + v \label{eq:x}
+\end{align}
+where $u, v$ are error terms, and $\beta_1, \beta_2 \neq 0$ (indeed, if $\beta_1, \beta_2 = 0$ then $x$ and $y$ don't cause one another, and we don't have reverse causality).
+
+Our goal is to show that $x$ is correlated with $u$. The overall strategy is:
+\begin{itemize}
+  \item Based on Eq \ref{eq:x}, we can express $y$ in terms of $x$
+  \begin{align}
+  y = \beta_2^{-1}x - \beta_2^{-1}v \label{eq:sub}
+  \end{align}
+
+  \item Substitute Eq \ref{eq:sub} into $y$ in Eq \ref{eq:y}, so that Eq \ref{eq:y} consists of only $x$ and $u$.
+
+  \begin{align}
+  y &= \beta_1 x + u \\
+  \beta_2^{-1}x - \beta_2^{-1}v &= \beta_1 x + u \\
+  (\beta_2^{-1} - \beta_1)x &= \beta_2^{-1}v + u \\
+  x &= \frac{\beta_2^{-1}v}{\beta_2^{-1} - \beta_1} + \frac{u}{\beta_2^{-1} - \beta_1} \label{eq:final}
+  \end{align}
+
+  Notice that since $\beta_1, \beta_2 \neq 0$, $\frac{1}{\beta_2^{-1} - \beta_1} \neq 0$. Therefore, Eq \ref{eq:final} means that $x$ and $u$ are correlated. \qed
+\end{itemize}
+
+\item Discuss one empirical paper -- what is the dependent variable, the independent variable. Is there a potential endogeneity problem? Of what kind (ommited variable bias, selection bias, reverse causality)?
+\item Fun fact: Endogeneity can also be caused by measurement error and simultaneity bias.
+\end{enumerate}
+\end{document}

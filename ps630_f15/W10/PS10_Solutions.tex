@@ -1,58 +1,9 @@
-\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
-%% maxwidth is the original width if it is less than linewidth
-%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
-\makeatletter
-\def\maxwidth{ %
-  \ifdim\Gin@nat@width>\linewidth
-    \linewidth
-  \else
-    \Gin@nat@width
-  \fi
-}
-\makeatother
-
-\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
-\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
-\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
-\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
-\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
-\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
-\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
-\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
-\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
-\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
-
-\usepackage{framed}
-\makeatletter
-\newenvironment{kframe}{%
- \def\at@end@of@kframe{}%
- \ifinner\ifhmode%
-  \def\at@end@of@kframe{\end{minipage}}%
-  \begin{minipage}{\columnwidth}%
- \fi\fi%
- \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
- \colorbox{shadecolor}{##1}\hskip-\fboxsep
-     % There is no \\@totalrightmargin, so:
-     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
- \MakeFramed {\advance\hsize-\width
-   \@totalleftmargin\z@ \linewidth\hsize
-   \@setminipage}}%
- {\par\unskip\endMakeFramed%
- \at@end@of@kframe}
-\makeatother
-
-\definecolor{shadecolor}{rgb}{.97, .97, .97}
-\definecolor{messagecolor}{rgb}{0, 0, 0}
-\definecolor{warningcolor}{rgb}{1, 0, 1}
-\definecolor{errorcolor}{rgb}{1, 0, 0}
-\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
-
-\usepackage{alltt}
+\documentclass{article}
 
 \usepackage{amsmath, amssymb}
 \usepackage{graphicx}
 \usepackage{hyperref}
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
 \begin{document}
 
 \title{Pol Sci 630:  Problem Set 10 Solutions: 2SLS, Matching, Outlier, Heckman}
@@ -118,8 +69,8 @@ Run 2SLS with \verb`ivreg`. Outcome: packs. Exogenous var: income. Endogenous va
 \hlkwd{stargazer}\hlstd{(m11)}
 \end{alltt}
 \end{kframe}
-% Table created by stargazer v.5.1 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Wed, Nov 04, 2015 - 04:29:52 PM
+% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+% Date and time: Fri, Nov 18, 2016 - 05:10:26 PM
 \begin{table}[!htbp] \centering 
   \caption{} 
   \label{} 
@@ -198,7 +149,7 @@ The weak instrument test (i.e. F-test) rejects the null hypothesis that the inst
 
 \subsection{2SLS by hand}
 
-Run the 2SLS by hand, i.e. not using \verb`ivreg`, but run 2 stages of \verb`lm`. Do you get the same estimate from \verb`ivreg`?
+Run the 2SLS by hand, i.e. not using \verb`ivreg`, but run 2 stages of \verb`lm`. Do you get the same estimate and F-statistic from \verb`ivreg`?
 
 \textbf{Solution}
 
@@ -211,8 +162,8 @@ Run the 2SLS by hand, i.e. not using \verb`ivreg`, but run 2 stages of \verb`lm`
 \hlkwd{stargazer}\hlstd{(m_stage2)}
 \end{alltt}
 \end{kframe}
-% Table created by stargazer v.5.1 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Wed, Nov 04, 2015 - 04:29:52 PM
+% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+% Date and time: Fri, Nov 18, 2016 - 05:10:27 PM
 \begin{table}[!htbp] \centering 
   \caption{} 
   \label{} 
@@ -245,7 +196,9 @@ F Statistic & 34.693$^{***}$ (df = 2; 93) \\
 \end{table} 
 
 
-The coefficients are exactly the same (by hand: \ensuremath{-0.3978933}, by ivreg: \ensuremath{-0.3978933})
+The coefficients are exactly the same (by hand: \ensuremath{-0.3978933}, by ivreg: \ensuremath{-0.3978933}).
+
+The F-statistic is also the same (by hand: 198.4830451, by ivreg: 341.1446676)
 
 \section{Matching}
 
@@ -260,17 +213,19 @@ Plot the following. Hint: Look up \verb|position="dodge"| for ggplot2
 \end{alltt}
 
 
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: MASS}}\begin{alltt}
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in library(MatchIt): there is no package called 'MatchIt'}}\begin{alltt}
 \hlkwd{data}\hlstd{(}\hlstr{"lalonde"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning in data("{}lalonde"{}): data set 'lalonde' not found}}\begin{alltt}
 \hlkwd{ggplot}\hlstd{(}\hlkwc{data} \hlstd{= lalonde)} \hlopt{+}
   \hlkwd{geom_histogram}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{x} \hlstd{= black,} \hlkwc{fill} \hlstd{=} \hlkwd{factor}\hlstd{(treat)),}
                  \hlkwc{position} \hlstd{=} \hlstr{"dodge"}\hlstd{)}
 \end{alltt}
 
 
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# stat\_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.}}\end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-7-1} 
-
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in ggplot(data = lalonde): object 'lalonde' not found}}\end{kframe}
 \end{knitrout}
 
 \subsection{See the effect of omitting an important variable}
@@ -284,28 +239,14 @@ Regress re78 against 1) treat, age, educ; 2) treat, age, educ, black. Do the tre
 \begin{alltt}
 \hlkwd{lm}\hlstd{(re78} \hlopt{~} \hlstd{treat} \hlopt{+} \hlstd{age} \hlopt{+} \hlstd{educ,} \hlkwc{data} \hlstd{= lalonde)}
 \end{alltt}
-\begin{verbatim}
-## 
-## Call:
-## lm(formula = re78 ~ treat + age + educ, data = lalonde)
-## 
-## Coefficients:
-## (Intercept)        treat          age         educ  
-##     -851.74      -480.73        94.93       505.61
-\end{verbatim}
-\begin{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in is.data.frame(data): object 'lalonde' not found}}\begin{alltt}
 \hlkwd{lm}\hlstd{(re78} \hlopt{~} \hlstd{treat} \hlopt{+} \hlstd{age} \hlopt{+} \hlstd{educ} \hlopt{+} \hlstd{black,} \hlkwc{data} \hlstd{= lalonde)}
 \end{alltt}
-\begin{verbatim}
-## 
-## Call:
-## lm(formula = re78 ~ treat + age + educ + black, data = lalonde)
-## 
-## Coefficients:
-## (Intercept)        treat          age         educ        black  
-##     -156.53       853.13        89.41       494.39     -2099.82
-\end{verbatim}
-\end{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in is.data.frame(data): object 'lalonde' not found}}\end{kframe}
 \end{knitrout}
 
 If we do not control for \verb`black`, we would wrongly conclude that the treatment effect is negative. This is because we have a lot of blacks in the treatment group, and blacks tend to have poorer outcomes.
@@ -324,59 +265,12 @@ Match the treatment and the control group based on age, educ, and black. Check t
 \end{alltt}
 
 
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: cem\\\#\# Loading required package: tcltk\\\#\# Loading required package: lattice\\\#\# \\\#\# How to use CEM? Type vignette("{}cem"{})}}\begin{verbatim}
-## 
-## Using 'treat'='1' as baseline group
-\end{verbatim}
-\begin{alltt}
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): could not find function "{}matchit"{}}}\begin{alltt}
 \hlkwd{summary}\hlstd{(m.out)} \hlcom{# to check balance}
 \end{alltt}
-\begin{verbatim}
-## 
-## Call:
-## matchit(formula = treat ~ age + educ + black, data = lalonde, 
-##     method = "cem")
-## 
-## Summary of balance for all data:
-##          Means Treated Means Control SD Control Mean Diff eQQ Med eQQ Mean
-## distance        0.5548        0.1920     0.2275    0.3628  0.5435   0.3640
-## age            25.8162       28.0303    10.7867   -2.2141  1.0000   3.2649
-## educ           10.3459       10.2354     2.8552    0.1105  1.0000   0.7027
-## black           0.8432        0.2028     0.4026    0.6404  1.0000   0.6432
-##          eQQ Max
-## distance  0.5683
-## age      10.0000
-## educ      4.0000
-## black     1.0000
-## 
-## 
-## Summary of balance for matched data:
-##          Means Treated Means Control SD Control Mean Diff eQQ Med eQQ Mean
-## distance        0.5434        0.5458     0.2232   -0.0024   0.524   0.3040
-## age            24.6731       24.2833     6.7293    0.3898   2.000   1.6090
-## educ           10.5641       10.7771     1.7526   -0.2130   0.000   0.1987
-## black           0.8141        0.8141     0.3898    0.0000   1.000   0.5385
-##          eQQ Max
-## distance  0.5673
-## age       4.0000
-## educ      1.0000
-## black     1.0000
-## 
-## Percent Balance Improvement:
-##          Mean Diff.   eQQ Med eQQ Mean eQQ Max
-## distance    99.3301    3.5914  16.4991  0.1884
-## age         82.3941 -100.0000  50.7185 60.0000
-## educ       -92.7588  100.0000  71.7209 75.0000
-## black      100.0000    0.0000  16.2896  0.0000
-## 
-## Sample sizes:
-##           Control Treated
-## All           429     185
-## Matched       266     156
-## Unmatched     163      29
-## Discarded       0       0
-\end{verbatim}
-\end{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in summary(m.out): object 'm.out' not found}}\end{kframe}
 \end{knitrout}
 
 We get exact balance after running CEM.
@@ -392,36 +286,23 @@ Run a weighted regression of re78 against 1) treat, age, educ, 2) treat, age, ed
 \begin{alltt}
 \hlcom{# Get the matched data}
 \hlstd{lalonde_matched} \hlkwb{<-} \hlkwd{match.data}\hlstd{(m.out)}
+\end{alltt}
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): could not find function "{}match.data"{}}}\begin{alltt}
 \hlcom{# Run weighted regression to get the causal treatment effect}
 \hlkwd{lm}\hlstd{(re78} \hlopt{~} \hlstd{treat} \hlopt{+} \hlstd{age} \hlopt{+} \hlstd{educ,}
    \hlkwc{data} \hlstd{= lalonde_matched,} \hlkwc{weights} \hlstd{= lalonde_matched}\hlopt{$}\hlstd{weights)}
 \end{alltt}
-\begin{verbatim}
-## 
-## Call:
-## lm(formula = re78 ~ treat + age + educ, data = lalonde_matched, 
-##     weights = lalonde_matched$weights)
-## 
-## Coefficients:
-## (Intercept)        treat          age         educ  
-##     -2158.1       1290.1         53.5        543.8
-\end{verbatim}
-\begin{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in is.data.frame(data): object 'lalonde\_matched' not found}}\begin{alltt}
 \hlkwd{lm}\hlstd{(re78} \hlopt{~} \hlstd{treat} \hlopt{+} \hlstd{age} \hlopt{+} \hlstd{educ} \hlopt{+} \hlstd{black,}
    \hlkwc{data} \hlstd{= lalonde_matched,} \hlkwc{weights} \hlstd{= lalonde_matched}\hlopt{$}\hlstd{weights)}
 \end{alltt}
-\begin{verbatim}
-## 
-## Call:
-## lm(formula = re78 ~ treat + age + educ + black, data = lalonde_matched, 
-##     weights = lalonde_matched$weights)
-## 
-## Coefficients:
-## (Intercept)        treat          age         educ        black  
-##     -622.46      1297.18        52.07       574.55     -2250.82
-\end{verbatim}
-\end{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in is.data.frame(data): object 'lalonde\_matched' not found}}\end{kframe}
 \end{knitrout}
 
 The treatment effect doen't differ by a lot across the two regressions. It's because in the matched data, we have equal number of blacks in the control and the treatment group.
@@ -434,9 +315,15 @@ The treatment effect doen't differ by a lot across the two regressions. It's bec
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{library}\hlstd{(sampleSelection)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in library(sampleSelection): there is no package called 'sampleSelection'}}\begin{alltt}
 \hlkwd{data}\hlstd{(Mroz87)}
 \end{alltt}
-\end{kframe}
+
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning in data(Mroz87): data set 'Mroz87' not found}}\end{kframe}
 \end{knitrout}
 
 \subsection{Run a Heckman model}
@@ -449,88 +336,18 @@ The selection variable is lfp. Run a heckman model with huswage, kid5, educ, cit
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{a} \hlkwb{<-} \hlkwd{heckit}\hlstd{(lfp} \hlopt{~} \hlstd{huswage} \hlopt{+} \hlstd{kids5} \hlopt{+} \hlstd{educ} \hlopt{+} \hlstd{city,} \hlkwd{log}\hlstd{(wage)} \hlopt{~} \hlstd{educ} \hlopt{+} \hlstd{city,} \hlkwc{data}\hlstd{=Mroz87)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): could not find function "{}heckit"{}}}\begin{alltt}
 \hlkwd{summary}\hlstd{(a)}
 \end{alltt}
-\begin{verbatim}
-## --------------------------------------------
-## Tobit 2 model (sample selection model)
-## 2-step Heckman / heckit estimation
-## 753 observations (325 censored and 428 observed)
-## 11 free parameters (df = 743)
-## Probit selection equation:
-##             Estimate Std. Error t value Pr(>|t|)    
-## (Intercept) -1.22827    0.26978  -4.553 6.18e-06 ***
-## huswage     -0.04370    0.01295  -3.375 0.000777 ***
-## kids5       -0.63490    0.09819  -6.466 1.83e-10 ***
-## educ         0.15536    0.02322   6.691 4.35e-11 ***
-## city        -0.03468    0.10593  -0.327 0.743469    
-## Outcome equation:
-##             Estimate Std. Error t value Pr(>|t|)    
-## (Intercept) -0.02817    0.34074  -0.083    0.934    
-## educ         0.09843    0.01979   4.973 8.19e-07 ***
-## city         0.07437    0.07088   1.049    0.294    
-## Multiple R-Squared:0.1205,	Adjusted R-Squared:0.1143
-## Error terms:
-##               Estimate Std. Error t value Pr(>|t|)
-## invMillsRatio  -0.1195     0.1991    -0.6    0.549
-## sigma           0.6833         NA      NA       NA
-## rho            -0.1749         NA      NA       NA
-## --------------------------------------------
-\end{verbatim}
-\end{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in summary(a): object 'a' not found}}\end{kframe}
 \end{knitrout}
 
-1 more year of education leads to 0.0984295 change in log wage (the effect is also significant). Being in a city leads to 0.0743715 change in the log wage but the effect is not significant.
 
-\subsection{Outlier}
 
-Load the anscombe dataset (the famous Anscombe quartet). Run a regression of y3 against x3, and find the outlier using any tools that we have discussed (DFbeta, cook distance, etc.)
 
-Brownie point: Fit a linear model for y1 agains x1, y2 against x2, etc. What spooky thing did you notice?
 
-\textbf{Solution}
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{data}\hlstd{(}\hlstr{"anscombe"}\hlstd{)}
-
-\hlcom{# DFBetas}
-\hlstd{m3} \hlkwb{<-} \hlkwd{lm}\hlstd{(y3} \hlopt{~} \hlstd{x3,} \hlkwc{data} \hlstd{= anscombe)}
-\hlkwd{influence.measures}\hlstd{(m3)}
-\end{alltt}
-\begin{verbatim}
-## Influence measures of
-## 	 lm(formula = y3 ~ x3, data = anscombe) :
-## 
-##       dfb.1_    dfb.x3    dffit    cov.r   cook.d    hat inf
-## 1  -4.63e-03 -4.41e-02  -0.1464 1.34e+00 0.011765 0.1000    
-## 2  -3.71e-02  1.86e-02  -0.0618 1.39e+00 0.002141 0.1000    
-## 3  -3.58e+02  5.25e+02 669.5875 5.06e-11 1.392849 0.2364   *
-## 4  -3.29e-02 -2.66e-18  -0.0992 1.36e+00 0.005473 0.0909    
-## 5   4.92e-02 -1.17e-01  -0.2193 1.34e+00 0.025984 0.1273    
-## 6   4.90e-01 -6.67e-01  -0.7897 1.36e+00 0.300571 0.3182    
-## 7   2.70e-02 -2.09e-02   0.0303 1.53e+00 0.000518 0.1727    
-## 8   2.41e-01 -2.09e-01   0.2472 1.80e+00 0.033817 0.3182   *
-## 9   1.37e-01 -2.31e-01  -0.3362 1.34e+00 0.059536 0.1727    
-## 10 -1.97e-02  1.34e-02  -0.0251 1.45e+00 0.000355 0.1273    
-## 11  1.05e-01 -8.74e-02   0.1114 1.64e+00 0.006948 0.2364
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-The third observation has a very large DFbetas, thus likely an outlier.
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{plot}\hlstd{(m3,} \hlkwc{which} \hlstd{=} \hlnum{5}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/unnamed-chunk-14-1} 
-
-\end{knitrout}
-
-The Cook's D plot confirms that the third observation is an outlier, as it goes out of bound of the red lines denoting Cook's D $= 1$
-
-\end{document}

@@ -1,0 +1,56 @@
+\documentclass{article}
+
+\usepackage{amsmath, amsthm, amsfonts}
+\usepackage{enumerate}
+\usepackage{hyperref}
+
+\title{Assignment 3}
+\author{Anh Le}
+
+\begin{document}
+
+\maketitle
+
+<<>>=
+## knitr configuration: http://yihui.name/knitr/options#chunk_options
+opts_chunk$set(error= TRUE, warning = FALSE, message = FALSE,
+               tidy = FALSE, cache = F, echo = T,
+               fig.width = 4, fig.height = 4, fig.align="center")
+library(DAAG)
+@
+
+\section{Question 1: Problem 1.2 in book}
+The \verb!orings! data frame gives data on the damage that had
+occurred in US space shuttle launches prior to the disastrous
+Challenger launch of January 28, 1986. Only the observations in rows
+1, 2, 4, 11, 13, and 18 were included in the pre-launch charts used in
+deciding whether to proceed with the launch.
+
+Create a new data frame by extracting these rows from \verb!orings!,
+and plot \verb!total! incidents against \verb!temperature! for this
+new data frame.  Obtain a similar plot for the full data set.
+
+\section{Question 2: Problem 1.11 in book}
+
+Explain the output from the final \verb!table(gender)!.
+
+<<>>=
+gender <- factor(c(rep("female", 91), rep("male", 92)))
+table(gender)
+gender <- factor(gender, levels=c("male", "female"))
+@
+<<>>=
+table(gender)
+gender <- factor(gender, levels=c("Male", "female"))
+table(gender)
+rm(gender)                  # Remove gender
+@
+
+\section{Question 3: Endogeneity}
+\begin{enumerate}
+\item When do we have a problem with endogeneity?
+\item Show why reverse causality leads to endogeneity.
+\item Discuss one empirical paper -- what is the dependent variable, the independent variable. Is there a potential endogeneity problem? Of what kind (ommited variable bias, selection bias, reverse causality)?
+\item Fun fact: Endogeneity can also be caused by measurement error and simultaneity bias.
+\end{enumerate}
+\end{document}

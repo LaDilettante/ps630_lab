@@ -76,7 +76,7 @@ The weak instrument test (i.e. F-test) rejects the null hypothesis that the inst
 
 \subsection{2SLS by hand}
 
-Run the 2SLS by hand, i.e. not using \verb`ivreg`, but run 2 stages of \verb`lm`. Do you get the same estimate from \verb`ivreg`?
+Run the 2SLS by hand, i.e. not using \verb`ivreg`, but run 2 stages of \verb`lm`. Do you get the same estimate and F-statistic from \verb`ivreg`?
 
 \textbf{Solution}
 
@@ -88,7 +88,9 @@ m_stage2 <- lm(packs ~ income + price_hat, data = CigarettesSW)
 stargazer(m_stage2)
 @
 
-The coefficients are exactly the same (by hand: \Sexpr{coef(m_stage2)['price_hat']}, by ivreg: \Sexpr{coef(m11)['price']})
+The coefficients are exactly the same (by hand: \Sexpr{coef(m_stage2)['price_hat']}, by ivreg: \Sexpr{coef(m11)['price']}).
+
+The F-statistic is also the same (by hand: \Sexpr{summary(m_stage1)$fstatistic["value"]}, by ivreg: \Sexpr{summary(m11, diagnostics = TRUE)$diagnostics["Weak instruments", "statistic"]})
 
 \section{Matching}
 

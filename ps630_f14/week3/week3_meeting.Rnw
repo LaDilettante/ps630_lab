@@ -1,0 +1,102 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{hyperref}
+
+
+\title{Meeting 3}
+\author{Anh Le}
+
+\begin{document}
+
+\maketitle
+
+\section{Readings}
+
+Read Sec. 1.4, Functions, operators, and loops.
+
+This is where you start thinking like a programmer. Up until now, we have only learned names of commands, what are their options, etc. Basically, instead of point-and-click in Excel, we now type into RStudio.
+
+On the other hand, functions and loops are the real ``logic'' of programming and will make you very powerful. We don't point-and-click anymore, but write guidances for the computer to point-and-click for us.
+
+Consider the following function that is trivial to write but very useful in real (grad) life. Suppose your advisor told you to calculate the summary statistics of ALL the variable in the dataset.
+
+<<>>=
+data <- data.frame(var1=rnorm(10, mean=0, sd=1),
+                   var2=rnorm(10, mean=2, sd=5),
+                   var3=runif(10, min=1, max=6))
+data
+@
+
+Now, if we know some R but still in the ``point-and-click'' stage, we will write something like this:
+
+<<>>=
+mean(data$var1)
+sd(data$var1)
+mean(data$var2)
+sd(data$var2)
+mean(data$var3)
+sd(data$var3)
+@
+
+So instead of ``point-and-click'' 6 times in Excel, we wrote 6 lines in R. Still do-able.
+
+But God forbid, what if the dataset has 100 variables? What if we need more summary statistic than just \verb`mean` and \verb`sd`? Functions to the rescue.
+
+<<>>=
+my_summary_statistic_function <- function(data_vector) {
+  mean_of_data <- mean(data_vector, na.rm=TRUE)
+  median_of_data <- median(data_vector, na.rm=TRUE)
+  sd_of_data <- sd(data_vector, na.rm=TRUE)
+
+  result <- c(mean_of_data, median_of_data, sd_of_data)
+  names(result) <- c("mean", "median", "standard deviation")
+
+  return(result)
+}
+
+my_summary_statistic_function(data$var1)
+my_summary_statistic_function(data$var2)
+my_summary_statistic_function(data$var3)
+@
+
+We have just created a \textbf{re-usable} function that can take in any vector of data and spits out our desirable statistic. If the advisor at some point wants us to add a statistic, we only have to add that statistic to our function.
+
+And lastly, instead of using our \verb`my_summary_statistic_function` on each column by hand, we can also tell R to do it as follows:
+
+<<>>=
+apply(data, MARGIN=2, FUN=my_summary_statistic_function)
+
+# Equivalently, we can use loop
+for (i in 1:ncol(data)) {
+  print(my_summary_statistic_function(data[ , i]))
+}
+@
+
+\section{In-class Exercises}
+
+\begin{enumerate}
+\item See \href{http://polsci630.herokuapp.com/meetings}{our website}.
+\item Trivial: \verb`print("Hello World!")` 100 times.
+\item Less trivial: \verb`print("Hello friend #1!")`, \verb`print("Hello friend #2!")`, etc. 100 times
+\item Decidedly not trivial: Prove the Central limit theorem with simulation.
+
+First, the Central Limit Theorem (CLT)--the most important theorem in statistics--states that the mean of a random variable is normally distributed, \textbf{regardless of the distribution of the random variable itself}
+
+For example, let's say that $X$ is uniformly distributed between 0 and 1
+
+<<fig.height=3, fig.width=3>>=
+X <- runif(10000, min=0, max=1)
+mean(X)
+plot(density(X))
+@
+
+Clearly, the distribution of X is not normal. If we generate X many times (says, $n$ times), and each time calculate its mean, then we will get a vector containing $n$ means. The CLT states that these $n$ means will be normally distributed. (It's amazing! Where does the normal come from??)
+
+Prove it using for loop. Hint: \verb`for (i in 1:n) { do stuff in here }`
+
+\end{enumerate}
+
+\end{document}

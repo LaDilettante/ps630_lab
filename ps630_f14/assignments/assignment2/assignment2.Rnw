@@ -1,0 +1,73 @@
+\documentclass{article}
+
+\usepackage{amsmath, amsthm, amsfonts}
+\usepackage{enumerate}
+\usepackage{hyperref}
+
+\title{Assignment 2}
+\author{Anh Le}
+
+\begin{document}
+
+\maketitle
+
+<<>>=
+## knitr configuration: http://yihui.name/knitr/options#chunk_options
+opts_chunk$set(comment = "", error= TRUE, warning = FALSE, message = FALSE,
+               tidy = FALSE, cache = F, echo = T,
+               fig.width = 4, fig.height = 4, fig.align="center")
+@
+
+
+\section{Question 1}
+
+Let's pursue further the in-class example of ordering / selecting one variable based on another. We have the following mock data.
+<<>>=
+mock_data <- data.frame(country=c("US", "UK", "South Africa", "Liberia"),
+                         region=c("America", "Europe", "Africa", "Africa"),
+                         gdppc=c(40000, 35000, 25000, 9000),
+                         stringsAsFactors=FALSE)
+mock_data
+@
+
+What I showed you in class is to select the \verb`country` variable based on the \verb`gdppc` variable, like so:
+<<>>=
+# Get countries with GDP per capita > 10000
+mock_data$country[mock_data$gdppc > 10000]
+# Get countries with above-average GDP per capita
+mock_data$country[mock_data$gdppc > mean(mock_data$gdppc)]
+@
+
+Now, the question is how to select countries that have \verb`gdppc > 10000` AND belong in Africa? Phrased more generally, how do we subset the data frame using two / multiple conditions? (Google if you don't know how -- I have phrased the question in very Google-able terms)
+
+So here's your first assignment.
+\begin{enumerate}
+  \item Using the mock data above, select Africans countries that have \verb`gdppc > 10000`.
+  \item Download real data from package \verb`WDI`, the subset the data according to some conditions that interests you. (E.g. List all African countries that have below / above average GDP per capita; What about other continents? Variables other than GDP, etc.)
+\end{enumerate}
+
+
+\section{Question 2 -- Problem 1.9.1 in the book}
+
+This problem involves data frame -- re-read the book chapter on data frame if necessary
+<<>>=
+library(DAAG) # install if you have it yet
+@
+
+The following table gives the size of the floor area (ha) and
+  the price (\$000), for 15 houses sold in the Canberra (Australia)
+  suburb of Aranda in 1999.
+
+
+<<>>=
+houseprices
+@
+
+\begin{enumerate}
+\item Plot \verb+sale.price+ versus \verb+area+.
+\item Use the \verb+hist()+ command to plot a histogram of the sale prices.
+\item Repeat (a) and (b) after taking logarithms of sale prices.
+\item The two histograms emphasize different parts of the range of sale prices. Describe the differences.
+\end{enumerate}
+
+\end{document}

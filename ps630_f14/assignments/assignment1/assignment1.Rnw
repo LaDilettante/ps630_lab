@@ -1,0 +1,38 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+
+\usepackage[svgnames]{xcolor}
+
+\usepackage[colorlinks,citecolor=DeepPink4,linkcolor=DarkRed, urlcolor=DarkBlue]{hyperref}
+
+\title{Assignment 1}
+\author{Anh Le}
+
+\begin{document}
+
+\maketitle
+
+Use package \verb`WDI` (an R package that downloads data from the World Bank's World Development Indicators) , download data and plot it. Do not download data by hand, which is both inefficient and not reproducible. Your grader should be able to run your code from start to finish and get the same result.\\
+
+Here are some ideas to help you start. Feel free to do things you think are cool.
+\begin{itemize}
+\item Easy: Plot the histogram of countries' GDP / your favorite statistic in one year
+\item Easy: Plot the GDP of one country across years
+\item Harder: Plot the GDP of multiple countries / continents / groups across years
+\item Harder: Add text label, color, etc. to highlight certain countries
+\end{itemize}
+
+Make sure to have appropriate title, axis labels, etc.\\
+
+P/S: There are \href{http://github.com/rOpenGov/psData}{other packages} similar to \verb`WDI` to download Political Science data straight into R. Amazing time that we live in.
+
+<<>>=
+library("WDI") # install.packages as necessary
+help(WDI) # Read the docs -- this one is particularly comprehensible
+@
+
+
+\end{document}

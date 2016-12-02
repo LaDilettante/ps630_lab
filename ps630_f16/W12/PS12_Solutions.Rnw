@@ -1,0 +1,197 @@
+\documentclass{article}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+
+\begin{document}
+
+\title{Pol Sci 630:  Problem Set 12 Solutions: 2SLS, RDD, ggplot2}
+
+\author{Prepared by: Anh Le (\href{mailto:anh.le@duke.edu}{anh.le@duke.edu})}
+
+\date{Due Date: Wed, Nov 23, 2016 (Beginning of Class)}
+
+\maketitle
+
+\section{2SLS}
+
+\textbf{\color{red} Insert your comments on the assignment that you are grading above the solution in bold and red text. For example write: "GRADER COMMENT: everything is correct! - 8/8 Points" Also briefly point out which, if any, problems were not solved correctly and what the mistake was. See below for more examples.}
+
+\subsection{Load dataset CigarettesSW from package AER}
+
+<<message = FALSE>>=
+library(AER)
+data("CigarettesSW")
+@
+
+\subsection{Plot the following using ggplot2}
+
+What can we say about the relationship between tax, price, and packs? Importantly, could sales tax be a valid instrument here? Explain your reasoning.
+
+Note: This is a good way to show the relationship between 3 variables with a 2D plot.
+
+<<fig.width=6, fig.height=5, echo = FALSE>>=
+library(ggplot2)
+ggplot(data = CigarettesSW) +
+  geom_point(aes(x = tax, y = price, size = packs, color = year))
+@
+
+\textbf{Solution}
+
+For tax to be a good instrument, it has to 1) correlate with price, 2) not correlate with some other factors that affect packs (i.e. not endogenous).
+
+Criterion (1) seems satisfied as the plot shows a positive correlation between tax and price. Whether (2) is satisfied is unclear. On the one hand, if tax is a cigarette-specific tax, it's likely that there's a reverse causality problem as legislators expect more cigarette consumption and raise tax to counter it. In this case, tax is not a valid instrument. On the other hand, if tax is some general sales tax, it's possible that it's changed based on some other factors unrelated to cigarette. In this case, tax is a valid instrument.
+
+Tax and price are negatively correlated with the number of cigarette packs consumed per capita.
+
+\subsection{Divide variable income by 1000 (for interpretability)}
+
+<<>>=
+CigarettesSW$income <- CigarettesSW$income / 1000
+@
+
+
+\subsection{Run 2SLS}
+
+Run 2SLS with \verb`ivreg`. Outcome: packs. Exogenous var: income. Endogenous var: price, whose instrument is tax. Interpret the coefficient of \verb`income` and \verb`price`.
+
+Note: Different from the model during lab, this model has an exogenous independent variable that doesn't need to be instrumented for. See `help(ivreg)` $>$ Details, which explains how to deal with this.
+
+\textbf{Solution}
+
+<<results='asis', message=FALSE>>=
+library(stargazer)
+m11 <- ivreg(packs ~ income + price | income + tax, data = CigarettesSW)
+stargazer(m11)
+@
+
+1000 dollar increase in income per capita leads to \Sexpr{coef(m11)['income']} change in number of packs per capita, but the effect is not significant.
+
+1 dollar increase in price leads to \Sexpr{coef(m11)['price']} change in number of packs per capita, holding others constant. The coefficient is statistically significant.
+
+\subsection{2SLS diagnostics: use F-test to check for weak instrument}
+
+\textbf{Solution}
+
+<<>>=
+summary(m11, diagnostics = TRUE)
+@
+
+The weak instrument test (i.e. F-test) rejects the null hypothesis that the instrument is not correlated with the endogenous variable (p-value = \Sexpr{summary(m11, diagnostics = TRUE)$diagnostics['Weak instruments', 'p-value']}). So our instruments are not weak.
+
+\subsection{2SLS by hand}
+
+Run the 2SLS by hand, i.e. not using \verb`ivreg`, but run 2 stages of \verb`lm`. Do you get the same estimate from \verb`ivreg`?
+
+\textbf{Solution}
+
+<<results='asis'>>=
+m_stage1 <- lm(price ~ tax + income, data = CigarettesSW)
+CigarettesSW$price_hat <- predict(m_stage1)
+
+m_stage2 <- lm(packs ~ income + price_hat, data = CigarettesSW)
+stargazer(m_stage2)
+@
+
+The coefficients are exactly the same (by hand: \Sexpr{coef(m_stage2)['price_hat']}, by ivreg: \Sexpr{coef(m11)['price']})
+
+\subsection{Weak instrument test by hand}
+
+The weak instrument test aims to test whether the instrument is an important predictor of the endogenous variables, even after controlling for other variables.
+
+We do it as follows:
+
+\begin{itemize}
+\item Run the standard 1st stage regression of endogenous var ~ instrument + exogenous vars
+\item Run a ``modified'' 1st stage regression of endogenous var ~ exogenous vars
+\item Use \verb`waldtest(model1, model2)` to compare the two models (to see if the model with the instrument fits better). The null hypothesis is that the instrument has a statistically significant impact
+\end{itemize}
+The rule of thumb is that the F-statistic should be $>$ 10
+
+Implement the weak instrument test as described above and show that it gets the same F-statistic as given by \verb`ivreg`.
+
+\textbf{Solution}
+
+<<>>=
+m_stage1_without_instrument <- lm(price ~ income, data = CigarettesSW)
+(t_wald <- waldtest(m_stage1, m_stage1_without_instrument))
+@
+
+The F-statistic the same (by hand: \Sexpr{t_wald$F[2]}, by ivreg: \Sexpr{summary(m11, diagnostics = TRUE)$diagnostics["Weak instruments", "statistic"]}).
+
+\section{Regression Discontinuity Design}
+
+Find the replication data here \url{https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/9OOLQ7}
+
+<<>>=
+load("replication_data.RData")
+@
+
+Variables that you'll use: elecpopratio (\% of the population as the electorate), treat (whether got audited or not), electorate.perpop07 (\% registration in 07), electorate.perpop08 (\% registration in 08)
+
+Read (by which I mean Ctrl + F) through the paper to figure out which bandwidth and the cutoff points the authors used. Read help(rdrobust) to see how to specify our own bandwidth and cutoff points.
+
+In this exercise we'll replicate their main results in Table 2 (p. 447)
+
+\subsection{Sharp RDD}
+
+Use rdrobust to estimate the RDD effect of elecpopratio $>$ 0.8 for Change in registration (\%) ($\hat\tau_A$ in Table 2), using 1) the author's bandwidth, and 2) the bandwidth chosen by rdrobust itself.
+
+\textbf{Solution}
+
+<<>>=
+library(rdrobust)
+# Author's bandwidth
+rdrobust(y = data$electorate.perpop08 - data$electorate.perpop07,
+        x = data$elecpopratio,
+        c = 0.8, h = 0.04, all = TRUE)
+
+# Auto bandwidth
+rdrobust(y = data$electorate.perpop08 - data$electorate.perpop07,
+                       x = data$elecpopratio, c = 0.8, all = TRUE)
+@
+
+The effect sizes of the two models are about the same as the paper's.
+
+\subsection{Fuzzy RDD}
+
+The design of this paper is a Fuzzy RDD because when elecpopratio $>$ 0.8, a district may be audited but not necessarily.
+
+rdrobust has an argument \verb`fuzzy` to specify which observation is actually treated. Use it to get a Fuzzy RDD estimate for Change in registration (\%) ($\hat\tau_R$ in Table 2)
+
+\textbf{Solution}
+
+<<>>=
+# Author's bandwidth
+rdrobust(y = data$electorate.perpop08 - data$electorate.perpop07,
+        x = data$elecpopratio,
+        fuzzy = data$treat,
+        c = 0.8, h = 0.04, all = TRUE)
+
+# Auto bandwidth
+rdrobust(y = data$electorate.perpop08 - data$electorate.perpop07,
+         fuzzy = data$treat,
+         x = data$elecpopratio, c = 0.8, all = TRUE)
+@
+
+The paper's estimate is 11.93, pretty close.
+
+\subsection{Density test (graphical)}
+
+Plot the histogram of the number of observations on both sides of the cut-off to see if there's any difference
+
+\textbf{Solution}
+
+<<fig.width = 6, fig.height = 4>>=
+ggplot(data = data) +
+  geom_histogram(aes(x = elecpopratio, fill = factor(elecpopratio > 0.8)), binwidth = 0.01) +
+  geom_vline(xintercept = 0.8) +
+  coord_cartesian(xlim = c(0.5, 1)) +
+  scale_fill_discrete("% of pop as electorate > 80%")
+@
+
+Seems like that the density is the same across the cutoff
+
+\end{document}
